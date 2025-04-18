@@ -58,7 +58,6 @@ export default async function handler(
       );
 
       const data = (await response.json()) as RetroDiffusionResponse;
-      console.log(data.base64_images[0]);
 
       // Return the generated image URL
       if (response.ok) {
@@ -68,15 +67,15 @@ export default async function handler(
 
         // Step 2: Ensure the upload directory exists
         await fs.mkdir(uploadDir, { recursive: true });
-
+        const randomInt = Math.floor(Math.random() * 1000000);
         // Step 3: Create a unique filename for the generated image
-        const imagePath = path.join(uploadDir, "generated_image.png");
-
+        //const imagePath = path.join(uploadDir, `${randomInt}.png`);
+        const imagePath = path.join(uploadDir, `generated_image.png`);
         // Step 4: Save the image buffer to the file system
         await fs.writeFile(imagePath, imageBuffer);
 
         // Return the saved image URL
-        res.status(200).json({ image: `/images/generated_image.png` });
+        res.status(200).json({ image: `/images/generated/${randomInt}.png` });
       } else {
         res.status(500).json({ error: "Failed to generate image" });
       }

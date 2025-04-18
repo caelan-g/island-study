@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import { promises as fs } from "fs";
 import path from "path";
-
+import { createClient } from "@supabase/supabase-js";
 export default function Dashboard() {
   interface FormData {
     prompt: string;
@@ -46,10 +46,23 @@ export default function Dashboard() {
     }
   };
 
+  const log15Minutes = async () => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from("temp").select("*").eq("id", 1);
+    if (error) {
+      console.error("Error:", error);
+    }
+    let newTotal = data[0].total + 15;
+    const { error } = await supabase.from("temp").update({ total: newTotal });
+    if (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Dashboard</h1>
-      <div>
+      <div className="flex flex-row gap-4">
         <Card className="w-[512px]">
           <CardHeader>
             <CardTitle>My Island</CardTitle>
@@ -82,6 +95,14 @@ export default function Dashboard() {
               Evolve island
             </Button>
           </CardFooter>
+        </Card>
+        <Card className="grow">
+          <CardHeader>
+            <CardTitle>Graphs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => log15Minutes()}>Log 15 Minutes</Button>
+          </CardContent>
         </Card>
       </div>
     </div>
