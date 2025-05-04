@@ -22,7 +22,7 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const imageBuffer = await fs.readFile(
-      path.resolve(process.cwd(), "public", "images", "island.png")
+      path.resolve(process.cwd(), "public", "images", "light_island.png")
     );
 
     // Convert the buffer to a base64 string

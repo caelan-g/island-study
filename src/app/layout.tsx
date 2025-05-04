@@ -1,7 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Providers } from "@/app/theme-provider";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-nav";
 
 import "@/app/globals.css";
+import App from "next/app";
 
 export default function RootLayout({
   children,
@@ -10,8 +13,13 @@ export default function RootLayout({
 }>) {
   return (
     <html dir="ltr" lang="en" suppressHydrationWarning>
-      <body className="mx-4 lg:mx-48">
-        <Providers>{children}</Providers>
+      <body>
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="ml-4 mr-12 w-full my-4">
+            <Providers>{children}</Providers>
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );
