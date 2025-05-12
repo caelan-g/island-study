@@ -127,3 +127,19 @@
   /* fallback for older browsers */
   image-rendering: crisp-edges;
 }
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating {
+  animation: float 5s ease-in-out infinite;
+}

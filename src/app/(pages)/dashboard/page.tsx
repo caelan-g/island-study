@@ -1,10 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
-import { Logout } from "@/hooks/logout";
 import DraggableImageCard from "@/components/draggable-image";
 import { fetchCourses } from "@/hooks/courses/fetch-courses";
+import { fetchSessions } from "@/hooks/sessions/fetch-sessions";
+import { fetchTotal } from "@/hooks/user/fetch-total";
+import { fetchUser } from "@/hooks/user/fetch-user";
 import {
   Card,
   CardContent,
@@ -12,11 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
-import { promises as fs } from "fs";
-import path from "path";
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
+import { SessionButton } from "@/components/session-button";
+import { RadialChart } from "@/components/charts/radial";
+import Image from "next/image";
 
 export default function Dashboard() {
   interface FormData {
@@ -54,78 +55,59 @@ export default function Dashboard() {
   const [progressValue, setProgressValue] = useState<number>(0);
 
   const [courses, setCourses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [courseLoading, setCourseLoading] = useState(true);
+  const [studyTime, setTotal] = useState<{ today: number; total: number }>({
+    today: 0,
+    total: 0,
+  });
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [user, setUser] = useState<any[]>([]);
+  const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
-    // 2. An async function inside useEffect to handle the async operation
-    const fetchXP = async () => {
-      // Call the async function and await its result
-      const progress = await updateXP();
-      // 3. Update the state with the resolved numerical value
-      setProgressValue(progress);
+    const loadUser = async () => {
+      setUserLoading(true);
+      const data = await fetchUser();
+      if (data) setUser(data);
+      setUserLoading(false);
     };
-
-    // Call the async function when the component mounts
-    fetchXP();
+    loadUser();
   }, []);
 
   useEffect(() => {
-    const loadCourses = async () => {
-      setLoading(true);
-      const data = await fetchCourses();
-      if (data) setCourses(data);
-      setLoading(false);
+    const loadSessions = async () => {
+      setCourseLoading(true);
+      const data = await fetchTotal("studyTime");
+      if (data) setTotal(data);
+      setSessionLoading(false);
     };
-    loadCourses();
+    loadSessions();
   }, []);
-
-  const log15Minutes = async () => {
-    const supabase = createClient();
-    const { data, error } = await supabase.from("temp").select("total");
-    if (error) {
-      console.error("Error:", error);
-      return;
-    }
-
-    let newTotal = parseInt(data[0].total) + 15;
-    console.log("newTotal", newTotal);
-    const { error: updateError } = await supabase
-      .from("temp")
-      .update({ total: newTotal })
-      .eq("id", 1);
-    if (updateError) {
-      console.error("Error:", updateError);
-      return;
-    }
-    console.log("Successfully updated total");
-    // Update the progress bar with the new total
-    setProgressValue(newTotal);
-  };
-
-  const updateXP = async () => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("temp")
-      .select("total")
-      .eq("id", 1);
-    if (error) {
-      console.error("Error:", error);
-      return;
-    }
-    return parseInt(data[0].total);
-  };
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <div className="flex flex-row justify-between">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex flex-row gap-2">
+          <SessionButton />
+          <Button variant="secondary">Other</Button>
+        </div>
+      </div>
       <div className="flex flex-col gap-4">
         <div className="flex flex-row gap-4">
           <Card className="w-[512px]">
-            <CardHeader>
-              <CardTitle>My Island</CardTitle>
-            </CardHeader>
+            <CardHeader></CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <DraggableImageCard />
+              <div>
+                <Image
+                  src="/images/light_island.png"
+                  alt="My Island"
+                  width={512}
+                  height={262}
+                  className="pixelated floating pointer-events-none"
+                  unoptimized
+                />
+              </div>
 
               <div className="flex flex-row justify-between space-x-4">
                 <p className="text-sm font-bold">XP</p>
@@ -147,41 +129,39 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
           <Card className="grow">
-            <CardHeader>
-              <CardTitle>Graphs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button onClick={() => log15Minutes()}>Log 15 Minutes</Button>
-            </CardContent>
+            <CardContent></CardContent>
           </Card>
         </div>
         <div className="flex flex-row gap-4">
           <Card>
             <CardHeader className="">
-              <div className="font-bold text-xl">Courses</div>
+              <div className="font-bold text-xl">Goal</div>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col my-2 min-w-96 gap-2">
-                {loading ? (
+                {sessionLoading || userLoading ? (
                   <div className="animate-pulse bg-neutral-100 rounded-xl p-4">
                     loading...
                   </div>
                 ) : (
-                  courses.map((course) => (
-                    <div
-                      key={course.name}
-                      className="flex flex-row text-xl font-bold"
-                    >
-                      <div
-                        className="size-8 rounded-sm"
-                        style={{ backgroundColor: course.colour }}
-                      />
-                      <span>{course.name}</span>
-                    </div>
-                  ))
+                  <RadialChart
+                    chartData={[
+                      {
+                        today: studyTime["today"],
+                        goal: user[0].goal,
+                        fill: "var(--color-safari)",
+                      },
+                    ]}
+                  />
                 )}
               </div>
             </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="font-bold text-xl">Sessions</div>
+            </CardHeader>
+            <CardContent></CardContent>
           </Card>
         </div>
       </div>

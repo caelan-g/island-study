@@ -1,0 +1,91 @@
+"use client";
+
+import {
+  Label,
+  PolarGrid,
+  PolarRadiusAxis,
+  RadialBar,
+  RadialBarChart,
+} from "recharts";
+
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
+
+const chartConfig = {
+  today: {
+    label: "Study Time",
+    color: "#2363eb", // Blue color
+  },
+} satisfies ChartConfig;
+
+interface chartData {
+  today: number;
+  goal: number;
+  fill: string;
+}
+
+export function RadialChart({ chartData }: { chartData: chartData[] }) {
+  if (chartData[0].today > chartData[0].goal) {
+    chartData[0].today = chartData[0].goal;
+  }
+  console.log(chartData[0].today);
+  console.log(chartData[0].goal);
+  return (
+    <div className="flex-1 flex-col">
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square max-h-[250px]"
+      >
+        <RadialBarChart
+          data={chartData}
+          startAngle={90}
+          endAngle={90 - (chartData[0].today / chartData[0].goal) * 360}
+          innerRadius={114}
+          outerRadius={144}
+        >
+          <PolarGrid
+            gridType="circle"
+            radialLines={false}
+            stroke="none"
+            className="first:fill-muted last:fill-background"
+            polarRadius={[120, 108]}
+          />
+          <RadialBar dataKey="today" background cornerRadius={10} />
+          <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+            <Label
+              content={({ viewBox }) => {
+                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  const percentage = Math.round(
+                    (chartData[0].today / chartData[0].goal) * 100
+                  );
+                  return (
+                    <text
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      <tspan
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        className="fill-foreground text-4xl font-bold"
+                      >
+                        {chartData[0].today.toLocaleString()}
+                      </tspan>
+                      <tspan
+                        x={viewBox.cx}
+                        y={(viewBox.cy || 0) + 30}
+                        className="fill-muted-foreground text-sm"
+                      >
+                        {percentage}% of goal
+                      </tspan>
+                    </text>
+                  );
+                }
+              }}
+            />
+          </PolarRadiusAxis>
+        </RadialBarChart>
+      </ChartContainer>
+    </div>
+  );
+}
