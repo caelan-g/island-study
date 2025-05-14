@@ -9,11 +9,12 @@ import {
 } from "recharts";
 
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { timeFilter } from "@/hooks/time-filter";
 
 const chartConfig = {
   today: {
     label: "Study Time",
-    color: "#2363eb", // Blue color
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
@@ -69,7 +70,7 @@ export function RadialChart({ chartData }: { chartData: chartData[] }) {
                         y={viewBox.cy}
                         className="fill-foreground text-4xl font-bold"
                       >
-                        {chartData[0].today.toLocaleString()}
+                        {timeFilter(chartData[0].today)}
                       </tspan>
                       <tspan
                         x={viewBox.cx}

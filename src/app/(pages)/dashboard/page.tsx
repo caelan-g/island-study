@@ -6,6 +6,9 @@ import { fetchCourses } from "@/hooks/courses/fetch-courses";
 import { fetchSessions } from "@/hooks/sessions/fetch-sessions";
 import { fetchTotal } from "@/hooks/user/fetch-total";
 import { fetchUser } from "@/hooks/user/fetch-user";
+import { timeFilter } from "@/hooks/time-filter";
+import { StackedBarChart } from "@/components/charts/stacked-bar";
+import { SplineAreaChart } from "@/components/charts/spline-area";
 import {
   Card,
   CardContent,
@@ -104,7 +107,7 @@ export default function Dashboard() {
                   alt="My Island"
                   width={512}
                   height={262}
-                  className="pixelated floating pointer-events-none"
+                  className="pixelated floating pointer-events-none select-none"
                   unoptimized
                 />
               </div>
@@ -129,7 +132,9 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
           <Card className="grow">
-            <CardContent></CardContent>
+            <CardContent>
+              <SplineAreaChart />
+            </CardContent>
           </Card>
         </div>
         <div className="flex flex-row gap-4">
@@ -157,11 +162,13 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="grow">
             <CardHeader>
               <div className="font-bold text-xl">Sessions</div>
             </CardHeader>
-            <CardContent></CardContent>
+            <CardContent>
+              <StackedBarChart />
+            </CardContent>
           </Card>
         </div>
       </div>
