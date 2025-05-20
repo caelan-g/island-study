@@ -3,7 +3,7 @@ import { UUID } from "crypto";
 import { checkSession } from "./check-session";
 
 const supabase = createClient();
-export const startSession = async (subject_id: UUID) => {
+export const startSession = async (course_id: UUID) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -13,7 +13,7 @@ export const startSession = async (subject_id: UUID) => {
       try {
         const { data, error } = await supabase
           .from("sessions")
-          .insert({ user_id: user.id, subject_id: subject_id });
+          .insert({ user_id: user.id, course_id: course_id });
 
         if (error) {
           console.log(error);

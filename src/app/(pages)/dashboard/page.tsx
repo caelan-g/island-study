@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import DraggableImageCard from "@/components/draggable-image";
 import { fetchCourses } from "@/hooks/courses/fetch-courses";
-import { fetchSessions } from "@/hooks/sessions/fetch-sessions";
 import { fetchTotal } from "@/hooks/user/fetch-total";
 import { fetchUser } from "@/hooks/user/fetch-user";
 import { timeFilter } from "@/hooks/time-filter";
@@ -56,35 +55,48 @@ export default function Dashboard() {
   };
 
   const [progressValue, setProgressValue] = useState<number>(0);
-
-  const [courses, setCourses] = useState<any[]>([]);
-  const [courseLoading, setCourseLoading] = useState(true);
   const [studyTime, setTotal] = useState<{ today: number; total: number }>({
     today: 0,
     total: 0,
   });
-  const [sessionLoading, setSessionLoading] = useState(true);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [chartCourses, setChartCourses] = useState<{
+    course: string[];
+    total: number[];
+  }>({ course: [], total: [] });
   const [user, setUser] = useState<any[]>([]);
-  const [userLoading, setUserLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadUser = async () => {
-      setUserLoading(true);
-      const data = await fetchUser();
-      if (data) setUser(data);
-      setUserLoading(false);
-    };
-    loadUser();
-  }, []);
+    const loadDatabases = async () => {
+      setLoading(true);
+      const userData = await fetchUser();
+      if (userData) setUser(userData);
 
-  useEffect(() => {
-    const loadSessions = async () => {
-      setCourseLoading(true);
-      const data = await fetchTotal("studyTime");
-      if (data) setTotal(data);
-      setSessionLoading(false);
+      const sessionData = await fetchTotal("studyTime");
+      if (sessionData) setTotal(sessionData);
+
+      const courseData = await fetchCourses();
+      if (courseData) setCourses(courseData);
+      let courseDataDictionary: { course?: string[]; total?: number[] } = {};
+      if (courseData) {
+        for (let i = 0; i < courseData.length; i++) {
+          if (
+            !courseDataDictionary["course"] ||
+            !courseDataDictionary["total"]
+          ) {
+            courseDataDictionary["course"] = [];
+            courseDataDictionary["total"] = [];
+          }
+          courseDataDictionary["course"].push(courseData[i].name);
+          courseDataDictionary["total"].push(courseData[i].total);
+        }
+      }
+      setChartCourses(courseDataDictionary);
+
+      setLoading(false);
     };
-    loadSessions();
+    loadDatabases();
   }, []);
 
   return (
@@ -93,7 +105,7 @@ export default function Dashboard() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex flex-row gap-2">
           <SessionButton />
-          <Button variant="secondary">Other</Button>
+          <Button variant="secondary">Add Session</Button>
         </div>
       </div>
       <div className="flex flex-col gap-4">
@@ -131,20 +143,10 @@ export default function Dashboard() {
               </Button>
             </CardFooter>
           </Card>
-          <Card className="grow">
-            <CardContent>
-              <SplineAreaChart />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="flex flex-row gap-4">
           <Card>
-            <CardHeader className="">
-              <div className="font-bold text-xl">Goal</div>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col my-2 min-w-96 gap-2">
-                {sessionLoading || userLoading ? (
+            <CardContent className="h-full">
+              <div className="flex flex-col align-middle py-auto min-w-96 gap-2 justify-center">
+                {loading ? (
                   <div className="animate-pulse bg-neutral-100 rounded-xl p-4">
                     loading...
                   </div>
@@ -162,10 +164,18 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+        </div>
+        <div className="flex flex-row gap-4">
           <Card className="grow">
-            <CardHeader>
-              <div className="font-bold text-xl">Sessions</div>
-            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <SplineAreaChart />
+              ) : (
+                <SplineAreaChart data={chartCourses} />
+              )}
+            </CardContent>
+          </Card>
+          <Card className="grow">
             <CardContent>
               <StackedBarChart />
             </CardContent>

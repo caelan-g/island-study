@@ -25,11 +25,11 @@ interface chartData {
 }
 
 export function RadialChart({ chartData }: { chartData: chartData[] }) {
+  let max = chartData[0].today;
   if (chartData[0].today > chartData[0].goal) {
-    chartData[0].today = chartData[0].goal;
+    max = chartData[0].goal;
   }
-  console.log(chartData[0].today);
-  console.log(chartData[0].goal);
+
   return (
     <div className="flex-1 flex-col">
       <ChartContainer
@@ -39,7 +39,7 @@ export function RadialChart({ chartData }: { chartData: chartData[] }) {
         <RadialBarChart
           data={chartData}
           startAngle={90}
-          endAngle={90 - (chartData[0].today / chartData[0].goal) * 360}
+          endAngle={90 - (max / chartData[0].goal) * 360}
           innerRadius={114}
           outerRadius={144}
         >

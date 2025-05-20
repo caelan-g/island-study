@@ -10,7 +10,7 @@ export const fetchTotal = async (type: string) => {
     try {
       const { data, error } = await supabase
         .from("sessions")
-        .select("start_time, end_time, subject_id")
+        .select("start_time, end_time, course_id")
         .eq("user_id", user.id);
 
       if (error) {
@@ -36,12 +36,13 @@ export const fetchTotal = async (type: string) => {
         const startDate = new Date(data[i].start_time);
         const endDate = new Date(data[i].end_time);
         if (startDate >= startOfDay) {
-          studyTime["today"] +=
-            (endDate.getTime() - startDate.getTime()) / 1000; // Convert to seconds
+          if (endDate > startDate) {
+            studyTime["today"] +=
+              (endDate.getTime() - startDate.getTime()) / 1000; // Convert to seconds
+          }
         }
       }
 
-      console.log(studyTime);
       return studyTime;
     } catch {
       return;

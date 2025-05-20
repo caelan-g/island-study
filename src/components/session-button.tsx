@@ -42,7 +42,7 @@ export function SessionButton() {
   return !activeSession ? (
     <div className="flex flex-col gap-2">
       <div>
-        <Button className="peer cursor-pointer">Start</Button>
+        <Button className="peer cursor-pointer">Start Session</Button>
         <div className="bg-background rounded-md p-2 border transition-all flex flex-col gap-2 z-50 opacity-0 pointer-events-none peer-hover:opacity-100 hover:pointer-events-auto hover:opacity-100 peer-hover:pointer-events-auto absolute">
           {courses.map((course) => (
             <Button
