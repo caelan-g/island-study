@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export const createCourse = async (name: string, colour: string) => {
+export const useCreateCourse = async (name: string, colour: string) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();

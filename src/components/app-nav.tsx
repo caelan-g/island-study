@@ -21,7 +21,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Logout } from "@/hooks/logout";
+import { useLogout } from "@/hooks/logout";
 
 const items = [
   {
@@ -83,7 +83,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <button className="cursor-pointer" onClick={Logout}>
+              <button className="cursor-pointer" onClick={useLogout}>
                 <LogOut />
                 <span>Logout</span>
               </button>

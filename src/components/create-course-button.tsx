@@ -34,7 +34,7 @@ import { Label } from "@radix-ui/react-label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { createCourse } from "@/hooks/courses/create-course";
+import { useCreateCourse } from "@/hooks/courses/create-course";
 
 export function CreateCourseButton() {
   const colours = [
@@ -73,7 +73,7 @@ export function CreateCourseButton() {
   });
 
   function onSubmit(values: z.infer<typeof courseSchema>) {
-    createCourse(values.name, values.colour);
+    useCreateCourse(values.name, values.colour);
   }
 
   return (

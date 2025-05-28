@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export const fetchTotal = async (type: string) => {
+export const useFetchTotal = async (type: string) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();

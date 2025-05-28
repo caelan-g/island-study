@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { redirect } from "next/navigation";
-export const Logout = async () => {
+export const useLogout = async () => {
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();
   if (error) {

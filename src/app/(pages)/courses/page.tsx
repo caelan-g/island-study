@@ -1,6 +1,6 @@
 "use client";
 import { CreateCourseButton } from "@/components/create-course-button";
-import { fetchCourses } from "@/hooks/courses/fetch-courses";
+import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -17,7 +17,7 @@ export default function Courses() {
   useEffect(() => {
     const loadCourses = async () => {
       setLoading(true);
-      const data = await fetchCourses();
+      const data = await useFetchCourses();
       if (data) setCourses(data);
       setLoading(false);
     };

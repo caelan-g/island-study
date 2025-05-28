@@ -1,8 +1,9 @@
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 const supabase = createClient();
 
-export const fetchCourses = async () => {
+export const useFetchCourses = async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -11,12 +12,12 @@ export const fetchCourses = async () => {
       const { data, error } = await supabase
         .from("courses")
         .select()
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .order("name", { ascending: true });
 
       if (error) {
         console.log(error);
       }
-
       return data;
     } catch {
       return;

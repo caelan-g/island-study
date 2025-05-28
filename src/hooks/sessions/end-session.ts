@@ -1,27 +1,54 @@
 import { createClient } from "@/lib/supabase/client";
 import { UUID } from "crypto";
-import { checkSession } from "./check-session";
+import { useCheckSession } from "./check-session";
+import { toast } from "sonner";
 
 const supabase = createClient();
 
-export const endSession = async () => {
+export async function useEndSession(
+  start_time: Date,
+  end_time: Date,
+  course_id: string,
+  description?: string
+) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
     try {
-      const active = await checkSession();
+      const active = await useCheckSession();
       if (active) {
         const { data, error } = await supabase
           .from("sessions")
-          .update({ end_time: new Date().toISOString() })
+          .update({
+            start_time: new Date(start_time).toISOString(),
+            end_time: new Date(end_time).toISOString(),
+            description: description,
+            course_id: course_id,
+          })
           .eq("id", active.id);
 
         if (error) {
           console.log(error);
+          toast.error("Failed to end session");
+        } else {
+          toast.success("Session created");
         }
       } else {
-        console.log("no session active");
+        const { data, error } = await supabase.from("sessions").insert({
+          user_id: user.id,
+          start_time: new Date(start_time).toISOString(),
+          end_time: new Date(end_time).toISOString(),
+          description: description,
+          course_id: course_id,
+        });
+
+        if (error) {
+          console.log(error);
+          toast.error("Failed to end session");
+        } else {
+          toast.success("Session created");
+        }
       }
     } catch {
       return;
@@ -29,4 +56,4 @@ export const endSession = async () => {
   } else {
     console.log("no user logged in");
   }
-};
+}

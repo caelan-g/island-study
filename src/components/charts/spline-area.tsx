@@ -2,7 +2,7 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { timeFilter } from "@/hooks/time-filter";
+import { useTimeFilter } from "@/hooks/time-filter";
 
 // Dynamically import ApexCharts to avoid SSR issues
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -65,7 +65,7 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
       dataLabels: {
         enabled: true,
         formatter: function (value) {
-          return timeFilter(value, "hours");
+          return useTimeFilter(value, "hours");
         },
       },
       stroke: {
@@ -92,7 +92,7 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
         x: {},
         y: {
           formatter: function (value) {
-            return timeFilter(value);
+            return useTimeFilter(value);
           },
         },
       },

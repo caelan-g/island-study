@@ -1,22 +1,25 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { checkSession } from "@/hooks/sessions/check-session";
-import { startSession } from "@/hooks/sessions/start-session";
-import { endSession } from "@/hooks/sessions/end-session";
-import { fetchCourses } from "@/hooks/courses/fetch-courses";
+import { useCheckSession } from "@/hooks/sessions/check-session";
+import { useStartSession } from "@/hooks/sessions/start-session";
+import { useEndSession } from "@/hooks/sessions/end-session";
+import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { Spinner } from "@/components/ui/spinner";
+import { SessionDialog } from "@/components/session-dialog";
+import { Session } from "inspector/promises";
 
 export function SessionButton() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSession, setActiveSession] = useState<boolean | null>(null);
+  const [openSessionDialog, setOpenSessionDialog] = useState(false);
 
   useEffect(() => {
     const initializeData = async () => {
       try {
         const [active, courseData] = await Promise.all([
-          checkSession(),
-          fetchCourses(),
+          useCheckSession(),
+          useFetchCourses(),
         ]);
 
         setActiveSession(active);
@@ -50,7 +53,7 @@ export function SessionButton() {
               style={{ backgroundColor: course.colour }}
               onClick={async () => {
                 setActiveSession(true);
-                await startSession(course.id);
+                await useStartSession(course.id);
               }}
             >
               {course.name}
@@ -60,13 +63,18 @@ export function SessionButton() {
       </div>
     </div>
   ) : (
-    <Button
-      onClick={async () => {
-        setActiveSession(false);
-        await endSession();
-      }}
-    >
-      End Session
-    </Button>
+    <>
+      <Button
+        onClick={() => {
+          setOpenSessionDialog(true);
+        }}
+      >
+        End Session
+      </Button>
+      <SessionDialog
+        open={openSessionDialog}
+        onOpenChange={(open: boolean) => setOpenSessionDialog(open)}
+      />
+    </>
   );
 }

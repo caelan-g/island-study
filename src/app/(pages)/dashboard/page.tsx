@@ -2,12 +2,13 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import DraggableImageCard from "@/components/draggable-image";
-import { fetchCourses } from "@/hooks/courses/fetch-courses";
-import { fetchTotal } from "@/hooks/user/fetch-total";
-import { fetchUser } from "@/hooks/user/fetch-user";
-import { timeFilter } from "@/hooks/time-filter";
+import { useFetchCourses } from "@/hooks/courses/fetch-courses";
+import { useFetchTotal } from "@/hooks/user/fetch-total";
+import { useFetchUser } from "@/hooks/user/fetch-user";
+import { useTimeFilter } from "@/hooks/time-filter";
 import { StackedBarChart } from "@/components/charts/stacked-bar";
 import { SplineAreaChart } from "@/components/charts/spline-area";
+import { useCheckSession } from "@/hooks/sessions/check-session";
 import {
   Card,
   CardContent,
@@ -19,7 +20,9 @@ import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect } from "react";
 import { SessionButton } from "@/components/session-button";
 import { RadialChart } from "@/components/charts/radial";
+import { SessionDialog } from "@/components/session-dialog";
 import Image from "next/image";
+import { set } from "react-hook-form";
 
 export default function Dashboard() {
   interface FormData {
@@ -54,6 +57,8 @@ export default function Dashboard() {
     }
   };
 
+  const [openSessionDialog, setOpenSessionDialog] = useState(false);
+
   const [progressValue, setProgressValue] = useState<number>(0);
   const [studyTime, setTotal] = useState<{ today: number; total: number }>({
     today: 0,
@@ -65,37 +70,35 @@ export default function Dashboard() {
     total: number[];
   }>({ course: [], total: [] });
   const [user, setUser] = useState<any[]>([]);
+  const [activeSession, setActiveSession] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadDatabases = async () => {
-      setLoading(true);
-      const userData = await fetchUser();
-      if (userData) setUser(userData);
-
-      const sessionData = await fetchTotal("studyTime");
-      if (sessionData) setTotal(sessionData);
-
-      const courseData = await fetchCourses();
-      if (courseData) setCourses(courseData);
-      let courseDataDictionary: { course?: string[]; total?: number[] } = {};
-      if (courseData) {
-        for (let i = 0; i < courseData.length; i++) {
-          if (
-            !courseDataDictionary["course"] ||
-            !courseDataDictionary["total"]
-          ) {
-            courseDataDictionary["course"] = [];
-            courseDataDictionary["total"] = [];
-          }
-          courseDataDictionary["course"].push(courseData[i].name);
-          courseDataDictionary["total"].push(courseData[i].total);
+  const loadDatabases = async () => {
+    Promise.all([
+      useFetchUser(),
+      useCheckSession(),
+      useFetchTotal("studyTime"),
+      useFetchCourses(),
+    ])
+      .then(([userData, activeSession, sessionData, courseData]) => {
+        if (userData) setUser(userData);
+        setActiveSession(activeSession ? true : false);
+        if (sessionData) setTotal(sessionData);
+        if (courseData) {
+          setCourses(courseData);
+          const courseNames = courseData.map((course) => course.name);
+          const courseTotals = courseData.map((course) => course.total);
+          setChartCourses({ course: courseNames, total: courseTotals });
         }
-      }
-      setChartCourses(courseDataDictionary);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error loading data:", error);
+        setLoading(false);
+      });
+  };
 
-      setLoading(false);
-    };
+  useEffect(() => {
     loadDatabases();
   }, []);
 
@@ -105,7 +108,24 @@ export default function Dashboard() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex flex-row gap-2">
           <SessionButton />
-          <Button variant="secondary">Add Session</Button>
+          {!activeSession ? (
+            <Button
+              variant="secondary"
+              onClick={() => setOpenSessionDialog(true)}
+            >
+              Add Session
+            </Button>
+          ) : null}
+
+          <SessionDialog
+            open={openSessionDialog}
+            onOpenChange={(open: boolean) => {
+              setOpenSessionDialog(open);
+              if (!open) {
+                loadDatabases(); // Refresh data when dialog closes
+              }
+            }}
+          />
         </div>
       </div>
       <div className="flex flex-col gap-4">
