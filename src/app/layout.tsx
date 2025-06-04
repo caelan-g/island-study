@@ -15,6 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html dir="ltr" lang="en" suppressHydrationWarning>
+      <head>
+        <title>study app</title>
+      </head>
       <body>
         <SidebarProvider>
           <AppSidebar />

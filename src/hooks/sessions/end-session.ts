@@ -6,6 +6,7 @@ import { toast } from "sonner";
 const supabase = createClient();
 
 export async function useEndSession(
+  session_id: string,
   start_time: Date,
   end_time: Date,
   course_id: string,
@@ -17,6 +18,25 @@ export async function useEndSession(
   if (user) {
     try {
       const active = await useCheckSession();
+      if (session_id !== "") {
+        const { data, error } = await supabase
+          .from("sessions")
+          .update({
+            start_time: new Date(start_time).toISOString(),
+            end_time: new Date(end_time).toISOString(),
+            description: description,
+            course_id: course_id,
+          })
+          .eq("id", session_id);
+
+        if (error) {
+          console.log(error);
+          toast.error("Failed to end session");
+        } else {
+          toast.success("Session updated");
+        }
+        return;
+      }
       if (active) {
         const { data, error } = await supabase
           .from("sessions")

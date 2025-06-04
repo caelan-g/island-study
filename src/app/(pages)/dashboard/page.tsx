@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 import { SessionButton } from "@/components/session-button";
 import { RadialChart } from "@/components/charts/radial";
 import { SessionDialog } from "@/components/session-dialog";
+import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { set } from "react-hook-form";
 
@@ -64,7 +65,7 @@ export default function Dashboard() {
     today: 0,
     total: 0,
   });
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<courseProps[]>([]);
   const [chartCourses, setChartCourses] = useState<{
     course: string[];
     total: number[];
@@ -121,10 +122,8 @@ export default function Dashboard() {
             open={openSessionDialog}
             onOpenChange={(open: boolean) => {
               setOpenSessionDialog(open);
-              if (!open) {
-                loadDatabases(); // Refresh data when dialog closes
-              }
             }}
+            courses={courses}
           />
         </div>
       </div>

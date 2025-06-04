@@ -5,27 +5,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
-import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { useTimeFilter } from "@/hooks/time-filter";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SessionDialog } from "@/components/session-dialog";
+import { Button } from "@/components/ui/button";
 
-export const SessionCard = ({ session }: { session: sessionProps }) => {
+export const SessionCard = ({
+  session,
+  courses,
+  onEdit,
+}: {
+  session: sessionProps;
+  courses: courseProps[];
+  onEdit: (session: sessionProps) => void;
+}) => {
   const [course, setCourse] = useState<courseProps | null>(null);
 
-  useFetchCourses().then((data) => {
-    if (data) {
-      const foundCourse = data.find((c) => c.id === session.course_id);
-      setCourse(foundCourse || null);
-    }
-  });
+  useEffect(() => {
+    const foundCourse = courses.find((c) => c.id === session.course_id);
+    setCourse(foundCourse || null);
+  }, [courses, session.course_id]);
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex flex-row justify-between">
-          <div>{course.name || "Unknown Course"}</div>
+          <div>{course?.name || "Unknown Course"}</div>
           <div>
             {useTimeFilter(
               (new Date(session.end_time).getTime() -
@@ -35,15 +50,35 @@ export const SessionCard = ({ session }: { session: sessionProps }) => {
           </div>
         </CardTitle>
         <CardDescription>
-          {new Date(session.end_time).toLocaleDateString()}
+          {session.end_time
+            ? new Date(session.end_time).toLocaleDateString()
+            : new Date(session.start_time).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {session.description || "No description available"}
-        <p className="text-sm text-gray-500">
-          {new Date(session.start_time).toLocaleTimeString()} -{" "}
-          {new Date(session.end_time).toLocaleTimeString()}
-        </p>
+
+      <CardContent className="flex flex-row justify-between ">
+        {session.end_time ? (
+          <>
+            <div>
+              {session.description || "No description available"}
+              <p className="text-sm text-gray-500">
+                {new Date(session.start_time).toLocaleTimeString()} -{" "}
+                {new Date(session.end_time).toLocaleTimeString()}
+              </p>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger>...</DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => onEdit(session)}>
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem>Delete</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : (
+          <div>Started {new Date(session.start_time).toLocaleTimeString()}</div>
+        )}
       </CardContent>
     </Card>
   );

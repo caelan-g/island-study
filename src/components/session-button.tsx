@@ -74,6 +74,7 @@ export function SessionButton() {
       <SessionDialog
         open={openSessionDialog}
         onOpenChange={(open: boolean) => setOpenSessionDialog(open)}
+        courses={courses}
       />
     </>
   );
