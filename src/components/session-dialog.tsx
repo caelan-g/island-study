@@ -55,6 +55,7 @@ type SessionDialogProps = {
   onOpenChange: (open: boolean) => void;
   courses: courseProps[]; // Array of courses to select from
   sessionProps?: sessionProps; // Optional, if you want to pass session data
+  onSubmitSuccess?: () => void;
 };
 
 //add sessionProps then add an if statement if theres session to show extra buttons/different text - do same for courses form
@@ -64,6 +65,7 @@ export function SessionDialog({
   onOpenChange,
   courses,
   sessionProps,
+  onSubmitSuccess,
 }: SessionDialogProps) {
   const [activeSession, setActiveSession] = useState<ActiveSession | null>(
     null
@@ -158,17 +160,19 @@ export function SessionDialog({
     }
   }, [form, activeSession, sessionProps]);
 
-  function onSubmit(values: z.infer<typeof sessionSchema>) {
-    useEndSession(
-      sessionProps ? sessionProps.id : "", // If editing, pass the session ID
+  async function onSubmit(values: z.infer<typeof sessionSchema>) {
+    await useEndSession(
+      sessionProps ? sessionProps.id : "",
       values.startTime,
       values.endTime,
-      values.course, // This is already the course ID from the Select component
+      values.course,
       values.description
     );
     form.reset();
-    onOpenChange(false); // Close the dialog
-    //window.location.reload();
+    onOpenChange(false);
+    if (onSubmitSuccess) {
+      onSubmitSuccess(); // Call the callback after successful submission
+    }
   }
 
   return (

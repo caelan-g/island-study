@@ -9,6 +9,7 @@ import { useTimeFilter } from "@/hooks/time-filter";
 import { StackedBarChart } from "@/components/charts/stacked-bar";
 import { SplineAreaChart } from "@/components/charts/spline-area";
 import { useCheckSession } from "@/hooks/sessions/check-session";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Card,
   CardContent,
@@ -24,6 +25,7 @@ import { SessionDialog } from "@/components/session-dialog";
 import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { set } from "react-hook-form";
+import { HorizontalBar } from "@/components/charts/horizontal-bar";
 
 export default function Dashboard() {
   interface FormData {
@@ -99,6 +101,17 @@ export default function Dashboard() {
       });
   };
 
+  const handleSessionSubmit = async () => {
+    setLoading(true);
+    try {
+      await loadDatabases(); // Reuse existing loadDatabases function
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadDatabases();
   }, []);
@@ -122,8 +135,12 @@ export default function Dashboard() {
             open={openSessionDialog}
             onOpenChange={(open: boolean) => {
               setOpenSessionDialog(open);
+              if (!open) {
+                handleSessionSubmit(); // Refresh data when dialog closes
+              }
             }}
             courses={courses}
+            onSubmitSuccess={handleSessionSubmit}
           />
         </div>
       </div>
@@ -148,37 +165,28 @@ export default function Dashboard() {
                 <Progress value={progressValue} />
               </div>
             </CardContent>
-            <CardFooter>
-              <Button
-                onClick={() =>
-                  evolveIsland({
-                    prompt:
-                      "Some cut down trees. Tree stumps. Stacked logs. Dirt paths. No structures. Jungle has been pushed back.",
-                    strength: 0.65,
-                  })
-                }
-              >
-                Evolve island
-              </Button>
-            </CardFooter>
           </Card>
-          <Card>
+          <Card className="grow">
             <CardContent className="h-full">
-              <div className="flex flex-col align-middle py-auto min-w-96 gap-2 justify-center">
+              <div className="flex flex-col py-auto gap-2 justify-center h-full">
                 {loading ? (
-                  <div className="animate-pulse bg-neutral-100 rounded-xl p-4">
-                    loading...
+                  <div className="flex justify-center items-center h-full">
+                    <Spinner size="lg" />
                   </div>
                 ) : (
-                  <RadialChart
-                    chartData={[
-                      {
-                        today: studyTime["today"],
-                        goal: user[0].goal,
-                        fill: "var(--color-safari)",
-                      },
-                    ]}
-                  />
+                  <div className="">
+                    <div className="min-w-48 p-">
+                      <RadialChart
+                        chartData={[
+                          {
+                            today: studyTime["today"],
+                            goal: user[0].goal,
+                            fill: "var(--color-safari)",
+                          },
+                        ]}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
             </CardContent>
