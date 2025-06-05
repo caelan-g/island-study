@@ -2,7 +2,8 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { useTimeFilter } from "@/hooks/time-filter";
+import { ApexOptions } from "apexcharts";
+import { timeFilter } from "@/lib/filters/time-filter";
 
 // Dynamically import ApexCharts to avoid SSR issues
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -17,7 +18,11 @@ interface SplineAreaChartProps {
 }
 
 export function SplineAreaChart({ data }: SplineAreaChartProps) {
-  const chartState = {
+  const chartState: {
+    series: ApexAxisChartSeries;
+    fill: ApexFill;
+    options: ApexOptions;
+  } = {
     series: [
       {
         name: "course",
@@ -64,15 +69,14 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
       },
       dataLabels: {
         enabled: true,
-        formatter: function (value) {
-          return useTimeFilter(value, "hours");
+        formatter: function (value: number) {
+          return timeFilter(value, "hours");
         },
       },
       stroke: {
         curve: "smooth",
       },
       xaxis: {
-        type: "string",
         categories: data?.course || ["1", "2", "3", "4", "5"],
         tooltip: {
           enabled: false,
@@ -80,7 +84,6 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
         labels: {
           rotate: -45,
           rotateAlways: true,
-          textAnchor: "end",
           offsetY: 10,
         },
       },
@@ -91,8 +94,8 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
       tooltip: {
         x: {},
         y: {
-          formatter: function (value) {
-            return useTimeFilter(value);
+          formatter: function (value: number) {
+            return timeFilter(value);
           },
         },
       },
@@ -103,10 +106,10 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
     <div>
       <div id="chart">
         <ReactApexChart
-          options={chartState.options}
           series={chartState.series}
-          type="area"
+          options={chartState.options}
           height={350}
+          type="area"
         />
       </div>
     </div>

@@ -1,11 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
-import { UUID } from "crypto";
-import { useCheckSession } from "./check-session";
+import { checkSession } from "./check-session";
 import { toast } from "sonner";
 
 const supabase = createClient();
 
-export async function useEndSession(
+export async function endSession(
   session_id: string,
   start_time: Date,
   end_time: Date,
@@ -17,9 +16,9 @@ export async function useEndSession(
   } = await supabase.auth.getUser();
   if (user) {
     try {
-      const active = await useCheckSession();
+      const active = await checkSession();
       if (session_id !== "") {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("sessions")
           .update({
             start_time: new Date(start_time).toISOString(),
@@ -38,7 +37,7 @@ export async function useEndSession(
         return;
       }
       if (active) {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("sessions")
           .update({
             start_time: new Date(start_time).toISOString(),
@@ -55,7 +54,7 @@ export async function useEndSession(
           toast.success("Session created");
         }
       } else {
-        const { data, error } = await supabase.from("sessions").insert({
+        const { error } = await supabase.from("sessions").insert({
           user_id: user.id,
           start_time: new Date(start_time).toISOString(),
           end_time: new Date(end_time).toISOString(),

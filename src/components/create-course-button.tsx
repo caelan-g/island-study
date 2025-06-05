@@ -18,15 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -34,7 +26,7 @@ import { Label } from "@radix-ui/react-label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useCreateCourse } from "@/hooks/courses/create-course";
+import { createCourse } from "@/lib/courses/create-course";
 
 export function CreateCourseButton() {
   const colours = [
@@ -73,7 +65,7 @@ export function CreateCourseButton() {
   });
 
   function onSubmit(values: z.infer<typeof courseSchema>) {
-    useCreateCourse(values.name, values.colour);
+    createCourse(values.name, values.colour);
   }
 
   return (

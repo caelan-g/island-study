@@ -1,17 +1,16 @@
 import { createClient } from "@/lib/supabase/client";
-import { UUID } from "crypto";
-import { useCheckSession } from "./check-session";
+import { checkSession } from "./check-session";
 
 const supabase = createClient();
-export const useStartSession = async (course_id: UUID) => {
+export const startSession = async (course_id: string) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
-    let active = await useCheckSession();
+    const active = await checkSession();
     if (!active.start_time) {
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from("sessions")
           .insert({ user_id: user.id, course_id: course_id });
 

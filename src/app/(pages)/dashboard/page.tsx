@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { useFetchCourses } from "@/hooks/courses/fetch-courses";
-import { useFetchTotal } from "@/hooks/user/fetch-total";
-import { useFetchUser } from "@/hooks/user/fetch-user";
+import { fetchCourses } from "@/lib/courses/fetch-courses";
+import { fetchTotal } from "@/lib/user/fetch-total";
+import { fetchUser } from "@/lib/user/fetch-user";
 import { StackedBarChart } from "@/components/charts/stacked-bar";
 import { SplineAreaChart } from "@/components/charts/spline-area";
-import { useCheckSession } from "@/hooks/sessions/check-session";
+import { checkSession } from "@/lib/sessions/check-session";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useState, useEffect } from "react";
@@ -15,6 +15,7 @@ import { RadialChart } from "@/components/charts/radial";
 import { SessionDialog } from "@/components/session-dialog";
 import { courseProps } from "@/components/types/course";
 import Image from "next/image";
+import { userProps } from "@/components/types/user";
 
 export default function Dashboard() {
   /*const evolveIsland = async (data: FormData) => {
@@ -56,17 +57,12 @@ export default function Dashboard() {
     course: string[];
     total: number[];
   }>({ course: [], total: [] });
-  const [user, setUser] = useState<any[]>([]);
+  const [user, setUser] = useState<userProps>();
   const [activeSession, setActiveSession] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadDatabases = async () => {
-    Promise.all([
-      useFetchUser(),
-      useCheckSession(),
-      useFetchTotal("studyTime"),
-      useFetchCourses(),
-    ])
+    Promise.all([fetchUser(), checkSession(), fetchTotal(), fetchCourses()])
       .then(([userData, activeSession, sessionData, courseData]) => {
         if (userData) setUser(userData);
         setActiveSession(activeSession ? true : false);
@@ -164,7 +160,7 @@ export default function Dashboard() {
                         chartData={[
                           {
                             today: studyTime["today"],
-                            goal: user[0].goal,
+                            goal: user?.goal ?? 0,
                             fill: "var(--color-safari)",
                           },
                         ]}

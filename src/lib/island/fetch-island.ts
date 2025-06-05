@@ -2,17 +2,17 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export async function useFetchCourses() {
+export async function fetchIsland() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
     try {
       const { data, error } = await supabase
-        .from("courses")
+        .from("islands")
         .select()
         .eq("user_id", user.id)
-        .order("name", { ascending: true });
+        .eq("active", true);
 
       if (error) {
         console.log(error);

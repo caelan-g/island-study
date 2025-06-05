@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
-import { useTimeFilter } from "@/hooks/time-filter";
+import { timeFilter } from "@/lib/filters/time-filter";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +38,7 @@ export const SessionCard = ({
         <CardTitle className="flex flex-row justify-between">
           <div>{course?.name || "Unknown Course"}</div>
           <div>
-            {useTimeFilter(
+            {timeFilter(
               (new Date(session.end_time).getTime() -
                 new Date(session.start_time).getTime()) /
                 1000

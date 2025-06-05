@@ -21,13 +21,13 @@ import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEndSession } from "@/hooks/sessions/end-session";
+import { endSession } from "@/lib/sessions/end-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useState, useEffect } from "react";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { useCheckSession } from "@/hooks/sessions/check-session";
+import { checkSession } from "@/lib/sessions/check-session";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 
@@ -62,7 +62,7 @@ export function SessionDialog({
   useEffect(() => {
     const checkForActiveSession = async () => {
       try {
-        const active = await useCheckSession();
+        const active = await checkSession();
         if (active) {
           setActiveSession(active);
         } else {
@@ -149,7 +149,7 @@ export function SessionDialog({
   }, [form, activeSession, sessionProps]);
 
   async function onSubmit(values: z.infer<typeof sessionSchema>) {
-    await useEndSession(
+    await endSession(
       sessionProps ? sessionProps.id : "",
       values.startTime,
       values.endTime,

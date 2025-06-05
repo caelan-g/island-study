@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { useCheckSession } from "@/hooks/sessions/check-session";
-import { useStartSession } from "@/hooks/sessions/start-session";
-import { useFetchCourses } from "@/hooks/courses/fetch-courses";
+import { checkSession } from "@/lib/sessions/check-session";
+import { startSession } from "@/lib/sessions/start-session";
+import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { Spinner } from "@/components/ui/spinner";
 import { SessionDialog } from "@/components/session-dialog";
+import { courseProps } from "./types/course";
 
 export function SessionButton() {
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<courseProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeSession, setActiveSession] = useState<boolean | null>(null);
   const [openSessionDialog, setOpenSessionDialog] = useState(false);
@@ -16,8 +17,8 @@ export function SessionButton() {
     const initializeData = async () => {
       try {
         const [active, courseData] = await Promise.all([
-          useCheckSession(),
-          useFetchCourses(),
+          checkSession(),
+          fetchCourses(),
         ]);
 
         setActiveSession(active);
@@ -51,7 +52,7 @@ export function SessionButton() {
               style={{ backgroundColor: course.colour }}
               onClick={async () => {
                 setActiveSession(true);
-                await useStartSession(course.id);
+                await startSession(course.id);
               }}
             >
               {course.name}
