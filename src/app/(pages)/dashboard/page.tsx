@@ -1,39 +1,23 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import DraggableImageCard from "@/components/draggable-image";
 import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { useFetchTotal } from "@/hooks/user/fetch-total";
 import { useFetchUser } from "@/hooks/user/fetch-user";
-import { useTimeFilter } from "@/hooks/time-filter";
 import { StackedBarChart } from "@/components/charts/stacked-bar";
 import { SplineAreaChart } from "@/components/charts/spline-area";
 import { useCheckSession } from "@/hooks/sessions/check-session";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { SessionButton } from "@/components/session-button";
 import { RadialChart } from "@/components/charts/radial";
 import { SessionDialog } from "@/components/session-dialog";
 import { courseProps } from "@/components/types/course";
 import Image from "next/image";
-import { set } from "react-hook-form";
-import { HorizontalBar } from "@/components/charts/horizontal-bar";
 
 export default function Dashboard() {
-  interface FormData {
-    prompt: string;
-    strength: number;
-  }
-
-  const evolveIsland = async (data: FormData) => {
+  /*const evolveIsland = async (data: FormData) => {
     try {
       const imageName = "light_island.png"; // Just the image name (without "/images/")
 
@@ -58,11 +42,11 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error:", error);
     }
-  };
+  }; */
 
   const [openSessionDialog, setOpenSessionDialog] = useState(false);
 
-  const [progressValue, setProgressValue] = useState<number>(0);
+  //const [progressValue, setProgressValue] = useState<number>(0);
   const [studyTime, setTotal] = useState<{ today: number; total: number }>({
     today: 0,
     total: 0,
@@ -162,7 +146,7 @@ export default function Dashboard() {
 
               <div className="flex flex-row justify-between space-x-4">
                 <p className="text-sm font-bold">XP</p>
-                <Progress value={progressValue} />
+                <Progress value={0} />
               </div>
             </CardContent>
           </Card>
@@ -193,7 +177,7 @@ export default function Dashboard() {
           </Card>
         </div>
         <div className="flex flex-row gap-4">
-          <Card className="grow">
+          <Card className="grow min-w-96">
             <CardContent>
               {loading ? (
                 <SplineAreaChart />

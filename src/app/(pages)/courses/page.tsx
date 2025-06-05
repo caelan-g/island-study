@@ -2,13 +2,7 @@
 import { CreateCourseButton } from "@/components/create-course-button";
 import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 
 export default function Courses() {
   const [courses, setCourses] = useState<any[]>([]);

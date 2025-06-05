@@ -13,12 +13,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SessionDialog } from "@/components/session-dialog";
-import { Button } from "@/components/ui/button";
 
 export const SessionCard = ({
   session,

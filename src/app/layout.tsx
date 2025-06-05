@@ -1,12 +1,10 @@
 "use client";
-import { cn } from "@/lib/utils";
 import { Providers } from "@/app/theme-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-nav";
 import { Toaster } from "@/components/ui/sonner";
 
 import "@/app/globals.css";
-import App from "next/app";
 
 export default function RootLayout({
   children,

@@ -3,7 +3,6 @@ import { SessionCard } from "@/components/session-card";
 import { useFetchSessions } from "@/hooks/sessions/fetch-sessions";
 import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Toaster } from "sonner";
 import { sessionProps } from "@/components/types/session";
@@ -40,14 +39,6 @@ export default function Sessions() {
   const handleEditSession = (session: sessionProps) => {
     setSelectedSession(session);
     setOpenSessionDialog(true);
-  };
-
-  const handleDialogClose = (open: boolean) => {
-    setOpenSessionDialog(open);
-    if (!open) {
-      setSelectedSession(null);
-      initializeData(); // Refresh data when dialog closes
-    }
   };
 
   useEffect(() => {

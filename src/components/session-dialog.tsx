@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 import {
@@ -18,28 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEndSession } from "@/hooks/sessions/end-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
-import { start } from "repl";
 import { useState, useEffect } from "react";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { useCheckSession } from "@/hooks/sessions/check-session";
-import { Toaster } from "sonner";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 

@@ -2,11 +2,9 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useCheckSession } from "@/hooks/sessions/check-session";
 import { useStartSession } from "@/hooks/sessions/start-session";
-import { useEndSession } from "@/hooks/sessions/end-session";
 import { useFetchCourses } from "@/hooks/courses/fetch-courses";
 import { Spinner } from "@/components/ui/spinner";
 import { SessionDialog } from "@/components/session-dialog";
-import { Session } from "inspector/promises";
 
 export function SessionButton() {
   const [courses, setCourses] = useState<any[]>([]);
