@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export const useFetchTotal = async (type: string) => {
+export const fetchTotal = async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -19,7 +19,7 @@ export const useFetchTotal = async (type: string) => {
       }
       if (!data) return 0;
 
-      let studyTime = { total: 0, today: 0 };
+      const studyTime = { total: 0, today: 0 };
       for (let i = 0; i < data.length; i++) {
         // Convert timestamptz strings to Date objects and calculate difference in milliseconds
         const startDate = new Date(data[i].start_time);

@@ -1,18 +1,19 @@
 import { createClient } from "@/lib/supabase/client";
+import { sessionProps } from "@/components/types/session";
 
 const supabase = createClient();
 
-export async function useFetchIsland() {
+export async function deleteSession(session: sessionProps) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
     try {
       const { data, error } = await supabase
-        .from("islands")
-        .select()
-        .eq("user_id", user.id)
-        .eq("active", true);
+        .from("sessions")
+        .delete()
+        .eq("id", session.id)
+        .single();
 
       if (error) {
         console.log(error);

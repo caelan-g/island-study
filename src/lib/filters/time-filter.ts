@@ -1,4 +1,4 @@
-export function useTimeFilter(seconds: number, type?: string) {
+export function timeFilter(seconds: number, type?: string) {
   const hours = seconds / 3600;
   const wholeHours = Math.floor(hours);
   const roundedHours = Math.round(hours);

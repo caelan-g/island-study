@@ -1,7 +1,7 @@
 "use client";
 import { SessionCard } from "@/components/session-card";
-import { useFetchSessions } from "@/hooks/sessions/fetch-sessions";
-import { useFetchCourses } from "@/hooks/courses/fetch-courses";
+import { fetchSessions } from "@/lib/sessions/fetch-sessions";
+import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { useState, useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { Toaster } from "sonner";
@@ -23,8 +23,8 @@ export default function Sessions() {
   const initializeData = async () => {
     try {
       const [sessionData, courseData] = await Promise.all([
-        useFetchSessions(),
-        useFetchCourses(),
+        fetchSessions(),
+        fetchCourses(),
       ]);
 
       if (sessionData) setSessions(sessionData);
@@ -71,7 +71,7 @@ export default function Sessions() {
                 setOpenSessionDialog(open);
               }}
               courses={courses}
-              sessionProps={selectedSession}
+              sessionProps={selectedSession ? selectedSession : undefined}
             />
           )}
         </>

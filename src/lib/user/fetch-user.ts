@@ -1,28 +1,28 @@
 import { createClient } from "@/lib/supabase/client";
-import { sessionProps } from "@/components/types/session";
 
 const supabase = createClient();
 
-export async function useDeleteSession(session: sessionProps) {
+export const fetchUser = async () => {
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) {
     try {
       const { data, error } = await supabase
-        .from("sessions")
-        .delete()
-        .eq("id", session.id)
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
       if (error) {
         console.log(error);
       }
       return data;
-    } catch {
+    } catch (err) {
+      console.error(err);
       return;
     }
   } else {
     console.log("no user logged in");
   }
-}
+};
