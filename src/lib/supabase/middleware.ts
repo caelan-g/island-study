@@ -43,12 +43,22 @@ export async function updateSession(request: NextRequest) {
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname !== "/"
+    !request.nextUrl.pathname.startsWith("/")
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
+  }
+  console.log(user);
+
+  if (
+    user &&
+    user.app_metadata.has_onboarded === false &&
+    !request.nextUrl.pathname.startsWith("/welcome")
+  ) {
+    // Redirect users who haven't onboarded to the onboarding page
+    return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

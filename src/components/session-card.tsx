@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Ellipsis } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
@@ -63,7 +64,9 @@ export const SessionCard = ({
               </p>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger>...</DropdownMenuTrigger>
+              <DropdownMenuTrigger>
+                <Ellipsis size={16} />
+              </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => onEdit(session)}>
                   Edit
