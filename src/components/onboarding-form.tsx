@@ -12,7 +12,6 @@ import GoalStep from "@/components/steps/goal-step";
 import CoursesStep from "@/components/steps/courses-step";
 import CompletionStep from "@/components/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
-import { createIsland } from "@/lib/island/create-island";
 
 // Define the schema for the entire form
 const formSchema = z.object({

@@ -1,8 +1,8 @@
+"use server";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Buffer } from "buffer";
 // Note: Changed to '@supabase/ssr' for robust server-side auth handling in Pages Router
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers"; // Or a cookie parser library if not using App Router context
+import { createServerSupabaseClient } from "@/lib/supabase/api-server";
 
 interface RetroDiffusionResponse {
   created_at: number;
@@ -88,26 +88,7 @@ export default async function handler(
 
   // --- Step 2: Upload Generated Image to Supabase ---
   try {
-    // This is the key change: Create a Supabase client on the server
-    // that is authenticated with the user's credentials from the request cookies.
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return req.cookies[name];
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            // This is a server-side route, so we don't need to set cookies on the response
-            // unless we are doing something like password reset or re-auth.
-          },
-          remove(name: string, options: CookieOptions) {
-            // Same as above.
-          },
-        },
-      }
-    );
+    const supabase = createServerSupabaseClient(req, res);
 
     const {
       data: { user },
@@ -126,7 +107,7 @@ export default async function handler(
 
     //console.log("Attempting to upload to Supabase storage at path:", filePath);
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from("islands")
       .upload(filePath, imageBuffer, {
         contentType: "image/png",

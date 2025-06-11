@@ -2,8 +2,6 @@
 import { Providers } from "@/app/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-nav";
-import { Toaster } from "@/components/ui/sonner";
-import { useEffect } from "react";
 import "@/app/globals.css";
 
 export default function RootLayout({

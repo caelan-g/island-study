@@ -1,3 +1,4 @@
+/*
 export async function evolveIsland(data: FormData) {
   try {
     const imageName = "light_island.png"; // Just the image name (without "/images/")
@@ -24,3 +25,4 @@ export async function evolveIsland(data: FormData) {
     console.error("Error:", error);
   }
 }
+*/
