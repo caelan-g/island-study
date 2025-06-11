@@ -142,7 +142,12 @@ export default function OnboardingForm() {
                 Continue
               </Button>
             ) : (
-              <Button type="button" onClick={form.handleSubmit(onSubmit)}>
+              <Button
+                type="button"
+                onClick={() => {
+                  form.handleSubmit(onSubmit)();
+                }}
+              >
                 Complete
               </Button>
             )}

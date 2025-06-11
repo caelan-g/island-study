@@ -220,9 +220,6 @@ export default function TimePicker({
               <>
                 <div className="w-px h-32 bg-border mx-2" />
                 <div className="flex flex-col items-center">
-                  <div className="text-xs text-muted-foreground mb-2 font-medium">
-                    Period
-                  </div>
                   {renderColumn(
                     periods,
                     selectedPeriod,
