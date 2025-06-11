@@ -16,35 +16,11 @@ import { SessionDialog } from "@/components/session-dialog";
 import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { userProps } from "@/components/types/user";
+import { islandProps } from "@/components/types/island";
+import { createIsland } from "@/lib/island/create-island";
+import { fetchIsland } from "@/lib/island/fetch-island";
 
 export default function Dashboard() {
-  /*const evolveIsland = async (data: FormData) => {
-    try {
-      const imageName = "light_island.png"; // Just the image name (without "/images/")
-
-      const response = await fetch("/api/retro-diffusion", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: data.prompt,
-          strength: data.strength,
-          imagePath: imageName, // Extract the base64 string without the data URL part
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-      } else {
-        console.error("Failed to generate image");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }; */
-
   const [openSessionDialog, setOpenSessionDialog] = useState(false);
 
   //const [progressValue, setProgressValue] = useState<number>(0);
@@ -53,6 +29,7 @@ export default function Dashboard() {
     total: 0,
   });
   const [courses, setCourses] = useState<courseProps[]>([]);
+  const [island, setIsland] = useState<islandProps | null>(null);
   const [chartCourses, setChartCourses] = useState<{
     course: string[];
     total: number[];
@@ -62,19 +39,28 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const loadDatabases = async () => {
-    Promise.all([fetchUser(), checkSession(), fetchTotal(), fetchCourses()])
-      .then(([userData, activeSession, sessionData, courseData]) => {
-        if (userData) setUser(userData);
-        setActiveSession(activeSession ? true : false);
-        if (sessionData) setTotal(sessionData);
-        if (courseData) {
-          setCourses(courseData);
-          const courseNames = courseData.map((course) => course.name);
-          const courseTotals = courseData.map((course) => course.total);
-          setChartCourses({ course: courseNames, total: courseTotals });
+    Promise.all([
+      fetchUser(),
+      checkSession(),
+      fetchTotal(),
+      fetchCourses(),
+      fetchIsland(),
+    ])
+      .then(
+        ([userData, activeSession, sessionData, courseData, islandData]) => {
+          if (userData) setUser(userData);
+          setActiveSession(activeSession ? true : false);
+          if (sessionData) setTotal(sessionData);
+          if (courseData) {
+            setCourses(courseData);
+            const courseNames = courseData.map((course) => course.name);
+            const courseTotals = courseData.map((course) => course.total);
+            setChartCourses({ course: courseNames, total: courseTotals });
+          }
+          setIsland(islandData);
+          setLoading(false);
         }
-        setLoading(false);
-      })
+      )
       .catch((error) => {
         console.error("Error loading data:", error);
         setLoading(false);
@@ -131,7 +117,13 @@ export default function Dashboard() {
             <CardContent className="flex flex-col gap-2">
               <div>
                 <Image
-                  src="/images/light_island.png"
+                  src={
+                    loading
+                      ? "/images/loading_island.png"
+                      : island
+                      ? island.current_url
+                      : "/images/loading_island.png" //change later
+                  }
                   alt="My Island"
                   width={512}
                   height={262}
@@ -144,6 +136,11 @@ export default function Dashboard() {
                 <p className="text-sm font-bold">XP</p>
                 <Progress value={0} />
               </div>
+              {!island ? (
+                <Button onClick={createIsland} size="sm">
+                  Create Island
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
           <Card className="grow">

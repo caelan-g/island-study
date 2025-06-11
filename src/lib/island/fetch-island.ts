@@ -10,9 +10,10 @@ export async function fetchIsland() {
     try {
       const { data, error } = await supabase
         .from("islands")
-        .select()
+        .select("*")
         .eq("user_id", user.id)
-        .eq("active", true);
+        .eq("active", true)
+        .single();
 
       if (error) {
         console.log(error);
