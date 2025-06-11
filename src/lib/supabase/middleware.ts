@@ -39,25 +39,30 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Add condition to allow welcome page access for non-onboarded users
+  if (request.nextUrl.pathname.startsWith("/welcome")) {
+    if (!user) {
+      // If no user on welcome page, redirect to login
+      return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
+    // Allow access to welcome page if user exists (onboarded or not)
+    return NextResponse.next({ request });
+  }
+
+  // Handle non-authenticated routes
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname != "/"
+    request.nextUrl.pathname !== "/"
   ) {
-    // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
-  console.log(user);
 
-  if (
-    user &&
-    user.app_metadata.has_onboarded === false &&
-    !request.nextUrl.pathname.startsWith("/welcome")
-  ) {
-    // Redirect users who haven't onboarded to the onboarding page
+  // Handle non-onboarded users trying to access other pages
+  if (user?.app_metadata.has_onboarded === false) {
     return NextResponse.redirect(new URL("/welcome", request.url));
   }
 
