@@ -219,7 +219,7 @@ export function SessionDialog({
                         <SelectGroup>
                           <SelectLabel>Courses</SelectLabel>
                           {courses.map((course) => (
-                            <SelectItem value={course.id} key={course.name}>
+                            <SelectItem value={course.id} key={course.id}>
                               <div
                                 className="size-4 rounded-sm"
                                 style={{ backgroundColor: course.colour }}
