@@ -2,7 +2,7 @@
 import { CreateCourseButton } from "@/components/create-course-button";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { useEffect, useState } from "react";
-import { Card, CardHeader } from "@/components/ui/card";
+import { CourseCard } from "@/components/ui/course-card";
 import { courseProps } from "@/components/types/course";
 
 export default function Courses() {
@@ -30,15 +30,7 @@ export default function Courses() {
           </div>
         ) : (
           courses.map((course) => (
-            <Card key={course.name}>
-              <CardHeader className="flex flex-row text-xl font-bold gap-2">
-                <div
-                  className="size-8 rounded-sm"
-                  style={{ backgroundColor: course.colour }}
-                />
-                <span>{course.name}</span>
-              </CardHeader>
-            </Card>
+            <CourseCard key={course.id} course={course} />
           ))
         )}
       </div>

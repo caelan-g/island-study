@@ -44,11 +44,7 @@ export function LoginForm({
 
       if (error) throw error;
 
-      if (user && !user.goal) {
-        router.push("/welcome");
-      } else {
-        router.push("/dashboard");
-      }
+      router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
