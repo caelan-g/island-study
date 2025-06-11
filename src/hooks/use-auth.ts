@@ -27,7 +27,7 @@ export function useAuth() {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase.auth]);
 
   const checkAuth = async () => {
     const user = await fetchUser();
