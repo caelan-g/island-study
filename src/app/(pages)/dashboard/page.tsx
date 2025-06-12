@@ -17,7 +17,6 @@ import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
-import { createIsland } from "@/lib/island/create-island";
 import { fetchIsland } from "@/lib/island/fetch-island";
 
 export default function Dashboard() {
@@ -136,11 +135,6 @@ export default function Dashboard() {
                 <p className="text-sm font-bold">XP</p>
                 <Progress value={0} />
               </div>
-              {!island ? (
-                <Button onClick={createIsland} size="sm">
-                  Create Island
-                </Button>
-              ) : null}
             </CardContent>
           </Card>
           <Card className="grow">
