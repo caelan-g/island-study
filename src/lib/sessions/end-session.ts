@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { checkSession } from "./check-session";
 import { toast } from "sonner";
+import { addXP } from "@/lib/island/add-xp";
 
 const supabase = createClient();
 
@@ -16,6 +17,9 @@ export async function endSession(
   } = await supabase.auth.getUser();
   if (user) {
     try {
+      const duration = Math.floor(
+        (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000
+      );
       const active = await checkSession();
       if (session_id !== "") {
         const { error } = await supabase
@@ -69,6 +73,7 @@ export async function endSession(
           toast.success("Session created");
         }
       }
+      await addXP(supabase, user.id, duration);
     } catch {
       return;
     }

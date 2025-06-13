@@ -8,6 +8,30 @@ export async function onboardUser(name: string, goal: number) {
   } = await supabase.auth.getUser();
   if (user) {
     try {
+      const { data: islandData, error: islandError } = await supabase
+        .from("islands")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (islandError) {
+        console.error("Error fetching island data:", islandError);
+        return;
+      }
+
+      if (islandData) {
+        const { error } = await supabase
+          .from("islands")
+          .update({ threshold: goal })
+          .eq("user_id", user.id)
+          .single();
+
+        if (error) {
+          console.error("Error updating island threshold:", error);
+          return;
+        }
+      }
+
       const { data, error } = await supabase
         .from("users")
         .update({ name: name, goal: goal, has_onboarded: true })
@@ -16,6 +40,7 @@ export async function onboardUser(name: string, goal: number) {
 
       if (error) {
         console.log(error);
+        return;
       }
       return data;
     } catch (err) {

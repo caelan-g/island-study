@@ -130,10 +130,21 @@ export default function Dashboard() {
                   unoptimized
                 />
               </div>
+              <div className="flex flex-row justify-center items-center">
+                <div className="z-10 font-bold text-background">
+                  {island ? island.level : <Spinner size="xs" />}
+                </div>
+                <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
+              </div>
 
-              <div className="flex flex-row justify-between space-x-4">
-                <p className="text-sm font-bold">XP</p>
-                <Progress value={0} />
+              <div className="flex flex-row justify-between space-x-4 items-center">
+                <Progress
+                  className="bg-muted [&>div]:bg-muted-foreground"
+                  value={island ? (island.xp / island.threshold) * 100 : 0}
+                />
+                <p className="text-xs font-bold whitespace-nowrap">
+                  {island ? `${island.xp} / ${island.threshold} XP` : null}
+                </p>
               </div>
             </CardContent>
           </Card>

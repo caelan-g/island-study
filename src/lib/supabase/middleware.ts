@@ -54,6 +54,7 @@ export async function updateSession(request: NextRequest) {
     !user &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
+    !request.nextUrl.pathname.startsWith("/") && //REMOVE THIS LATER - NEED TO UPDATE GOAL FUNCTION SO THAT ON USER CREATION IF AN ISLAND ROW EXISTS THEN insert goal from user into island
     request.nextUrl.pathname !== "/"
   ) {
     const url = request.nextUrl.clone();
