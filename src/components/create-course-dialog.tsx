@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 import {
@@ -21,14 +20,21 @@ import {
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createCourse } from "@/lib/courses/create-course";
 
-export function CreateCourseButton() {
+export function CreateCourseDialog({
+  open,
+  onOpenChange,
+  onSubmitSuccess,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmitSuccess?: () => void;
+}) {
   const colours = [
     { name: "Blue", colour: "#AEC6CF" },
     { name: "Green", colour: "#B2F2BB" },
@@ -64,19 +70,17 @@ export function CreateCourseButton() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof courseSchema>) {
-    createCourse(values.name, values.colour);
+  async function onSubmit(values: z.infer<typeof courseSchema>) {
+    await createCourse(values.name, values.colour);
+    onOpenChange(false);
+    if (onSubmitSuccess) {
+      onSubmitSuccess(); // Call the callback after successful submission
+    }
   }
 
   return (
     <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>
-            <span>Create Course</span>
-            <Plus strokeWidth={3} />
-          </Button>
-        </DialogTrigger>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[425px]">
           <Form {...form}>
             <DialogHeader>

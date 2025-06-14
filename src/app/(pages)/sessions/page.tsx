@@ -36,6 +36,17 @@ export default function Sessions() {
     }
   };
 
+  const handleSessionSubmit = async () => {
+    setLoading(true);
+    try {
+      await initializeData(); // Reuse existing loadDatabases function
+    } catch (error) {
+      console.error("Error refreshing data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleEditSession = (session: sessionProps) => {
     setSelectedSession(session);
     setOpenSessionDialog(true);
@@ -72,6 +83,7 @@ export default function Sessions() {
               }}
               courses={courses}
               sessionProps={selectedSession ? selectedSession : undefined}
+              onSubmitSuccess={handleSessionSubmit}
             />
           )}
         </>
