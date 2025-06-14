@@ -17,7 +17,7 @@ import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
-import { fetchIsland } from "@/lib/island/fetch-island";
+import { fetchActiveIsland } from "@/lib/island/fetch-active-island";
 
 export default function Dashboard() {
   const [openSessionDialog, setOpenSessionDialog] = useState(false);
@@ -43,7 +43,7 @@ export default function Dashboard() {
       checkSession(),
       fetchTotal(),
       fetchCourses(),
-      fetchIsland(),
+      fetchActiveIsland(),
     ])
       .then(
         ([userData, activeSession, sessionData, courseData, islandData]) => {

@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const supabase = createClient();
 
-export async function fetchIsland() {
+export async function fetchActiveIsland() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
