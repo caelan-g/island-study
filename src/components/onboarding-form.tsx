@@ -12,6 +12,7 @@ import GoalStep from "@/components/steps/goal-step";
 import CoursesStep from "@/components/steps/courses-step";
 import CompletionStep from "@/components/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
+import { useRouter } from "next/navigation";
 
 // Define the schema for the entire form
 const formSchema = z.object({
@@ -35,6 +36,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function OnboardingForm() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
@@ -65,7 +67,7 @@ export default function OnboardingForm() {
 
   const onSubmit = (data: FormValues) => {
     onboardUser(data.name, data.goal);
-    window.location.href = "/dashboard";
+    router.push("/dashboard");
     return;
   };
 

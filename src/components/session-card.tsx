@@ -37,7 +37,7 @@ export const SessionCard = ({
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex flex-row justify-between">
-          <div>{course?.name || "Unknown Course"}</div>
+          <div className="truncate">{course?.name || "Unknown Course"}</div>
           <div>
             {timeFilter(
               (new Date(session.end_time).getTime() -
@@ -53,10 +53,10 @@ export const SessionCard = ({
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-row justify-between ">
+      <CardContent className="flex flex-row justify-between">
         {session.end_time ? (
           <>
-            <div>
+            <div className="truncate">
               {session.description || "No description available"}
               <p className="text-sm text-gray-500">
                 {new Date(session.start_time).toLocaleTimeString()} -{" "}
