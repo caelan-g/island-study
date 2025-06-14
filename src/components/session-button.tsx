@@ -47,16 +47,20 @@ export function SessionButton() {
         <Button className="peer cursor-pointer">Start Session</Button>
         <div className="bg-background rounded-md p-2 border transition-all flex flex-col gap-2 z-50 opacity-0 pointer-events-none peer-hover:opacity-100 hover:pointer-events-auto hover:opacity-100 peer-hover:pointer-events-auto absolute">
           {courses.map((course) => (
-            <Button
+            <div
               key={course.id}
-              style={{ backgroundColor: course.colour }}
+              className="text-xs font-bold p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis max-w-48"
+              style={{
+                backgroundColor: course.colour,
+                color: `color-mix(in srgb, ${course.colour} 15%, black)`,
+              }}
               onClick={async () => {
                 setActiveSession(true);
                 await startSession(course.id);
               }}
             >
               {course.name}
-            </Button>
+            </div>
           ))}
         </div>
       </div>

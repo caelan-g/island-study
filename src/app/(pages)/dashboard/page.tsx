@@ -139,12 +139,21 @@ export default function Dashboard() {
 
               <div className="flex flex-row justify-between space-x-4 items-center">
                 <Progress
-                  className="bg-muted [&>div]:bg-muted-foreground"
+                  className={`bg-muted [&>div]:bg-muted-foreground ${
+                    island?.level === 7 ? "hidden" : ""
+                  }`}
                   value={island ? (island.xp / island.threshold) * 100 : 0}
                 />
-                <p className="text-xs font-bold whitespace-nowrap">
+                <p
+                  className={`text-xs font-bold whitespace-nowrap ${
+                    island?.level === 7 ? "hidden" : ""
+                  }`}
+                >
                   {island ? `${island.xp} / ${island.threshold} XP` : null}
                 </p>
+                {island?.level == 7 ? (
+                  <p className="font-bold mx-auto">MAX</p>
+                ) : null}
               </div>
             </CardContent>
           </Card>
