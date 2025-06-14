@@ -1,7 +1,8 @@
 export type islandProps = {
   id: string;
   user_id: string;
-  total_xp: number;
+  level: number;
+  xp: number;
   threshold: number;
   current_url: string;
   type: string;
