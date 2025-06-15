@@ -1,11 +1,14 @@
 "use client";
 import { Providers } from "@/app/theme-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-nav";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 import "@/app/globals.css";
-import { LandingNavigationMenu } from "@/components/ui/navbar";
 
-export default function RootLayout({
+export default function LoginLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -19,11 +22,13 @@ export default function RootLayout({
         <SpeedInsights />
         <Analytics />
         <Providers>
-          <div className="min-h-screen overflow-x-hidden">
-            <main className="w-full my-4">
-              <LandingNavigationMenu />
-              {children}
-            </main>
+          <div className="min-h-screen">
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="ml-4 mr-12 w-full my-4 overflow-x-hidden">
+                {children}
+              </main>
+            </SidebarProvider>
           </div>
         </Providers>
       </body>
