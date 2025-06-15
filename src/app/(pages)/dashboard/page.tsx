@@ -86,7 +86,14 @@ export default function Dashboard() {
       <div className="flex flex-row justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex flex-row gap-2">
-          <SessionButton />
+          <SessionButton
+            isActive={(isActive) => {
+              if (!isActive) {
+                setOpenSessionDialog(true);
+              } else {
+              }
+            }}
+          />
           {!activeSession ? (
             <Button
               variant="secondary"
@@ -100,9 +107,6 @@ export default function Dashboard() {
             open={openSessionDialog}
             onOpenChange={(open: boolean) => {
               setOpenSessionDialog(open);
-              if (!open) {
-                handleSessionSubmit(); // Refresh data when dialog closes
-              }
             }}
             courses={courses}
             onSubmitSuccess={handleSessionSubmit}

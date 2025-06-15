@@ -149,17 +149,22 @@ export function SessionDialog({
   }, [form, activeSession, sessionProps]);
 
   async function onSubmit(values: z.infer<typeof sessionSchema>) {
-    await endSession(
-      sessionProps ? sessionProps.id : "",
-      values.startTime,
-      values.endTime,
-      values.course,
-      values.description
-    );
-    form.reset();
-    onOpenChange(false);
-    if (onSubmitSuccess) {
-      onSubmitSuccess(); // Call the callback after successful submission
+    try {
+      await endSession(
+        sessionProps ? sessionProps.id : "",
+        values.startTime,
+        values.endTime,
+        values.course,
+        values.description
+      );
+      // Only call onSubmitSuccess if the endSession was successful
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      }
+      form.reset();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error ending session:", error);
     }
   }
 

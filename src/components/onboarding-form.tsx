@@ -126,7 +126,15 @@ export default function OnboardingForm() {
       />
 
       <Form {...form}>
-        <form className="mt-8 space-y-6 h-full flex flex-col justify-between">
+        <form
+          className="mt-8 space-y-6 h-full flex flex-col justify-between"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              goToNextStep();
+            }
+          }}
+        >
           {renderStepContent()}
 
           <div className="flex justify-between pt-4">
