@@ -4,36 +4,51 @@ import { checkSession } from "@/lib/sessions/check-session";
 import { startSession } from "@/lib/sessions/start-session";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { Spinner } from "@/components/ui/spinner";
-import { SessionDialog } from "@/components/session-dialog";
-import { courseProps } from "./types/course";
+import { courseProps } from "@/components/types/course";
+import { sessionProps } from "@/components/types/session";
+import Stopwatch from "@/components/ui/stopwatch";
+import { Square } from "lucide-react";
 
-export function SessionButton() {
+interface SessionButtonProps {
+  isActive?: (clicked: boolean) => void;
+}
+
+export function SessionButton({ isActive }: SessionButtonProps) {
   const [courses, setCourses] = useState<courseProps[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeSession, setActiveSession] = useState<boolean | null>(null);
-  const [openSessionDialog, setOpenSessionDialog] = useState(false);
+  const [courseLoading, setCourseLoading] = useState(true);
+
+  const [activeLoading, setActiveLoading] = useState(true);
+  const [activeSession, setActiveSession] = useState<sessionProps | null>(null);
+
+  const initializeCourses = async () => {
+    try {
+      const courseData = await fetchCourses();
+
+      if (courseData) setCourses(courseData);
+    } catch (error) {
+      console.error("Failed to load courses:", error);
+    } finally {
+      setCourseLoading(false);
+    }
+  };
+
+  const initializeActive = async () => {
+    try {
+      const active = await checkSession();
+      setActiveSession(active);
+    } catch (error) {
+      console.error("Failed to check active session:", error);
+    } finally {
+      setActiveLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const initializeData = async () => {
-      try {
-        const [active, courseData] = await Promise.all([
-          checkSession(),
-          fetchCourses(),
-        ]);
+    initializeCourses();
+    initializeActive();
+  }, [activeSession]);
 
-        setActiveSession(active);
-        if (courseData) setCourses(courseData);
-      } catch (error) {
-        console.error("Failed to load data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeData();
-  }, []);
-
-  if (loading || activeSession === null) {
+  if (courseLoading || activeLoading) {
     return (
       <Button variant={"loading"}>
         <Spinner />
@@ -49,14 +64,15 @@ export function SessionButton() {
           {courses.map((course) => (
             <div
               key={course.id}
-              className="text-xs font-bold p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis max-w-48"
+              className="text-xs text-white font-bold p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis max-w-48 cursor-pointer"
               style={{
                 backgroundColor: course.colour,
-                color: `color-mix(in srgb, ${course.colour} 15%, black)`,
+                //color: `color-mix(in srgb, ${course.colour} 15%, white)`,
               }}
               onClick={async () => {
-                setActiveSession(true);
                 await startSession(course.id);
+                initializeActive();
+                isActive?.(true);
               }}
             >
               {course.name}
@@ -69,16 +85,15 @@ export function SessionButton() {
     <>
       <Button
         onClick={() => {
-          setOpenSessionDialog(true);
+          isActive?.(false);
+          initializeActive();
         }}
       >
-        End Session
+        <span>
+          <Square strokeWidth={0} fill="rgb(255, 50, 50)" />
+        </span>
+        <Stopwatch startTime={new Date(activeSession.start_time)} />
       </Button>
-      <SessionDialog
-        open={openSessionDialog}
-        onOpenChange={(open: boolean) => setOpenSessionDialog(open)}
-        courses={courses}
-      />
     </>
   );
 }
