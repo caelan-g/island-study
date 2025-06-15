@@ -3,7 +3,6 @@ import { Providers } from "@/app/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import "@/app/globals.css";
-import { LandingNavigationMenu } from "@/components/ui/navbar";
 
 export default function RootLayout({
   children,
@@ -18,14 +17,7 @@ export default function RootLayout({
       <body>
         <SpeedInsights />
         <Analytics />
-        <Providers>
-          <div className="min-h-screen overflow-x-hidden">
-            <main className="w-full my-4">
-              <LandingNavigationMenu />
-              {children}
-            </main>
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

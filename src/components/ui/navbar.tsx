@@ -209,7 +209,7 @@ const components: { title: string; href: string; description: string }[] = [
 
 export function LandingNavigationMenu() {
   return (
-    <NavigationMenu viewport={false} className="z-100 mx-8">
+    <NavigationMenu viewport={false} className="z-100 mx-8 mt-4">
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
