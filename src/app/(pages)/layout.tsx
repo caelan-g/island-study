@@ -4,8 +4,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-nav";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-import { createClient } from "@/lib/supabase/client";
-import { useEffect, useState } from "react";
 import "@/app/globals.css";
 
 export default function LoginLayout({

@@ -1,7 +1,7 @@
 import Hero from "@/components/landing/hero";
 import Features from "@/components/landing/features";
 import CTA from "@/components/landing/cta";
-import MouseMoveEffect from "@/components/mouse-move-effect";
+//import MouseMoveEffect from "@/components/mouse-move-effect";
 
 export default function Landing() {
   return (

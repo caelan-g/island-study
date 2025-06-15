@@ -12,8 +12,8 @@ export default function Hero() {
         </h1>
         <p className="mx-auto max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
           Empowering students with cutting-edge software solutions. From
-          AI-driven analytics to seamless cloud integrations, we're shaping the
-          future of studying.
+          AI-driven analytics to seamless cloud integrations, we&apos;re shaping
+          the future of studying.
         </p>
       </div>
       <div className="flex gap-4">
