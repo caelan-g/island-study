@@ -18,7 +18,7 @@ export default function Hero() {
       </div>
       <div className="flex gap-4">
         <Button size="lg" asChild>
-          <a href="/auth/signup" className="flex items-center">
+          <a href="/auth/sign-up" className="flex items-center">
             Get Started
             <ArrowRight className="ml-2 h-4 w-4" />
           </a>
