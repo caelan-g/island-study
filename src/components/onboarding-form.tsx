@@ -156,6 +156,7 @@ export default function OnboardingForm() {
                 type="button"
                 onClick={() => {
                   form.handleSubmit(onSubmit)();
+                  router.push("/dashboard");
                 }}
               >
                 Complete

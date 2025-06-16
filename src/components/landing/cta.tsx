@@ -12,7 +12,7 @@ export default function CTA() {
           transformation and stay ahead in the rapidly evolving tech landscape.
         </p>
         <Button size="lg" className="mt-4" asChild>
-          <a href="/auth/signup" className="flex items-center">
+          <a href="/auth/sign-up" className="flex items-center">
             Get Started
           </a>
         </Button>
