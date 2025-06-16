@@ -4,20 +4,24 @@ import { islandProps } from "@/components/types/island";
 import { fetchIslands } from "@/lib/island/fetch-islands";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function Islands() {
+  const { user: authUser, loading: authLoading } = useAuth();
   const [islands, setIslands] = useState<islandProps[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadIslands = async () => {
       setLoading(true);
-      const data = await fetchIslands();
+      const data = await fetchIslands(authUser);
       if (data) setIslands(data);
       setLoading(false);
     };
-    loadIslands();
-  }, []);
+    if (!authLoading && authUser) {
+      loadIslands();
+    }
+  }, [authLoading, authUser]);
   return (
     <>
       {loading ? (

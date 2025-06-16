@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createCourse } from "@/lib/courses/create-course";
+import { useAuth } from "@/contexts/auth-context";
 
 export function CreateCourseDialog({
   open,
@@ -35,6 +36,7 @@ export function CreateCourseDialog({
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess?: () => void;
 }) {
+  const { user: authUser } = useAuth();
   const colours = [
     { name: "Blue", colour: "#AEC6CF" },
     { name: "Green", colour: "#B2F2BB" },
@@ -71,7 +73,7 @@ export function CreateCourseDialog({
   });
 
   async function onSubmit(values: z.infer<typeof courseSchema>) {
-    await createCourse(values.name, values.colour);
+    await createCourse(values.name, values.colour, authUser);
     onOpenChange(false);
     if (onSubmitSuccess) {
       onSubmitSuccess(); // Call the callback after successful submission

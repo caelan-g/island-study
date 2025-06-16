@@ -1,11 +1,9 @@
 import { createClient } from "@/lib/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
-export const checkSession = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export const checkSession = async (user: User | null) => {
   if (user) {
     try {
       const { data, error } = await supabase

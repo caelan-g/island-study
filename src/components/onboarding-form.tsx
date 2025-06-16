@@ -65,8 +65,8 @@ export default function OnboardingForm() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: FormValues) => {
-    onboardUser(data.name, data.goal);
+  const onSubmit = async (data: FormValues) => {
+    await onboardUser(data.name, data.goal);
     router.push("/dashboard");
     return;
   };
@@ -156,7 +156,6 @@ export default function OnboardingForm() {
                 type="button"
                 onClick={() => {
                   form.handleSubmit(onSubmit)();
-                  router.push("/dashboard");
                 }}
               >
                 Complete

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/client";
 import { checkSession } from "./check-session";
 import { toast } from "sonner";
 import { addXP } from "@/lib/island/add-xp";
+import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
@@ -10,17 +11,15 @@ export async function endSession(
   start_time: Date,
   end_time: Date,
   course_id: string,
+  user: User | null,
   description?: string
 ) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (user) {
     try {
       const duration = Math.floor(
         (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000
       );
-      const active = await checkSession();
+      const active = await checkSession(user);
       if (session_id !== "") {
         const { error } = await supabase
           .from("sessions")
@@ -73,7 +72,7 @@ export async function endSession(
           toast.success("Session created");
         }
       }
-      await addXP(supabase, user.id, duration);
+      await addXP(supabase, user.id, duration, user);
     } catch {
       return;
     }

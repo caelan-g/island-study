@@ -1,12 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
 import { sessionProps } from "@/components/types/session";
+import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
-export async function deleteSession(session: sessionProps) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export async function deleteSession(session: sessionProps, user: User | null) {
   if (user) {
     try {
       const { data, error } = await supabase
