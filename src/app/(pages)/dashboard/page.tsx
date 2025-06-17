@@ -10,15 +10,16 @@ import { checkSession } from "@/lib/sessions/check-session";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useState, useEffect, useCallback } from "react";
-import { SessionButton } from "@/components/session-button";
+import { SessionButton } from "@/components/sessions/session-button";
 import { RadialChart } from "@/components/charts/radial";
-import { SessionDialog } from "@/components/session-dialog";
+import { SessionDialog } from "@/components/sessions/session-dialog";
 import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
 import { fetchActiveIsland } from "@/lib/island/fetch-active-island";
 import { useAuth } from "@/contexts/auth-context";
+import { PlusIcon } from "lucide-react";
 
 export default function Dashboard() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -103,7 +104,8 @@ export default function Dashboard() {
               variant="secondary"
               onClick={() => setOpenSessionDialog(true)}
             >
-              Add Session
+              <PlusIcon strokeWidth={2.5} />
+              Add
             </Button>
           ) : null}
 

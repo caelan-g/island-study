@@ -1,7 +1,7 @@
 "use client";
-import { CourseForm } from "@/components/course-form";
+import { CourseForm } from "@/components/courses/course-form";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
-import { CourseCard } from "@/components/ui/course-card";
+import { CourseCard } from "@/components/courses/course-card";
 import { useEffect, useState } from "react";
 import { courseProps } from "@/components/types/course";
 import { FormMessage } from "@/components/ui/form";

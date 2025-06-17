@@ -6,11 +6,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import StepIndicator from "@/components/step-indicator";
-import NameStep from "@/components/steps/name-step";
-import GoalStep from "@/components/steps/goal-step";
-import CoursesStep from "@/components/steps/courses-step";
-import CompletionStep from "@/components/steps/completion-step";
+import StepIndicator from "@/components/onboarding/step-indicator";
+import NameStep from "@/components/onboarding/steps/name-step";
+import GoalStep from "@/components/onboarding/steps/goal-step";
+import CoursesStep from "@/components/onboarding/steps/courses-step";
+import CompletionStep from "@/components/onboarding/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
 import { useRouter } from "next/navigation";
 

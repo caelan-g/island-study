@@ -9,6 +9,7 @@ import { sessionProps } from "@/components/types/session";
 import Stopwatch from "@/components/ui/stopwatch";
 import { Square } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
+import { PlayIcon } from "lucide-react";
 
 interface SessionButtonProps {
   isActive?: (clicked: boolean) => void;
@@ -61,7 +62,10 @@ export function SessionButton({ isActive }: SessionButtonProps) {
   return !activeSession ? (
     <div className="flex flex-col gap-2">
       <div>
-        <Button className="peer cursor-pointer">Start Session</Button>
+        <Button className="peer cursor-pointer">
+          <PlayIcon fill="currentColor" />
+          Start
+        </Button>
         <div className="bg-background rounded-md p-2 border transition-all flex flex-col gap-2 z-50 opacity-0 pointer-events-none peer-hover:opacity-100 hover:pointer-events-auto hover:opacity-100 peer-hover:pointer-events-auto absolute">
           {courses.map((course) => (
             <div

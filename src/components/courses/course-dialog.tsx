@@ -26,15 +26,21 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createCourse } from "@/lib/courses/create-course";
 import { useAuth } from "@/contexts/auth-context";
+import { courseProps } from "@/components/types/course";
+import { useEffect } from "react";
+import { updateCourse } from "@/lib/courses/update-course";
+import { Toaster } from "sonner";
 
-export function CreateCourseDialog({
+export function CourseDialog({
   open,
   onOpenChange,
   onSubmitSuccess,
+  course,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmitSuccess?: () => void;
+  course: courseProps | null;
 }) {
   const { user: authUser } = useAuth();
   const colours = [
@@ -66,19 +72,43 @@ export function CreateCourseDialog({
 
   const form = useForm<z.infer<typeof courseSchema>>({
     resolver: zodResolver(courseSchema),
-    defaultValues: {
-      name: "",
-      colour: "",
-    },
+    defaultValues: course
+      ? {
+          name: course.name,
+          colour: course.colour,
+        }
+      : {
+          name: "",
+          colour: "",
+        },
   });
 
   async function onSubmit(values: z.infer<typeof courseSchema>) {
-    await createCourse(values.name, values.colour, authUser);
+    if (course === null) {
+      await createCourse(values.name, values.colour, authUser);
+    } else {
+      await updateCourse(course.id, values.name, values.colour, authUser);
+    }
+
     onOpenChange(false);
     if (onSubmitSuccess) {
       onSubmitSuccess(); // Call the callback after successful submission
     }
   }
+
+  useEffect(() => {
+    if (course === null) {
+      form.reset({
+        name: "",
+        colour: "",
+      });
+    } else {
+      form.reset({
+        name: course.name,
+        colour: course.colour,
+      });
+    }
+  }, [form, course]);
 
   return (
     <>
@@ -86,7 +116,9 @@ export function CreateCourseDialog({
         <DialogContent className="sm:max-w-[425px]">
           <Form {...form}>
             <DialogHeader>
-              <DialogTitle>Create a new course</DialogTitle>
+              <DialogTitle>
+                {course ? "Edit your course" : "Create a new course"}
+              </DialogTitle>
               <DialogDescription>
                 Make a new course to allocate study time towards.
               </DialogDescription>

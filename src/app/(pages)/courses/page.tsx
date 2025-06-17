@@ -1,18 +1,22 @@
 "use client";
-import { CreateCourseDialog } from "@/components/create-course-dialog";
+import { CourseDialog } from "@/components/courses/course-dialog";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { useEffect, useState, useCallback } from "react";
-import { CourseCard } from "@/components/ui/course-card";
+import { CourseCard } from "@/components/courses/course-card";
 import { courseProps } from "@/components/types/course";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Courses() {
   const { user: authUser, loading: authLoading } = useAuth();
+  const [selectedCourse, setSelectedCourse] = useState<courseProps | null>(
+    null
+  );
   const [courses, setCourses] = useState<courseProps[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openSessionDialog, setOpenSessionDialog] = useState(false);
+  const [openCourseDialog, setOpenCourseDialog] = useState(false);
 
   const initializeData = useCallback(async () => {
     setLoading(true);
@@ -38,28 +42,42 @@ export default function Courses() {
     }
   };
 
+  const handleEditCourse = (course: courseProps) => {
+    setSelectedCourse(course);
+    setOpenCourseDialog(true);
+  };
+
   return (
     <>
-      <div>courses page</div>
-      <Button onClick={() => setOpenSessionDialog(true)}>
+      <Button
+        onClick={() => {
+          setOpenCourseDialog(true);
+          setSelectedCourse(null);
+        }}
+      >
         Create Course
         <Plus strokeWidth={2.5} />
       </Button>
-      <CreateCourseDialog
-        open={openSessionDialog}
+      <CourseDialog
+        open={openCourseDialog}
         onOpenChange={(open: boolean) => {
-          setOpenSessionDialog(open);
+          setOpenCourseDialog(open);
         }}
         onSubmitSuccess={handleCourseSubmit}
+        course={selectedCourse}
       />
-      <div className="grid grid-cols-2 gap-2 my-2">
+      <div className="flex flex-col w-1/2 gap-2 my-2">
         {loading ? (
-          <div className="animate-pulse bg-neutral-100 rounded-xl p-4">
-            loading...
+          <div className="w-full mx-auto text-center">
+            <Spinner />
           </div>
         ) : (
           courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <CourseCard
+              key={course.id}
+              course={course}
+              onEdit={handleEditCourse}
+            />
           ))
         )}
       </div>
