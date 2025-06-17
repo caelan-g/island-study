@@ -24,7 +24,7 @@ export async function addXP(
       return;
     }
     if (island.level < 7) {
-      if (island.xp + duration >= island?.threshold) {
+      if (island.xp + duration >= island.threshold) {
         let level = island.level;
         let total = duration + island.xp;
         while (total >= island.threshold) {

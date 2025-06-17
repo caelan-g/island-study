@@ -13,6 +13,8 @@ import CoursesStep from "@/components/onboarding/steps/courses-step";
 import CompletionStep from "@/components/onboarding/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
 
 // Define the schema for the entire form
 const formSchema = z.object({
@@ -66,9 +68,14 @@ export default function OnboardingForm() {
   });
 
   const onSubmit = async (data: FormValues) => {
-    await onboardUser(data.name, data.goal);
-    router.push("/dashboard");
-    return;
+    try {
+      await onboardUser(data.name, data.goal);
+      // Force a hard navigation to ensure state is refreshed
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Onboarding failed:", error);
+      toast.error("Failed to complete onboarding");
+    }
   };
 
   const goToNextStep = async () => {
@@ -164,6 +171,7 @@ export default function OnboardingForm() {
           </div>
         </form>
       </Form>
+      <Toaster />
     </div>
   );
 }
