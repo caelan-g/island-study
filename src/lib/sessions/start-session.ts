@@ -1,13 +1,11 @@
 import { createClient } from "@/lib/supabase/client";
 import { checkSession } from "./check-session";
+import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
-export const startSession = async (course_id: string) => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export const startSession = async (course_id: string, user: User | null) => {
   if (user) {
-    const active = await checkSession();
+    const active = await checkSession(user);
     if (!active.start_time) {
       try {
         const { error } = await supabase

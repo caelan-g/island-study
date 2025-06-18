@@ -1,15 +1,17 @@
 "use client";
-import { CourseForm } from "@/components/course-form";
+import { CourseForm } from "@/components/courses/course-form";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
-import { CourseCard } from "@/components/ui/course-card";
+import { CourseCard } from "@/components/courses/course-card";
 import { useEffect, useState } from "react";
 import { courseProps } from "@/components/types/course";
 import { FormMessage } from "@/components/ui/form";
 import { Spinner } from "@/components/ui/spinner";
 import { StepProps } from "@/components/types/onboarding";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function CoursesStep({ form }: StepProps) {
   const [courses, setCourses] = useState<courseProps[]>([]);
+  const { user: authUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -21,7 +23,7 @@ export default function CoursesStep({ form }: StepProps) {
 
   const loadCourses = async () => {
     setLoading(true);
-    const data = await fetchCourses();
+    const data = await fetchCourses(authUser);
     if (data) setCourses(data);
     setLoading(false);
   };

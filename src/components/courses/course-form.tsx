@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createCourse } from "@/lib/courses/create-course";
+import { useAuth } from "@/contexts/auth-context";
 
 interface CourseFormProps {
   onSuccess?: () => void;
@@ -22,6 +23,7 @@ interface CourseFormProps {
 }
 
 export function CourseForm({ onSuccess, parentForm = false }: CourseFormProps) {
+  const { user: authUser } = useAuth();
   const colours = [
     { name: "Blue", colour: "#AEC6CF" },
     { name: "Green", colour: "#B2F2BB" },
@@ -59,7 +61,7 @@ export function CourseForm({ onSuccess, parentForm = false }: CourseFormProps) {
 
   async function onSubmit(values: z.infer<typeof courseSchema>) {
     try {
-      await createCourse(values.name, values.colour);
+      await createCourse(values.name, values.colour, authUser);
       form.reset(); // Reset form after successful submission
       onSuccess?.(); // Call the callback if provided
     } catch (error) {

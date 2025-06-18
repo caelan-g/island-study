@@ -32,7 +32,7 @@ export async function onboardUser(name: string, goal: number) {
         }
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("users")
         .update({ name: name, goal: goal, has_onboarded: true })
         .eq("id", user.id)
@@ -42,7 +42,12 @@ export async function onboardUser(name: string, goal: number) {
         console.log(error);
         return;
       }
-      return data;
+
+      await supabase.auth.updateUser({
+        data: { has_onboarded: true },
+      });
+
+      return true;
     } catch (err) {
       console.error(err);
       return;

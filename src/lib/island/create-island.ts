@@ -1,13 +1,12 @@
+/*
 "use client";
 import { createClient } from "@/lib/supabase/client";
 import { evolutionPrompts } from "@/app/data/island-prompts";
 import { fetchUser } from "@/lib/user/fetch-user";
+import { User } from "@supabase/supabase-js";
 
-export async function createIsland() {
+export async function createIsland(user: User | null) {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
   if (user) {
     const { data, error } = await supabase.storage
       .from("base")
@@ -32,7 +31,7 @@ export async function createIsland() {
 
       if (response.ok) {
         const result = await response.json();
-        const user = await fetchUser();
+        const user = await fetchUser(authUser);
         //console.log(result.publicUrl);
 
         try {
@@ -58,3 +57,4 @@ export async function createIsland() {
     console.error("no user logged in");
   }
 }
+*/

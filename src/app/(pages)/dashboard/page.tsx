@@ -9,17 +9,20 @@ import { SplineAreaChart } from "@/components/charts/spline-area";
 import { checkSession } from "@/lib/sessions/check-session";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useState, useEffect } from "react";
-import { SessionButton } from "@/components/session-button";
+import { useState, useEffect, useCallback } from "react";
+import { SessionButton } from "@/components/sessions/session-button";
 import { RadialChart } from "@/components/charts/radial";
-import { SessionDialog } from "@/components/session-dialog";
+import { SessionDialog } from "@/components/sessions/session-dialog";
 import { courseProps } from "@/components/types/course";
 import Image from "next/image";
 import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
 import { fetchActiveIsland } from "@/lib/island/fetch-active-island";
+import { useAuth } from "@/contexts/auth-context";
+import { PlusIcon } from "lucide-react";
 
 export default function Dashboard() {
+  const { user: authUser, loading: authLoading } = useAuth();
   const [openSessionDialog, setOpenSessionDialog] = useState(false);
 
   //const [progressValue, setProgressValue] = useState<number>(0);
@@ -37,13 +40,13 @@ export default function Dashboard() {
   const [activeSession, setActiveSession] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadDatabases = async () => {
+  const loadDatabases = useCallback(async () => {
     Promise.all([
-      fetchUser(),
-      checkSession(),
-      fetchTotal(),
-      fetchCourses(),
-      fetchActiveIsland(),
+      fetchUser(authUser),
+      checkSession(authUser),
+      fetchTotal(authUser),
+      fetchCourses(authUser),
+      fetchActiveIsland(authUser),
     ])
       .then(
         ([userData, activeSession, sessionData, courseData, islandData]) => {
@@ -64,7 +67,7 @@ export default function Dashboard() {
         console.error("Error loading data:", error);
         setLoading(false);
       });
-  };
+  }, [authUser]);
 
   const handleSessionSubmit = async () => {
     setLoading(true);
@@ -78,8 +81,10 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    loadDatabases();
-  }, []);
+    if (!authLoading && authUser) {
+      loadDatabases();
+    }
+  }, [authLoading, authUser, loadDatabases]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -99,7 +104,8 @@ export default function Dashboard() {
               variant="secondary"
               onClick={() => setOpenSessionDialog(true)}
             >
-              Add Session
+              <PlusIcon strokeWidth={2.5} />
+              Add
             </Button>
           ) : null}
 

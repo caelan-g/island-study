@@ -3,22 +3,26 @@ import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
-export async function fetchIslands(user: User | null) {
+export const updateUser = async (
+  id: string,
+  name: string,
+  goal: number,
+  user: User | null
+) => {
   if (user) {
     try {
-      const { data, error } = await supabase
-        .from("islands")
-        .select("*")
-        .eq("user_id", user.id);
+      const { error } = await supabase
+        .from("users")
+        .update({ name: name, goal: goal })
+        .eq("id", id);
 
       if (error) {
         console.log(error);
       }
-      return data;
     } catch {
       return;
     }
   } else {
     console.log("no user logged in");
   }
-}
+};

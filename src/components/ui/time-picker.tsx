@@ -47,7 +47,7 @@ export default function TimePicker({
   const periodRef = useRef<HTMLDivElement>(null);
 
   const hours = use24Hour
-    ? Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"))
+    ? Array.from({ length: 13 }, (_, i) => i.toString().padStart(2, "0"))
     : Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
   const minutes = Array.from({ length: 60 }, (_, i) =>
@@ -133,7 +133,7 @@ export default function TimePicker({
     <div className="relative h-[200px] overflow-hidden">
       <div
         ref={ref}
-        className="h-full overflow-y-scroll scrollbar-hide scroll-smooth"
+        className="h-full overflow-y-scroll scrollbar-hide scroll-smooth overflow-x-hidden"
         style={{ scrollSnapType: "y mandatory" }}
         onScroll={(e) => onScroll(e.currentTarget)}
       >

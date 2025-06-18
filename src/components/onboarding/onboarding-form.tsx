@@ -6,26 +6,23 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import StepIndicator from "@/components/step-indicator";
-import NameStep from "@/components/steps/name-step";
-import GoalStep from "@/components/steps/goal-step";
-import CoursesStep from "@/components/steps/courses-step";
-import CompletionStep from "@/components/steps/completion-step";
+import StepIndicator from "@/components/onboarding/step-indicator";
+import NameStep from "@/components/onboarding/steps/name-step";
+import GoalStep from "@/components/onboarding/steps/goal-step";
+import CoursesStep from "@/components/onboarding/steps/courses-step";
+import CompletionStep from "@/components/onboarding/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
-import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-// Define the schema for the entire form
 const formSchema = z.object({
-  //name
-  //goal
-  //courses
-  //submit
-  // Personal Info
-  name: z.string().min(2, "First name must be at least 2 characters"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
   goal: z
     .number()
     .min(1200, "Please set at least a 20 minute goal")
-    .max(89940, "Maximum goal is 12 hours ~ you need to live as well!"),
+    .max(46800, "Maximum goal is 13 hours ~ you need to live as well!"),
 
   // Account Info
   hasCourse: z.boolean().refine((val) => val === true, {
@@ -36,20 +33,19 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function OnboardingForm() {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
     {
-      title: "Name Step",
+      title: "Name",
       validationFields: ["name"],
     },
     {
-      title: "Goal Step",
+      title: "Goal",
       validationFields: ["goal"],
     },
     {
-      title: "Course Setup",
+      title: "Courses",
       validationFields: ["hasCourse"],
     },
     { title: "Complete", validationFields: [] },
@@ -65,10 +61,15 @@ export default function OnboardingForm() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: FormValues) => {
-    onboardUser(data.name, data.goal);
-    router.push("/dashboard");
-    return;
+  const onSubmit = async (data: FormValues) => {
+    try {
+      await onboardUser(data.name, data.goal);
+      // Force a hard navigation to ensure state is refreshed
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Onboarding failed:", error);
+      toast.error("Failed to complete onboarding");
+    }
   };
 
   const goToNextStep = async () => {
@@ -156,7 +157,6 @@ export default function OnboardingForm() {
                 type="button"
                 onClick={() => {
                   form.handleSubmit(onSubmit)();
-                  router.push("/dashboard");
                 }}
               >
                 Complete

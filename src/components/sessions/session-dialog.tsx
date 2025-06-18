@@ -30,6 +30,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { checkSession } from "@/lib/sessions/check-session";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
+import { useAuth } from "@/contexts/auth-context";
 
 type ActiveSession = {
   start_time: string;
@@ -58,11 +59,12 @@ export function SessionDialog({
   const [activeSession, setActiveSession] = useState<ActiveSession | null>(
     null
   );
+  const { user: authUser } = useAuth();
 
   useEffect(() => {
     const checkForActiveSession = async () => {
       try {
-        const active = await checkSession();
+        const active = await checkSession(authUser);
         if (active) {
           setActiveSession(active);
         } else {
@@ -77,7 +79,7 @@ export function SessionDialog({
     if (!sessionProps && open) {
       checkForActiveSession();
     }
-  }, [open, sessionProps]);
+  }, [open, sessionProps, authUser]);
 
   const sessionSchema = z.object({
     description: z
@@ -155,6 +157,7 @@ export function SessionDialog({
         values.startTime,
         values.endTime,
         values.course,
+        authUser,
         values.description
       );
       // Only call onSubmitSuccess if the endSession was successful
