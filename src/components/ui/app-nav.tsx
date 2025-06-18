@@ -56,7 +56,12 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>Logo</SidebarMenuButton>
+            <SidebarMenuButton className="flex justify-between">
+              Study App
+              <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
+                BETA
+              </span>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

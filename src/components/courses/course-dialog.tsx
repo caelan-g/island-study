@@ -29,7 +29,6 @@ import { useAuth } from "@/contexts/auth-context";
 import { courseProps } from "@/components/types/course";
 import { useEffect } from "react";
 import { updateCourse } from "@/lib/courses/update-course";
-import { Toaster } from "sonner";
 
 export function CourseDialog({
   open,

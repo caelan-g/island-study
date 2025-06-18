@@ -4,7 +4,6 @@ import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { useState, useEffect, useCallback } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { Toaster } from "sonner";
 import { sessionProps } from "@/components/types/session";
 import { SessionDialog } from "@/components/sessions/session-dialog";
 import { courseProps } from "@/components/types/course";
@@ -92,7 +91,6 @@ export default function Sessions() {
           )}
         </>
       )}
-      <Toaster />
     </>
   );
 }

@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,8 +15,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { fetchUser } from "@/lib/user/fetch-user";
+import { userProps } from "@/components/types/user";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -24,7 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, Palette, Shield, Bell, Lock, Trash2 } from "lucide-react";
+import { User, Palette, Shield, Lock, Trash2 } from "lucide-react";
+import { updateUser } from "@/lib/user/update-user";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
@@ -34,10 +38,18 @@ const sidebarItems = [
 ];
 
 const profileSchema = z.object({
-  name: z.string().min(2).max(50),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
   email: z.string().email(),
-  goal: z.number().min(0).max(24),
+  goal: z
+    .number()
+    .min(1200, "Please set at least a 20 minute goal")
+    .max(46800, "Maximum goal is 13 hours ~ you need to live as well!"),
 });
+
+/*
 
 const appearanceSchema = z.object({
   theme: z.enum(["light", "dark", "system"]),
@@ -63,17 +75,36 @@ const privacySchema = z.object({
   dataRetention: z.enum(["30days", "6months", "1year", "forever"]),
 });
 
+*/
+
 export default function SettingsPage() {
+  const { user: authUser } = useAuth();
   const [activeSection, setActiveSection] = useState("profile");
+  const [user, setUser] = useState<userProps | null>(null);
+
+  const initializeUser = useCallback(async () => {
+    try {
+      const userData = await fetchUser(authUser);
+      if (userData) setUser(userData);
+    } catch (error) {
+      console.error("Failed to load user:", error);
+    }
+  }, [authUser]);
+
+  useEffect(() => {
+    initializeUser();
+  }, [initializeUser]);
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      goal: 4,
+      name: user?.name || "",
+      email: authUser?.email || "",
+      goal: user?.goal || 4,
     },
   });
+
+  /*
 
   const appearanceForm = useForm<z.infer<typeof appearanceSchema>>({
     resolver: zodResolver(appearanceSchema),
@@ -102,12 +133,32 @@ export default function SettingsPage() {
       dataRetention: "1year",
     },
   });
+  */
+
+  useEffect(() => {
+    if (user) {
+      profileForm.reset({
+        name: user?.name || "",
+        email: authUser?.email || "",
+        goal: user?.goal || 4,
+      });
+    }
+  }, [profileForm, user]);
 
   async function onProfileSubmit(values: z.infer<typeof profileSchema>) {
-    // Handle profile update
-    console.log(values);
+    if (!user) return;
+    try {
+      await updateUser(user.id, values.name, values.goal, authUser);
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      toast.success("Profile updated successfully");
+      initializeUser(); // Refresh user data after update
+    }
   }
 
+  /*
   async function onAppearanceSubmit(values: z.infer<typeof appearanceSchema>) {
     // Handle appearance update
     console.log(values);
@@ -121,9 +172,8 @@ export default function SettingsPage() {
   async function onPrivacySubmit(values: z.infer<typeof privacySchema>) {
     // Handle privacy settings update
     console.log(values);
-  }
+  }*/
 
-  // Add this to calculate the position of the sliding background
   const getSliderPosition = () => {
     const index = sidebarItems.findIndex((item) => item.id === activeSection);
     return `${index * 100}%`;
@@ -156,7 +206,11 @@ export default function SettingsPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input {...profileForm.register("email")} type="email" />
+                  <Input
+                    {...profileForm.register("email")}
+                    disabled
+                    type="email"
+                  />
                   {profileForm.formState.errors.email && (
                     <p className="text-sm text-destructive">
                       {profileForm.formState.errors.email.message}
@@ -364,7 +418,7 @@ export default function SettingsPage() {
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`justify-center right-[0.5em] relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-transparent ${
+                  className={`justify-center cursor-pointer right-[0.5em] relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-transparent ${
                     activeSection === item.id
                       ? "font-medium text-foreground"
                       : "text-muted-foreground"

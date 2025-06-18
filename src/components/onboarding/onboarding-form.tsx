@@ -12,22 +12,17 @@ import GoalStep from "@/components/onboarding/steps/goal-step";
 import CoursesStep from "@/components/onboarding/steps/courses-step";
 import CompletionStep from "@/components/onboarding/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Toaster } from "sonner";
 
-// Define the schema for the entire form
 const formSchema = z.object({
-  //name
-  //goal
-  //courses
-  //submit
-  // Personal Info
-  name: z.string().min(2, "First name must be at least 2 characters"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
   goal: z
     .number()
     .min(1200, "Please set at least a 20 minute goal")
-    .max(89940, "Maximum goal is 12 hours ~ you need to live as well!"),
+    .max(46800, "Maximum goal is 13 hours ~ you need to live as well!"),
 
   // Account Info
   hasCourse: z.boolean().refine((val) => val === true, {
@@ -38,20 +33,19 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function OnboardingForm() {
-  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
     {
-      title: "Name Step",
+      title: "Name",
       validationFields: ["name"],
     },
     {
-      title: "Goal Step",
+      title: "Goal",
       validationFields: ["goal"],
     },
     {
-      title: "Course Setup",
+      title: "Courses",
       validationFields: ["hasCourse"],
     },
     { title: "Complete", validationFields: [] },
@@ -171,7 +165,6 @@ export default function OnboardingForm() {
           </div>
         </form>
       </Form>
-      <Toaster />
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
 
 interface CourseCardProps {
   course: courseProps;
-  onEdit: (session: courseProps) => void;
+  onEdit?: (session: courseProps) => void;
 }
 
 export function CourseCard({ course, onEdit }: CourseCardProps) {
@@ -24,17 +24,19 @@ export function CourseCard({ course, onEdit }: CourseCardProps) {
           />
           <span>{course.name}</span>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Ellipsis size={16} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => onEdit(course)}>
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {onEdit ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Ellipsis size={16} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => onEdit(course)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem>Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </CardHeader>
     </Card>
   );

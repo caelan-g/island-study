@@ -15,9 +15,7 @@ export default function GoalStep({ form }: StepProps) {
       <h2 className="text-xl font-semibold">
         How much do you aim to study each day?
       </h2>
-      <p className="text-sm text-muted-foreground">
-        You can change this later...
-      </p>
+      <p className="text-sm text-muted-foreground">Scroll to select</p>
 
       <div className="grid gap-4 py-4">
         <FormField

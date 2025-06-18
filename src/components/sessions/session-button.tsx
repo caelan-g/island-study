@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { checkSession } from "@/lib/sessions/check-session";
 import { startSession } from "@/lib/sessions/start-session";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
@@ -19,23 +19,22 @@ export function SessionButton({ isActive }: SessionButtonProps) {
   const { user: authUser } = useAuth();
   const [courses, setCourses] = useState<courseProps[]>([]);
   const [courseLoading, setCourseLoading] = useState(true);
-
   const [activeLoading, setActiveLoading] = useState(true);
   const [activeSession, setActiveSession] = useState<sessionProps | null>(null);
 
-  const initializeCourses = async () => {
+  // Move functions outside useEffect and memoize them
+  const initializeCourses = useCallback(async () => {
     try {
       const courseData = await fetchCourses(authUser);
-
       if (courseData) setCourses(courseData);
     } catch (error) {
       console.error("Failed to load courses:", error);
     } finally {
       setCourseLoading(false);
     }
-  };
+  }, [authUser]);
 
-  const initializeActive = async () => {
+  const initializeActive = useCallback(async () => {
     try {
       const active = await checkSession(authUser);
       setActiveSession(active);
@@ -44,12 +43,13 @@ export function SessionButton({ isActive }: SessionButtonProps) {
     } finally {
       setActiveLoading(false);
     }
-  };
+  }, [authUser]);
 
+  // Run effect only once on mount
   useEffect(() => {
     initializeCourses();
     initializeActive();
-  }, [initializeCourses, initializeActive, activeSession]);
+  }, [initializeCourses, initializeActive]); // Remove activeSession from deps
 
   if (courseLoading || activeLoading) {
     return (
