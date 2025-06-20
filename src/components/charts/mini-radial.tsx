@@ -7,31 +7,30 @@ import {
   RadialBar,
   RadialBarChart,
 } from "recharts";
-
-import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
+import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartConfig = {
-  today: {
+  total: {
     label: "Study Time",
-    color: "var(--chart-2)",
+    color: "var(--chart-5)",
   },
 } satisfies ChartConfig;
 
 interface chartData {
-  today: number;
+  total: number;
   goal: number;
   fill: string;
 }
 
-export function RadialChart({ chartData }: { chartData: chartData[] }) {
-  let max = chartData[0].today;
-  if (chartData[0].today > chartData[0].goal) {
+export function MiniRadialChart({ chartData }: { chartData: chartData[] }) {
+  let max = chartData[0].total;
+  if (chartData[0].total > chartData[0].goal) {
     max = chartData[0].goal;
   }
 
   return (
-    <div className="flex-1 flex-col">
+    <div className="flex-1 flex-col w-14">
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-square max-h-[250px]"
@@ -40,45 +39,30 @@ export function RadialChart({ chartData }: { chartData: chartData[] }) {
           data={chartData}
           startAngle={90}
           endAngle={90 - (max / chartData[0].goal) * 360}
-          innerRadius={89}
-          outerRadius={114}
+          innerRadius={20}
+          outerRadius={32}
         >
           <PolarGrid
             gridType="circle"
             radialLines={false}
             stroke="none"
-            className="first:fill-muted last:fill-background"
-            polarRadius={[94, 84]}
+            className="first:fill-background last:fill-muted"
+            polarRadius={[12, 22]}
           />
-          <RadialBar dataKey="today" background cornerRadius={10} />
+          <RadialBar dataKey="total" background cornerRadius={10} />
           <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
             <Label
               content={({ viewBox }) => {
                 if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                  const percentage = Math.round(
-                    (chartData[0].today / chartData[0].goal) * 100
-                  );
                   return (
                     <text
                       x={viewBox.cx}
                       y={viewBox.cy}
                       textAnchor="middle"
                       dominantBaseline="middle"
+                      className="font-bold"
                     >
-                      <tspan
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        className="fill-foreground text-3xl font-bold"
-                      >
-                        {timeFilter(chartData[0].today)}
-                      </tspan>
-                      <tspan
-                        x={viewBox.cx}
-                        y={(viewBox.cy || 0) + 30}
-                        className="fill-muted-foreground text-sm"
-                      >
-                        {percentage}% of goal
-                      </tspan>
+                      {timeFilter(chartData[0].total, "hours")}
                     </text>
                   );
                 }

@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 export default function Courses() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -37,6 +38,7 @@ export default function Courses() {
       await initializeData(); // Reuse existing loadDatabases function
     } catch (error) {
       console.error("Error refreshing data:", error);
+      toast.error("Failed to refresh courses. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,6 +47,18 @@ export default function Courses() {
   const handleEditCourse = (course: courseProps) => {
     setSelectedCourse(course);
     setOpenCourseDialog(true);
+  };
+
+  const handleDeleteCourse = async () => {
+    setLoading(true);
+    try {
+      await initializeData(); // Refresh data after deletion
+      setSelectedCourse(null); // Reset selected course
+    } catch (error) {
+      console.error("Error refreshing data after deletion:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,7 +90,9 @@ export default function Courses() {
             <CourseCard
               key={course.id}
               course={course}
+              user={authUser}
               onEdit={handleEditCourse}
+              onDelete={handleDeleteCourse}
             />
           ))
         )}

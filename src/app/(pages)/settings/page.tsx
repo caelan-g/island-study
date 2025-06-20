@@ -218,7 +218,7 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="goal">Daily Goal (hours)</Label>
+                  <Label htmlFor="goal">Daily Goal (seconds lol)</Label>
                   <Input
                     {...profileForm.register("goal", { valueAsNumber: true })}
                     type="number"

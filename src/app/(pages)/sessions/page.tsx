@@ -53,6 +53,18 @@ export default function Sessions() {
     setOpenSessionDialog(true);
   };
 
+  const handleDeleteSession = async () => {
+    setLoading(true);
+    try {
+      await initializeData(); // Refresh data after deletion
+      setSelectedSession(null); // Reset selected session
+    } catch (error) {
+      console.error("Error refreshing data after deletion:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!authLoading && authUser) {
       initializeData();
@@ -73,7 +85,9 @@ export default function Sessions() {
                 key={session.id}
                 session={session}
                 courses={courses}
+                user={authUser}
                 onEdit={() => handleEditSession(session)}
+                onDelete={handleDeleteSession}
               />
             ))}
           </div>

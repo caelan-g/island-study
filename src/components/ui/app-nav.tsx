@@ -18,7 +18,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { logout } from "@/lib/user/logout";
 
@@ -52,7 +51,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="floating" className="text-foreground">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -68,11 +67,14 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                  <SidebarMenuButton asChild size="default">
+                    <a
+                      href={item.url}
+                      className="flex gap-2 text-foreground text-md"
+                    >
                       <item.icon />
                       <span>{item.title}</span>
                     </a>
@@ -92,7 +94,7 @@ export function AppSidebar() {
                 <span>Logout</span>
               </button>
             </SidebarMenuButton>
-            <SidebarTrigger />
+            {/*<SidebarTrigger />*/}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
