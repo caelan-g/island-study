@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import { User, Palette, Shield, Lock, Trash2 } from "lucide-react";
 import { updateUser } from "@/lib/user/update-user";
+import { UpdatePasswordForm } from "@/components/auth/update-password-form";
+import { createClient } from "@/lib/supabase/client";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
@@ -49,6 +51,19 @@ const profileSchema = z.object({
     .max(46800, "Maximum goal is 13 hours ~ you need to live as well!"),
 });
 
+const accountSchema = z
+  .object({
+    currentPassword: z.string().min(6, "Current password is required"),
+    newPassword: z
+      .string()
+      .min(6, "New password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Passwords must match"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 /*
 
 const appearanceSchema = z.object({
@@ -57,16 +72,7 @@ const appearanceSchema = z.object({
   compactMode: z.boolean(),
 });
 
-const accountSchema = z
-  .object({
-    currentPassword: z.string().min(8),
-    newPassword: z.string().min(8),
-    confirmPassword: z.string().min(8),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+
 
 const privacySchema = z.object({
   profileVisibility: z.boolean(),
@@ -81,6 +87,9 @@ export default function SettingsPage() {
   const { user: authUser } = useAuth();
   const [activeSection, setActiveSection] = useState("profile");
   const [user, setUser] = useState<userProps | null>(null);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const initializeUser = useCallback(async () => {
     try {
@@ -104,6 +113,32 @@ export default function SettingsPage() {
     },
   });
 
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      // Update this route to redirect to an authenticated route. The user already has an active session.
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const accountForm = useForm<z.infer<typeof accountSchema>>({
+    resolver: zodResolver(accountSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
   /*
 
   const appearanceForm = useForm<z.infer<typeof appearanceSchema>>({
@@ -115,14 +150,7 @@ export default function SettingsPage() {
     },
   });
 
-  const accountForm = useForm<z.infer<typeof accountSchema>>({
-    resolver: zodResolver(accountSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  });
+  
 
   const privacyForm = useForm<z.infer<typeof privacySchema>>({
     resolver: zodResolver(privacySchema),
@@ -163,12 +191,8 @@ export default function SettingsPage() {
     // Handle appearance update
     console.log(values);
   }
-
-  async function onAccountSubmit(values: z.infer<typeof accountSchema>) {
-    // Handle password update
-    console.log(values);
-  }
-
+*/
+  /*
   async function onPrivacySubmit(values: z.infer<typeof privacySchema>) {
     // Handle privacy settings update
     console.log(values);
@@ -297,19 +321,85 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Current password</Label>
-                  <Input id="currentPassword" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">New password</Label>
-                  <Input id="newPassword" type="password" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm new password</Label>
-                  <Input id="confirmPassword" type="password" />
-                </div>
-                <Button>Update password</Button>
+                <form
+                  onSubmit={accountForm.handleSubmit(async (data) => {
+                    try {
+                      const supabase = createClient();
+
+                      // First verify current password
+                      const { error: signInError } =
+                        await supabase.auth.signInWithPassword({
+                          email: authUser?.email || "",
+                          password: data.currentPassword,
+                        });
+
+                      if (signInError) {
+                        toast.error("Current password is incorrect");
+                        return;
+                      }
+
+                      // If current password is correct, update to new password
+                      const { error: updateError } =
+                        await supabase.auth.updateUser({
+                          password: data.newPassword,
+                        });
+
+                      if (updateError) throw updateError;
+
+                      toast.success("Password updated successfully");
+                      accountForm.reset();
+                    } catch (error) {
+                      console.error("Failed to update password:", error);
+                      toast.error("Failed to update password");
+                    }
+                  })}
+                  className="space-y-4"
+                >
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current password</Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      {...accountForm.register("currentPassword")}
+                    />
+                    {accountForm.formState.errors.currentPassword && (
+                      <p className="text-sm text-destructive">
+                        {accountForm.formState.errors.currentPassword.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      {...accountForm.register("newPassword")}
+                    />
+                    {accountForm.formState.errors.newPassword && (
+                      <p className="text-sm text-destructive">
+                        {accountForm.formState.errors.newPassword.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">
+                      Confirm new password
+                    </Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      {...accountForm.register("confirmPassword")}
+                    />
+                    {accountForm.formState.errors.confirmPassword && (
+                      <p className="text-sm text-destructive">
+                        {accountForm.formState.errors.confirmPassword.message}
+                      </p>
+                    )}
+                  </div>
+                  <Button type="submit" className="mt-4">
+                    Update password
+                  </Button>
+                </form>
               </CardContent>
             </Card>
 
