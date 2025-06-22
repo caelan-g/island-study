@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Ellipsis } from "lucide-react";
+import { Ellipsis, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
@@ -88,12 +88,14 @@ export const SessionCard = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem onClick={() => onEdit(session)}>
+                    <Pencil className="text-primary" />
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleDelete}
                     className="text-destructive focus:text-destructive"
                   >
+                    <Trash2 className="text-destructive" />
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>

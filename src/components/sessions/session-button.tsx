@@ -62,7 +62,7 @@ export function SessionButton({ isActive }: SessionButtonProps) {
   return !activeSession ? (
     <div className="flex flex-col gap-2">
       <div>
-        <Button className="peer cursor-pointer">
+        <Button className="peer cursor-pointer" variant="accent">
           <PlayIcon fill="currentColor" />
           Start
         </Button>

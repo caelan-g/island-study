@@ -29,6 +29,12 @@ export function MiniRadialChart({ chartData }: { chartData: chartData[] }) {
     max = chartData[0].goal;
   }
 
+  const hasReachedGoal = chartData[0].total >= chartData[0].goal;
+
+  chartData[0].fill = hasReachedGoal
+    ? chartData[0].fill
+    : "var(--muted-foreground)";
+
   return (
     <div className="flex-1 flex-col w-14">
       <ChartContainer
@@ -46,10 +52,19 @@ export function MiniRadialChart({ chartData }: { chartData: chartData[] }) {
             gridType="circle"
             radialLines={false}
             stroke="none"
-            className="first:fill-background last:fill-muted"
-            polarRadius={[12, 22]}
+            className={
+              hasReachedGoal
+                ? "first:fill-background last:fill-[var(--chart-green)] opacity-20"
+                : "first:fill-background last:fill-muted"
+            }
+            polarRadius={[12, 21.5]}
           />
-          <RadialBar dataKey="total" background cornerRadius={10} />
+          <RadialBar
+            dataKey="total"
+            background
+            cornerRadius={10}
+            fillOpacity={0.9}
+          />
           <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
             <Label
               content={({ viewBox }) => {
@@ -57,10 +72,14 @@ export function MiniRadialChart({ chartData }: { chartData: chartData[] }) {
                   return (
                     <text
                       x={viewBox.cx}
-                      y={viewBox.cy}
+                      y={viewBox.cy ? viewBox.cy + 1 : 0}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="font-bold"
+                      className={`font-bold opacity-90 ${
+                        hasReachedGoal
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      }`}
                     >
                       {timeFilter(chartData[0].total, "hours")}
                     </text>

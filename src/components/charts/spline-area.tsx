@@ -27,7 +27,7 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
       {
         name: "course",
         data: data?.total || [0, 0, 0, 0, 0],
-        color: "#121212",
+        color: "#212121", // Default color for the series
       },
     ],
     fill: {
@@ -85,6 +85,11 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
           rotate: -45,
           rotateAlways: true,
           offsetY: 10,
+          style: {
+            fontSize: "10px",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 400,
+          },
         },
       },
       yaxis: {

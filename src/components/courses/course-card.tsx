@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface CourseCardProps {
   course: courseProps;
@@ -66,12 +67,14 @@ export function CourseCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => onEdit(course)}>
+                <Pencil className="text-primary" />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setShowDeleteDialog(true)}
                 className="text-destructive focus:text-destructive"
               >
+                <Trash2 className="text-destructive" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
