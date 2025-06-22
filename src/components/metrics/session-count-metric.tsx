@@ -1,17 +1,14 @@
 import { sessionProps } from "@/components/types/session";
-import { timeFilter } from "@/lib/filters/time-filter";
 
 interface GroupedSession {
   date: string;
   sessions: sessionProps[];
 }
 
-export function SessionMetric({
-  studyTime,
+export function SessionCountMetric({
   timeframe,
   groupedSessions,
 }: {
-  studyTime: number;
   timeframe: "week" | "month";
   groupedSessions: GroupedSession[];
 }) {
@@ -31,13 +28,9 @@ export function SessionMetric({
 
   return (
     <div>
-      <p className="text-xs text-muted-foreground">
-        Session Average ({timeframe})
-      </p>
+      <p className="text-xs text-muted-foreground">Sessions this {timeframe}</p>
       <div className="flex flex-row justify-between items-center">
-        <p className="text-xl font-bold">
-          {timeFilter(studyTime / sessionCount)}
-        </p>
+        <p className="text-xl font-bold">{sessionCount}</p>
       </div>
     </div>
   );

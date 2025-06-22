@@ -19,14 +19,16 @@ export function TimeMetric({
         Daily Average ({timeframe})
       </p>
       <div className="flex flex-row items-center">
-        <p className="text-xl font-bold ">{timeFilter(studyTime / period)}</p>
+        <p className="text-xl font-bold">{timeFilter(studyTime / period)}</p>
         {goal - studyTime / period > 0 ? (
-          <p className="text-xs rounded-md bg-muted flex px-2 py-1">
-            -{timeFilter(goal - studyTime / period)} from goal
+          <p className="text-xs rounded-md bg-muted flex px-2 py-1 ml-2">
+            <ArrowDown className="size-4 mr-1" />
+            {timeFilter(goal - studyTime / period)} from goal
           </p>
         ) : goal ? (
-          <p className="text-xs rounded-md bg-emerald-100 flex px-2 py-1 ">
-            +{timeFilter(studyTime / period - goal)}
+          <p className="text-xs rounded-md bg-emerald-100 flex px-2 py-1 ml-2">
+            <ArrowUp className="size-4 mr-1" />
+            {timeFilter(studyTime / period - goal)}
           </p>
         ) : null}
       </div>

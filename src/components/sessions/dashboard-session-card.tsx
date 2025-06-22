@@ -23,7 +23,7 @@ export const DashboardSessionCard = ({
       <div>
         <div className="max-w-52 truncate">
           <span
-            className="size-4 rounded-md mr-2 inline-block"
+            className="size-4 rounded-sm mr-2 inline-block"
             style={{ backgroundColor: course?.colour || "#000000" }}
           />
           {course?.name || "Unknown Course"}
@@ -34,7 +34,7 @@ export const DashboardSessionCard = ({
             : new Date(session.start_time).toLocaleDateString()}
         </div>
       </div>
-      <div className="bg-emerald-200 rounded-md font-bold my-auto items-center px-2 py-1">
+      <div className="bg-emerald-100 rounded-md text-xs my-auto items-center px-2 py-1">
         {timeFilter(
           (new Date(session.end_time).getTime() -
             new Date(session.start_time).getTime()) /

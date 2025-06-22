@@ -13,7 +13,7 @@ export function CourseMetric({
   return (
     <div>
       <p className="text-xs text-muted-foreground">
-        Course Study Average ({timeframe})
+        Average Study Per Course ({timeframe})
       </p>
       <div className="flex flex-row justify-between items-center">
         <p className="text-xl font-bold">

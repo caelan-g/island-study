@@ -55,18 +55,6 @@ export default function Sessions() {
     setSelectedSession(session);
   };
 
-  const handleDeleteSession = async () => {
-    setLoading(true);
-    try {
-      await initializeData(); // Refresh data after deletion
-      setSelectedSession(null); // Reset selected session
-    } catch (error) {
-      console.error("Error refreshing data after deletion:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!authLoading && authUser) {
       initializeData();
