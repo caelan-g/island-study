@@ -42,7 +42,8 @@ export default function Sessions() {
   const handleSessionSubmit = async () => {
     setLoading(true);
     try {
-      await initializeData(); // Reuse existing loadDatabases function
+      await initializeData();
+      setSelectedSession(null); // Reset selection after update
     } catch (error) {
       console.error("Error refreshing data:", error);
     } finally {
@@ -52,7 +53,6 @@ export default function Sessions() {
 
   const handleEditSession = (session: sessionProps) => {
     setSelectedSession(session);
-    setOpenSessionDialog(true);
   };
 
   const handleDeleteSession = async () => {
@@ -92,6 +92,7 @@ export default function Sessions() {
                   courses={courses}
                   user={authUser}
                   onClick={() => handleEditSession(session)}
+                  isSelected={selectedSession?.id === session.id}
                 />
               ))}
             </>
@@ -100,7 +101,7 @@ export default function Sessions() {
 
         <EditSessionCard
           courses={courses}
-          sessionProps={selectedSession ? selectedSession : null}
+          sessionProps={selectedSession}
           onSubmitSuccess={handleSessionSubmit}
         />
       </div>

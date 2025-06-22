@@ -37,13 +37,13 @@ export default function Islands() {
           <div className="text-2xl font-bold">My Islands</div>
           <div className="space-y-4">
             {islands.map((island) => (
-              <div className="flex flex-row">
+              <div className="flex flex-row" key={island.id}>
                 <div className="relative w-full">
                   <PerspectiveCarousel
                     urls={[...island.previous_urls, island.current_url]}
                   />
                 </div>
-                <Card key={island.id}>
+                <Card>
                   <CardHeader>
                     <CardTitle>
                       {new Date(island.created_at).toLocaleDateString()}
