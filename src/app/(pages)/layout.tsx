@@ -11,7 +11,7 @@ export default function LoginLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="pl-4 pr-12 w-full py-4 overflow-x-hidden">
+      <main className="pl-2 pr-12 w-full py-4 overflow-x-hidden">
         {children}
       </main>
     </SidebarProvider>

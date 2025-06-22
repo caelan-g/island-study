@@ -34,7 +34,7 @@ export function RadialChart({ chartData }: { chartData: chartData[] }) {
     <div className="flex-1 flex-col">
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square max-h-[250px]"
+        className="mx-auto aspect-square max-h-[200px]"
       >
         <RadialBarChart
           data={chartData}

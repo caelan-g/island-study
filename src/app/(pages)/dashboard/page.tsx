@@ -18,13 +18,17 @@ import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
 import { fetchActiveIsland } from "@/lib/island/fetch-active-island";
 import { useAuth } from "@/contexts/auth-context";
-import { PlusIcon, TrendingUp, TrendingDown } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { sessionProps } from "@/components/types/session";
 import { DashboardSessionCard } from "@/components/sessions/dashboard-session-card";
 import { SessionDayCard } from "@/components/sessions/session-day-card";
-import { timeFilter } from "@/lib/filters/time-filter";
-import { LineChart } from "@/components/charts/line-chart";
+import { RadialChart } from "@/components/charts/radial";
+import { TimeMetric } from "@/components/metrics/time-metric";
+import { SessionMetric } from "@/components/metrics/session-metric";
+import { CourseMetric } from "@/components/metrics/course-metric";
+import { PeriodProgress } from "@/components/metrics/period-progress";
+import { processSessionData } from "@/lib/metrics/process-session-data";
 
 interface GroupedSession {
   date: string;
@@ -58,68 +62,24 @@ export default function Dashboard() {
   const [user, setUser] = useState<userProps>();
   const [activeSession, setActiveSession] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rawSessionData, setRawSessionData] = useState<sessionProps[]>([]);
   const [allSessions, setAllSessions] = useState<sessionProps[]>([]);
   const [recentSessions, setRecentSessions] = useState<sessionProps[]>([]);
   const [groupedSessions, setGroupedSessions] = useState<GroupedSession[]>([]);
   console.log(groupedSessions);
 
-  const processSessionData = useCallback((sessions: sessionProps[]) => {
-    if (!sessions) return;
+  useEffect(() => {
+    if (rawSessionData.length > 0) {
+      const [timeMetrics, sessions, groupedArray] = processSessionData(
+        rawSessionData
+      ) || [{ today: 0, week: 0, month: 0, all: 0 }, [], []];
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-    const allTime = new Date(0); // Represents the start of time
-
-    // Calculate time metrics
-    const timeMetrics = sessions.reduce(
-      (acc: TimeMetrics, session) => {
-        const sessionStart = new Date(session.start_time);
-        const duration =
-          (new Date(session.end_time).getTime() - sessionStart.getTime()) /
-          1000;
-
-        if (sessionStart >= today) {
-          acc.today += duration;
-        }
-        if (sessionStart >= weekAgo) {
-          acc.week += duration;
-        }
-        if (sessionStart >= monthAgo) {
-          acc.month += duration;
-        }
-        return acc;
-      },
-      { today: 0, week: 0, month: 0 }
-    );
-
-    setTotal(timeMetrics);
-
-    // Rest of your existing processSessionData logic...
-    setAllSessions(sessions);
-    setRecentSessions(sessions.slice(0, 5));
-
-    // Group sessions by day
-    const grouped = sessions.reduce(
-      (acc: { [key: string]: sessionProps[] }, session) => {
-        const date = new Date(session.start_time).toLocaleDateString();
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(session);
-        return acc;
-      },
-      {}
-    );
-
-    const groupedArray = Object.entries(grouped)
-      .map(([date, sessions]) => ({
-        date,
-        sessions,
-      }))
-      .slice(0, 16);
-
-    setGroupedSessions(groupedArray);
-  }, []);
+      setTotal(timeMetrics);
+      setAllSessions(sessions);
+      setRecentSessions(sessions.slice(0, 5));
+      setGroupedSessions(groupedArray);
+    }
+  }, [rawSessionData]);
 
   const loadDatabases = useCallback(async () => {
     Promise.all([
@@ -142,7 +102,7 @@ export default function Dashboard() {
           if (userData) setUser(userData);
           setActiveSession(activeSession ? true : false);
           if (totalData) setTotal(totalData);
-          if (sessionData) processSessionData(sessionData);
+          if (sessionData) setRawSessionData(sessionData);
           if (courseData) {
             setCourses(courseData);
             const courseNames = courseData.map((course) => course.name);
@@ -157,7 +117,7 @@ export default function Dashboard() {
         console.error("Error loading data:", error);
         setLoading(false);
       });
-  }, [authUser, processSessionData]);
+  }, [authUser]);
 
   const handleSessionSubmit = async () => {
     setLoading(true);
@@ -177,38 +137,8 @@ export default function Dashboard() {
   }, [authLoading, authUser, loadDatabases]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-row justify-between">
-        <h1 className="text-4xl font-light">Dashboard</h1>
-        <div className="flex flex-row gap-2">
-          <SessionButton
-            isActive={(isActive) => {
-              if (!isActive) {
-                setOpenSessionDialog(true);
-              } else {
-              }
-            }}
-          />
-          {!activeSession ? (
-            <Button
-              variant="secondary"
-              onClick={() => setOpenSessionDialog(true)}
-            >
-              <PlusIcon strokeWidth={2.5} />
-              Add
-            </Button>
-          ) : null}
-
-          <SessionDialog
-            open={openSessionDialog}
-            onOpenChange={(open: boolean) => {
-              setOpenSessionDialog(open);
-            }}
-            courses={courses}
-            onSubmitSuccess={handleSessionSubmit}
-          />
-        </div>
-      </div>
+    <div className="flex flex-col">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
       <div className="flex flex-col gap-4">
         <div className="flex flex-row gap-4">
           <Card className="w-[600px]">
@@ -254,84 +184,89 @@ export default function Dashboard() {
                   <p className="font-bold mx-auto">MAX</p>
                 ) : null}
               </div>
+              <div className="flex flex-row gap-2">
+                <SessionButton
+                  isActive={(isActive) => {
+                    if (!isActive) {
+                      setOpenSessionDialog(true);
+                    } else {
+                    }
+                  }}
+                />
+                {!activeSession ? (
+                  <Button
+                    variant="secondary"
+                    onClick={() => setOpenSessionDialog(true)}
+                    className="grow"
+                  >
+                    <PlusIcon strokeWidth={2.5} />
+                    Add
+                  </Button>
+                ) : null}
+
+                <SessionDialog
+                  open={openSessionDialog}
+                  onOpenChange={(open: boolean) => {
+                    setOpenSessionDialog(open);
+                  }}
+                  courses={courses}
+                  onSubmitSuccess={handleSessionSubmit}
+                />
+              </div>
             </CardContent>
           </Card>
-          <Card className="grow">
+          <Card className="grow px-4">
             <CardContent className="mt-8">
               <div className="flex flex-col py-auto gap-2 justify-center h-full">
-                <div className="min-w-48 flex flex-col gap-2">
-                  <div className="flex flex-row justify-between gap-4 mx-12">
-                    <div>
-                      <h1 className="text-md text-muted-foreground text-center">
-                        Today
-                      </h1>
-                      <p className="text-2xl font-bold ">
-                        {timeFilter(studyTime["today"])}
-                      </p>
-                      <Progress
-                        className={`bg-muted ${
-                          user?.goal && studyTime["today"] >= user.goal
-                            ? "[&>div]:bg-[var(--chart-green)]"
-                            : "[&>div]:bg-muted-foreground"
-                        }`}
-                        value={
-                          user?.goal
-                            ? Math.min(
-                                (studyTime["today"] / user.goal) * 100,
-                                100
-                              )
-                            : 0
-                        }
+                <div className="min-w-48 flex flex-col gap-6">
+                  <div className="flex flex-row justify-between">
+                    <PeriodProgress
+                      studyTime={studyTime["today"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="day"
+                    />
+                    <PeriodProgress
+                      studyTime={studyTime["week"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="week"
+                    />
+                    <PeriodProgress
+                      studyTime={studyTime["month"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="month"
+                    />
+                  </div>
+                  <div className="flex flex-row justify-between gap-2">
+                    <RadialChart
+                      chartData={[
+                        {
+                          today: studyTime["today"],
+                          goal: user?.goal ?? 0,
+                          fill: "var(--chart-green)",
+                        },
+                      ]}
+                    />
+                    <div className="flex flex-col gap-2 my-auto align-middle">
+                      <TimeMetric
+                        studyTime={studyTime["week"]}
+                        goal={user?.goal ?? 0}
+                        timeframe="week"
                       />
-                    </div>
-                    <div>
-                      <h1 className="text-md text-muted-foreground text-center">
-                        Week
-                      </h1>
-                      <p className="text-2xl font-bold ">
-                        {timeFilter(studyTime["week"])}
-                      </p>
-                      <Progress
-                        className={`bg-muted ${
-                          user?.goal && studyTime["week"] >= user.goal * 7
-                            ? "[&>div]:bg-[var(--chart-green)]"
-                            : "[&>div]:bg-muted-foreground"
-                        }`}
-                        value={
-                          user?.goal
-                            ? Math.min(
-                                (studyTime["week"] / (user.goal * 7)) * 100,
-                                100
-                              )
-                            : 0
-                        }
+                      <SessionMetric
+                        studyTime={studyTime["week"]}
+                        goal={user?.goal ?? 0}
+                        timeframe="week"
+                        groupedSessions={groupedSessions}
                       />
-                    </div>
-                    <div>
-                      <h1 className="text-md text-muted-foreground text-center">
-                        Month
-                      </h1>
-                      <p className="text-2xl font-bold ">
-                        {timeFilter(studyTime["month"])}
-                      </p>
-                      <Progress
-                        className={`bg-muted ${
-                          user?.goal && studyTime["month"] >= user.goal * 30
-                            ? "[&>div]:bg-[var(--chart-green)]"
-                            : "[&>div]:bg-muted-foreground"
-                        }`}
-                        value={
-                          user?.goal
-                            ? Math.min(
-                                (studyTime["month"] / (user.goal * 30)) * 100,
-                                100
-                              )
-                            : 0
-                        }
+                      <CourseMetric
+                        studyTime={studyTime["week"]}
+                        timeframe="week"
+                        courses={courses}
                       />
                     </div>
                   </div>
-                  <div className="flex flex-row justify-center grow">
+
+                  <div className="flex flex-row justify-between w-full">
                     {loading ? (
                       <Spinner className="mt-8" />
                     ) : (
@@ -347,7 +282,6 @@ export default function Dashboard() {
                         ))
                     )}
                   </div>
-                  <LineChart chartData={groupedSessions} />
                 </div>
               </div>
             </CardContent>
@@ -362,33 +296,6 @@ export default function Dashboard() {
                 ) : (
                   <SplineAreaChart data={chartCourses} />
                 )}
-                <div>
-                  <p className="text-md text-muted-foreground">
-                    Current Pace (week)
-                  </p>
-                  <div className="flex flex-row justify-between items-center">
-                    <p className="text-2xl font-bold ">
-                      {timeFilter(studyTime["week"] / 7)}
-                    </p>
-                    {user?.goal && user.goal - studyTime["week"] / 7 > 0 ? (
-                      <p className="text-sm rounded-md bg-muted flex px-2 py-1">
-                        -{timeFilter(user?.goal - studyTime["week"] / 7)}
-                        <TrendingDown className="ml-2" size="8" />
-                      </p>
-                    ) : user?.goal ? (
-                      <p className="text-sm rounded-md bg-emerald-100 flex px-2 py-1 ">
-                        +{timeFilter(studyTime["week"] / 7 - user?.goal)}
-                        <TrendingUp className="ml-2" size="18" />
-                      </p>
-                    ) : null}
-                  </div>
-                  <p className="text-md text-muted-foreground">
-                    Session Duration
-                  </p>
-                  <p className="text-2xl font-bold ">
-                    {timeFilter(studyTime["total"])}
-                  </p>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -396,7 +303,14 @@ export default function Dashboard() {
           <Card className="grow">
             <CardContent className="flex flex-col">
               <div className="grow min-w-96">
-                <StackedBarChart />
+                {loading ? (
+                  <Spinner className="mt-8" />
+                ) : (
+                  <StackedBarChart
+                    groupedSessions={groupedSessions}
+                    goal={user?.goal ?? 0}
+                  />
+                )}
               </div>
 
               <div className="flex flex-col gap-2 mt-4">

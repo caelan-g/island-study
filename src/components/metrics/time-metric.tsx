@@ -1,0 +1,37 @@
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { sessionProps } from "@/components/types/session";
+import { timeFilter } from "@/lib/filters/time-filter";
+
+export function TimeMetric({
+  studyTime,
+  goal,
+  timeframe,
+}: {
+  studyTime: number;
+  goal: number;
+  timeframe: "week" | "month";
+}) {
+  const period = timeframe === "week" ? 7 : 30;
+
+  return (
+    <div>
+      <p className="text-xs text-muted-foreground">
+        Daily Average ({timeframe})
+      </p>
+      <div className="flex flex-row gap-6 items-center">
+        <p className="text-xl font-bold ">{timeFilter(studyTime / period)}</p>
+        {goal - studyTime / period > 0 ? (
+          <p className="text-xs rounded-md bg-muted flex px-2 py-1">
+            <ArrowDown className="" size="14" />
+            {timeFilter(goal - studyTime / period)} from goal
+          </p>
+        ) : goal ? (
+          <p className="text-xs rounded-md bg-emerald-100 flex px-2 py-1 ">
+            <ArrowUp className="" size="14" />
+            {timeFilter(studyTime / period - goal)}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}

@@ -5,6 +5,7 @@ import { fetchIslands } from "@/lib/island/fetch-islands";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
+import PerspectiveCarousel from "@/components/ui/perspective-carousel";
 
 export default function Islands() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -15,7 +16,7 @@ export default function Islands() {
     const loadIslands = async () => {
       setLoading(true);
       const data = await fetchIslands(authUser);
-      if (data) setIslands(data);
+      if (data) setIslands(data.reverse());
       setLoading(false);
     };
     if (!authLoading && authUser) {
@@ -32,45 +33,28 @@ export default function Islands() {
           </Card>
         </>
       ) : (
-        <>
-          {islands.map((island) => (
-            <Card key={island.id}>
-              <CardHeader>
-                <CardTitle>{island.created_at}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <Image
-                    src={island.current_url}
-                    alt="Island"
-                    width={512}
-                    height={262}
-                    className="pixelated pointer-events-none select-none"
-                    unoptimized
+        <div className="">
+          <div className="text-2xl font-bold">My Islands</div>
+          <div className="space-y-4">
+            {islands.map((island) => (
+              <div className="flex flex-row">
+                <div className="relative w-full">
+                  <PerspectiveCarousel
+                    urls={[...island.previous_urls, island.current_url]}
                   />
                 </div>
-                <div className="flex flex-row justify-center items-center">
-                  <div className="z-10 font-bold text-background">
-                    {island.level}
-                  </div>
-                  <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
-                </div>
-                {[...(island.previous_urls || [])].reverse().map((url) => (
-                  <div key={url}>
-                    <Image
-                      src={url}
-                      alt="Island"
-                      width={256}
-                      height={128}
-                      className="pixelated pointer-events-none select-none"
-                      unoptimized
-                    />
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-        </>
+                <Card key={island.id}>
+                  <CardHeader>
+                    <CardTitle>
+                      {new Date(island.created_at).toLocaleDateString()}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0"></CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );

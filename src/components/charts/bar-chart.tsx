@@ -1,6 +1,7 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart as Chart, XAxis } from "recharts";
+import { Bar, BarChart as Chart, CartesianGrid, XAxis } from "recharts";
+
 import {
   ChartConfig,
   ChartContainer,
@@ -10,12 +11,14 @@ import {
 import { timeFilter } from "@/lib/filters/time-filter";
 import { sessionProps } from "@/components/types/session";
 
+export const description = "A bar chart";
+
 interface GroupedSession {
   date: string;
   sessions: sessionProps[];
 }
 
-interface LineChartProps {
+interface BarChartProps {
   chartData: GroupedSession[];
 }
 
@@ -26,8 +29,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function LineChart({ chartData }: LineChartProps) {
-  // Transform grouped sessions into chart data format
+export function BarChart({ chartData }: BarChartProps) {
   const processedData = chartData.map((day) => {
     // Parse the date string (assuming day/month/year format)
     const [day_, month_, year_] = day.date.split("/");
@@ -45,23 +47,17 @@ export function LineChart({ chartData }: LineChartProps) {
       }, 0),
     };
   });
+  console.log("Processed Data:", processedData);
 
   return (
-    <ChartContainer config={chartConfig} className="max-h-48">
-      <Chart
-        accessibilityLayer
-        data={processedData.reverse()}
-        margin={{
-          left: 12,
-          right: 12,
-        }}
-      >
+    <ChartContainer config={chartConfig}>
+      <Chart accessibilityLayer data={processedData.reverse()}>
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
           tickLine={false}
+          tickMargin={10}
           axisLine={false}
-          tickMargin={8}
           tickFormatter={(value) => {
             const date = new Date(value);
             return date.toLocaleDateString("en-US", {
@@ -79,7 +75,7 @@ export function LineChart({ chartData }: LineChartProps) {
                   <p className="text-sm text-muted-foreground">
                     {new Date(payload[0].payload.date).toLocaleDateString()}
                   </p>
-                  <p className="text-lg font-light">
+                  <p className="text-lg font-bold">
                     {timeFilter(Number(payload[0].value))}
                   </p>
                 </div>
@@ -88,18 +84,10 @@ export function LineChart({ chartData }: LineChartProps) {
             return null;
           }}
         />
-        <Line
+        <Bar
           dataKey="studyTime"
-          type="natural"
-          stroke="var(--chart-green)"
-          strokeWidth={2}
-          dot={{
-            fill: "var(--chart-green)",
-            r: 1,
-          }}
-          activeDot={{
-            r: 1,
-          }}
+          fill="#646464"
+          radius={[4, 4, 0, 0]} // Rounded top corners
         />
       </Chart>
     </ChartContainer>

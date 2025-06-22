@@ -10,6 +10,16 @@ import Stopwatch from "@/components/ui/stopwatch";
 import { Square } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { PlayIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface SessionButtonProps {
   isActive?: (clicked: boolean) => void;
@@ -53,38 +63,47 @@ export function SessionButton({ isActive }: SessionButtonProps) {
 
   if (courseLoading || activeLoading) {
     return (
-      <Button variant={"loading"}>
+      <Button variant={"loading"} className="grow">
         <Spinner />
       </Button>
     );
   }
 
   return !activeSession ? (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 grow">
       <div>
-        <Button className="peer cursor-pointer" variant="accent">
-          <PlayIcon fill="currentColor" />
-          Start
-        </Button>
-        <div className="bg-background rounded-md p-2 border transition-all flex flex-col gap-2 z-50 opacity-0 pointer-events-none peer-hover:opacity-100 hover:pointer-events-auto hover:opacity-100 peer-hover:pointer-events-auto absolute">
-          {courses.map((course) => (
-            <div
-              key={course.id}
-              className="text-xs text-white font-bold p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis max-w-48 cursor-pointer"
-              style={{
-                backgroundColor: course.colour,
-                //color: `color-mix(in srgb, ${course.colour} 15%, white)`,
-              }}
-              onClick={async () => {
-                await startSession(course.id, authUser);
-                initializeActive();
-                isActive?.(true);
-              }}
-            >
-              {course.name}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="peer cursor-pointer w-full">
+              <PlayIcon fill="currentColor" />
+              Start
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Start a Session</DialogTitle>
+            </DialogHeader>
+            <div className="p-2 transition-all flex flex-col gap-2">
+              {courses.map((course) => (
+                <div
+                  key={course.id}
+                  className="text-xs text-white font-bold p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis cursor-pointer"
+                  style={{
+                    backgroundColor: course.colour,
+                    //color: `color-mix(in srgb, ${course.colour} 15%, white)`,
+                  }}
+                  onClick={async () => {
+                    await startSession(course.id, authUser);
+                    initializeActive();
+                    isActive?.(true);
+                  }}
+                >
+                  {course.name}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   ) : (
@@ -94,6 +113,7 @@ export function SessionButton({ isActive }: SessionButtonProps) {
           isActive?.(false);
           initializeActive();
         }}
+        className="w-full"
       >
         <span>
           <Square strokeWidth={0} fill="rgb(255, 50, 50)" />

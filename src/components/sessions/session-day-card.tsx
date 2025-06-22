@@ -1,6 +1,5 @@
 import { MiniRadialChart } from "@/components/charts/mini-radial";
 import { sessionProps } from "@/components/types/session";
-import { timeFilter } from "@/lib/filters/time-filter";
 
 interface GroupedSession {
   date: string;
@@ -23,11 +22,12 @@ export const SessionDayCard = ({
         1000 // Convert to seconds
     );
   }, 0);
+  console.log(day.sessions[0]?.start_time);
 
   return (
     <div className="text-sm flex flex-col">
       <div className="text-muted-foreground text-center">
-        {new Date(day.sessions[0]?.start_time).toLocaleDateString(undefined, {
+        {new Date(day.sessions[0]?.end_time).toLocaleDateString(undefined, {
           weekday: "short",
         })}
       </div>

@@ -54,17 +54,12 @@ export function MiniRadialChart({ chartData }: { chartData: chartData[] }) {
             stroke="none"
             className={
               hasReachedGoal
-                ? "first:fill-background last:fill-[var(--chart-green)] opacity-20"
-                : "first:fill-background last:fill-muted"
+                ? "first:fill-muted last:fill-[var(--chart-green)] opacity-20"
+                : "first:fill-muted last:fill-muted"
             }
-            polarRadius={[12, 21.5]}
+            polarRadius={[20, 21.5]}
           />
-          <RadialBar
-            dataKey="total"
-            background
-            cornerRadius={10}
-            fillOpacity={0.9}
-          />
+          <RadialBar dataKey="total" background cornerRadius={10} />
           <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
             <Label
               content={({ viewBox }) => {

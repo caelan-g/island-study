@@ -79,7 +79,7 @@ export default function Sessions() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col gap-4">
             {sessions.map((session) => (
               <SessionCard
                 key={session.id}
