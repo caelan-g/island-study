@@ -1,13 +1,12 @@
 "use client";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -17,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,59 +27,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useState, useEffect, useCallback } from "react";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { checkSession } from "@/lib/sessions/check-session";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
-
-type ActiveSession = {
-  start_time: string;
-  end_time: string;
-  course_id: string; // Assuming course_id is part of the active session
-  // Add other session fields if needed
-};
+import { deleteSession } from "@/lib/sessions/delete-session";
+import { Check, Trash } from "lucide-react";
 
 type SessionDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   courses: courseProps[]; // Array of courses to select from
-  sessionProps?: sessionProps; // Optional, if you want to pass session data
+  sessionProps: sessionProps | null; // Optional, if you want to pass session data
   onSubmitSuccess?: () => void;
 };
 
 //add sessionProps then add an if statement if theres session to show extra buttons/different text - do same for courses form
 
-export function SessionDialog({
-  open,
-  onOpenChange,
+export function EditSessionCard({
   courses,
   sessionProps,
   onSubmitSuccess,
 }: SessionDialogProps) {
-  const [activeSession, setActiveSession] = useState<ActiveSession | null>(
-    null
-  );
   const { user: authUser } = useAuth();
-
-  useEffect(() => {
-    const checkForActiveSession = async () => {
-      try {
-        const active = await checkSession(authUser);
-        if (active) {
-          setActiveSession(active);
-        } else {
-          setActiveSession(null);
-        }
-      } catch (error) {
-        console.error("Error checking for active session:", error);
-        setActiveSession(null);
-      }
-    };
-
-    if (!sessionProps && open) {
-      checkForActiveSession();
-    }
-  }, [open, sessionProps, authUser]);
 
   const sessionSchema = z.object({
     description: z
@@ -119,25 +86,15 @@ export function SessionDialog({
         },
   });
 
-  // Move form reset logic to a separate function
   const resetFormWithCurrentTime = useCallback(() => {
     if (!sessionProps) {
-      if (activeSession) {
-        form.reset({
-          description: "",
-          course: activeSession.course_id,
-          startTime: new Date(activeSession.start_time),
-          endTime: new Date(), // Current time
-        });
-      } else {
-        const now = new Date();
-        form.reset({
-          description: "",
-          course: "",
-          startTime: now,
-          endTime: now,
-        });
-      }
+      const now = new Date();
+      form.reset({
+        description: "",
+        course: "",
+        startTime: now,
+        endTime: now,
+      });
     } else {
       form.reset({
         description: sessionProps.description || "",
@@ -146,14 +103,12 @@ export function SessionDialog({
         endTime: new Date(sessionProps.end_time),
       });
     }
-  }, [form, activeSession, sessionProps]);
+  }, [form, sessionProps]);
 
-  // Reset form when dialog opens
+  // Reset form when session gets selected
   useEffect(() => {
-    if (open) {
-      resetFormWithCurrentTime();
-    }
-  }, [open, resetFormWithCurrentTime]);
+    resetFormWithCurrentTime();
+  }, [sessionProps, resetFormWithCurrentTime]);
 
   async function onSubmit(values: z.infer<typeof sessionSchema>) {
     try {
@@ -169,35 +124,45 @@ export function SessionDialog({
       if (onSubmitSuccess) {
         onSubmitSuccess();
       }
-      form.reset();
-      onOpenChange(false);
     } catch (error) {
       console.error("Error ending session:", error);
     }
   }
 
+  const handleDelete = async () => {
+    try {
+      if (!sessionProps) {
+        toast.error("No session selected to delete");
+        return;
+      }
+      await deleteSession(sessionProps, authUser);
+      toast.success("Session deleted");
+    } catch (error) {
+      console.error("Failed to delete session:", error);
+      toast.error("Failed to delete session");
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="z-50">
+    <Card className="w-full max-w-lg mb-auto align-top">
+      <CardContent>
         <Form {...form}>
-          <DialogHeader>
-            {sessionProps ? (
-              <>
-                <DialogTitle>Edit your study session</DialogTitle>
-                <DialogDescription>
-                  Modify the details of your study session.
-                </DialogDescription>
-              </>
-            ) : (
-              <>
-                <DialogTitle>Add your study session</DialogTitle>
-                <DialogDescription>
-                  Fill in the details of your study session to keep track of
-                  your progress.
-                </DialogDescription>
-              </>
-            )}
-          </DialogHeader>
+          {sessionProps ? (
+            <CardHeader className="px-0">
+              <CardTitle>Edit your study session</CardTitle>
+              <CardDescription>
+                Modify the details of your study session.
+              </CardDescription>
+            </CardHeader>
+          ) : (
+            <CardHeader className="px-0">
+              <CardTitle>Select a study session to edit</CardTitle>
+              <CardDescription>
+                Fill in the details of your study session to keep track of your
+                progress.
+              </CardDescription>
+            </CardHeader>
+          )}
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             onClick={(e) => e.stopPropagation()}
@@ -278,19 +243,27 @@ export function SessionDialog({
                 )}
               />
             </div>
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="secondary">Cancel</Button>
-              </DialogClose>
-
-              <Button type="submit">
-                {sessionProps ? "Update" : "Create"}
-              </Button>
-            </DialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+      <CardFooter className="flex justify-between gap-2 w-full">
+        {sessionProps ? (
+          <>
+            <Button type="submit" className="w-full">
+              <Check />
+              Save
+            </Button>
+            <Button
+              variant="destructive"
+              className="w-full"
+              onClick={() => handleDelete()}
+            >
+              <Trash />
+              Delete
+            </Button>
+          </>
+        ) : null}
+      </CardFooter>
+    </Card>
   );
 }

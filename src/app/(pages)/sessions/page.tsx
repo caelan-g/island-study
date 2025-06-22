@@ -8,6 +8,8 @@ import { sessionProps } from "@/components/types/session";
 import { SessionDialog } from "@/components/sessions/session-dialog";
 import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
+import { EditSessionCard } from "@/components/sessions/edit-session-card";
+import { SessionCardSkeleton } from "@/components/sessions/session-card-skeleton";
 
 export default function Sessions() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -73,38 +75,36 @@ export default function Sessions() {
 
   return (
     <>
-      {loading ? (
-        <div className="flex justify-center items-center h-screen">
-          <Spinner />
-        </div>
-      ) : (
-        <>
-          <div className="flex flex-col gap-4">
-            {sessions.map((session) => (
-              <SessionCard
-                key={session.id}
-                session={session}
-                courses={courses}
-                user={authUser}
-                onEdit={() => handleEditSession(session)}
-                onDelete={handleDeleteSession}
-              />
-            ))}
-          </div>
-
-          {openSessionDialog && (
-            <SessionDialog
-              open={openSessionDialog}
-              onOpenChange={(open: boolean) => {
-                setOpenSessionDialog(open);
-              }}
-              courses={courses}
-              sessionProps={selectedSession ? selectedSession : undefined}
-              onSubmitSuccess={handleSessionSubmit}
-            />
+      <div className="flex flex-row w-full gap-4 justify-between items-start">
+        <div className="flex flex-col gap-4 w-full">
+          {loading ? (
+            <>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SessionCardSkeleton key={i} />
+              ))}
+            </>
+          ) : (
+            <>
+              {sessions.map((session) => (
+                <SessionCard
+                  key={session.id}
+                  session={session}
+                  courses={courses}
+                  user={authUser}
+                  onClick={() => handleEditSession(session)}
+                  isSelected={selectedSession?.id === session.id}
+                />
+              ))}
+            </>
           )}
-        </>
-      )}
+        </div>
+
+        <EditSessionCard
+          courses={courses}
+          sessionProps={selectedSession}
+          onSubmitSuccess={handleSessionSubmit}
+        />
+      </div>
     </>
   );
 }
