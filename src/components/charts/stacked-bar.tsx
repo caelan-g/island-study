@@ -63,7 +63,7 @@ export function StackedBarChart({
   return (
     <ChartContainer config={chartConfig}>
       <BarChart
-        data={processedData}
+        data={processedData.reverse()}
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
       >
         <CartesianGrid vertical={false} />
@@ -102,7 +102,7 @@ export function StackedBarChart({
         <Bar
           dataKey="over"
           stackId="a"
-          fill="var(--chart-green)"
+          fill="var(--muted-foreground)"
           radius={[4, 4, 0, 0]}
         />
       </BarChart>

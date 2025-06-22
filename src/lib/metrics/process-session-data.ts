@@ -75,7 +75,7 @@ export const processSessionData = (sessions: sessionProps[]) => {
       sessions,
     }))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, 16);
+    .slice(0, 30);
 
   return [timeMetrics, sessions, groupedArray];
 };

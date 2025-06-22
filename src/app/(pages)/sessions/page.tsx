@@ -92,7 +92,6 @@ export default function Sessions() {
                   courses={courses}
                   user={authUser}
                   onClick={() => handleEditSession(session)}
-                  isSelected={selectedSession?.id === session.id}
                 />
               ))}
             </>
@@ -101,7 +100,7 @@ export default function Sessions() {
 
         <EditSessionCard
           courses={courses}
-          sessionProps={selectedSession}
+          sessionProps={selectedSession ? selectedSession : null}
           onSubmitSuccess={handleSessionSubmit}
         />
       </div>

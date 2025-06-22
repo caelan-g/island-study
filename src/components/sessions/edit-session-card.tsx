@@ -123,6 +123,8 @@ export function EditSessionCard({
       // Only call onSubmitSuccess if the endSession was successful
       if (onSubmitSuccess) {
         onSubmitSuccess();
+        console.log("Session ended successfully");
+        toast.success("Session ended successfully");
       }
     } catch (error) {
       console.error("Error ending session:", error);
@@ -145,28 +147,29 @@ export function EditSessionCard({
 
   return (
     <Card className="w-full max-w-lg mb-auto align-top">
-      <CardContent>
-        <Form {...form}>
-          {sessionProps ? (
-            <CardHeader className="px-0">
-              <CardTitle>Edit your study session</CardTitle>
-              <CardDescription>
-                Modify the details of your study session.
-              </CardDescription>
-            </CardHeader>
-          ) : (
-            <CardHeader className="px-0">
-              <CardTitle>Select a study session to edit</CardTitle>
-              <CardDescription>
-                Fill in the details of your study session to keep track of your
-                progress.
-              </CardDescription>
-            </CardHeader>
-          )}
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            onClick={(e) => e.stopPropagation()}
-          >
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <CardContent>
+            {sessionProps ? (
+              <CardHeader className="px-0">
+                <CardTitle>Edit your study session</CardTitle>
+                <CardDescription>
+                  Modify the details of your study session.
+                </CardDescription>
+              </CardHeader>
+            ) : (
+              <CardHeader className="px-0">
+                <CardTitle>Select a study session to edit</CardTitle>
+                <CardDescription>
+                  Fill in the details of your study session to keep track of
+                  your progress.
+                </CardDescription>
+              </CardHeader>
+            )}
+
             <div className="flex flex-col gap-2">
               <FormField
                 control={form.control}
@@ -243,27 +246,27 @@ export function EditSessionCard({
                 )}
               />
             </div>
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex justify-between gap-2 w-full">
-        {sessionProps ? (
-          <>
-            <Button type="submit" className="w-full">
-              <Check />
-              Save
-            </Button>
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={() => handleDelete()}
-            >
-              <Trash />
-              Delete
-            </Button>
-          </>
-        ) : null}
-      </CardFooter>
+          </CardContent>
+          <CardFooter className="flex justify-between gap-2 w-full">
+            {sessionProps ? (
+              <>
+                <Button type="submit" className="w-full">
+                  <Check />
+                  Save
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="w-full"
+                  onClick={() => handleDelete()}
+                >
+                  <Trash />
+                  Delete
+                </Button>
+              </>
+            ) : null}
+          </CardFooter>
+        </form>
+      </Form>
     </Card>
   );
 }

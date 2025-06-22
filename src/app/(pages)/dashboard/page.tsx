@@ -140,7 +140,7 @@ export default function Dashboard() {
     <div className="flex flex-col">
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <Card className="w-[600px]">
             <CardHeader></CardHeader>
             <CardContent className="flex flex-col gap-2">
@@ -220,23 +220,6 @@ export default function Dashboard() {
               <div className="flex flex-col py-auto gap-2 justify-center h-full">
                 <div className="min-w-48 flex flex-col gap-6">
                   <div className="flex flex-row justify-between">
-                    <PeriodProgress
-                      studyTime={studyTime["today"]}
-                      goal={user?.goal ?? 0}
-                      timeframe="day"
-                    />
-                    <PeriodProgress
-                      studyTime={studyTime["week"]}
-                      goal={user?.goal ?? 0}
-                      timeframe="week"
-                    />
-                    <PeriodProgress
-                      studyTime={studyTime["month"]}
-                      goal={user?.goal ?? 0}
-                      timeframe="month"
-                    />
-                  </div>
-                  <div className="flex flex-row justify-between gap-2">
                     <RadialChart
                       chartData={[
                         {
@@ -246,27 +229,21 @@ export default function Dashboard() {
                         },
                       ]}
                     />
+
                     <div className="flex flex-col gap-2 my-auto align-middle">
-                      <TimeMetric
+                      <PeriodProgress
                         studyTime={studyTime["week"]}
                         goal={user?.goal ?? 0}
                         timeframe="week"
                       />
-                      <SessionMetric
-                        studyTime={studyTime["week"]}
+                      <PeriodProgress
+                        studyTime={studyTime["month"]}
                         goal={user?.goal ?? 0}
-                        timeframe="week"
-                        groupedSessions={groupedSessions}
-                      />
-                      <CourseMetric
-                        studyTime={studyTime["week"]}
-                        timeframe="week"
-                        courses={courses}
+                        timeframe="month"
                       />
                     </div>
                   </div>
-
-                  <div className="flex flex-row justify-between w-full">
+                  <div className="flex flex-row justify-between gap-2">
                     {loading ? (
                       <Spinner className="mt-8" />
                     ) : (
@@ -282,6 +259,25 @@ export default function Dashboard() {
                         ))
                     )}
                   </div>
+
+                  <div className="flex flex-row justify-between w-full">
+                    <TimeMetric
+                      studyTime={studyTime["week"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="week"
+                    />
+                    <SessionMetric
+                      studyTime={studyTime["week"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="week"
+                      groupedSessions={groupedSessions}
+                    />
+                    <CourseMetric
+                      studyTime={studyTime["week"]}
+                      timeframe="week"
+                      courses={courses}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -296,6 +292,23 @@ export default function Dashboard() {
                 ) : (
                   <SplineAreaChart data={chartCourses} />
                 )}
+                <div className="flex flex-col gap-4">
+                  <CourseMetric
+                    studyTime={studyTime["week"]}
+                    timeframe="week"
+                    courses={courses}
+                  />
+                  <CourseMetric
+                    studyTime={studyTime["week"]}
+                    timeframe="week"
+                    courses={courses}
+                  />
+                  <CourseMetric
+                    studyTime={studyTime["week"]}
+                    timeframe="week"
+                    courses={courses}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>

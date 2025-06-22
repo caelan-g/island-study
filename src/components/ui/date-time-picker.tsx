@@ -3,6 +3,7 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import TimePicker from "@/components/ui/time-picker";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export function DateTimePicker({
   value,
@@ -24,7 +24,37 @@ export function DateTimePicker({
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const hours = Array.from({ length: 12 }, (_, i) => i + 1);
+  // Format time string for TimePicker
+  const formatTimeString = (date: Date | undefined): string => {
+    if (!date) return "12:00 AM";
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours % 12 || 12;
+    return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Handle time changes from TimePicker
+  const handleTimeChange = (timeString: string) => {
+    if (!value) return;
+
+    const [time, period] = timeString.split(" ");
+    const [hours, minutes] = time.split(":").map(Number);
+
+    const newDate = new Date(value);
+    let adjustedHours = hours;
+
+    // Adjust hours based on AM/PM
+    if (period === "PM" && hours !== 12) {
+      adjustedHours += 12;
+    } else if (period === "AM" && hours === 12) {
+      adjustedHours = 0;
+    }
+
+    newDate.setHours(adjustedHours);
+    newDate.setMinutes(minutes);
+    onChange(newDate);
+  };
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
@@ -32,28 +62,6 @@ export function DateTimePicker({
       if (value) {
         newDate.setHours(value.getHours());
         newDate.setMinutes(value.getMinutes());
-      }
-      onChange(newDate);
-    }
-  };
-
-  const handleTimeChange = (type: "hour" | "minute" | "ampm", val: string) => {
-    if (value) {
-      const newDate = new Date(value);
-      if (type === "hour") {
-        newDate.setHours(
-          (parseInt(val) % 12) + (newDate.getHours() >= 12 ? 12 : 0)
-        );
-      } else if (type === "minute") {
-        newDate.setMinutes(parseInt(val));
-      } else if (type === "ampm") {
-        const currentHours = newDate.getHours();
-        const isPM = currentHours >= 12;
-        if (val === "AM" && isPM) {
-          newDate.setHours(currentHours - 12);
-        } else if (val === "PM" && !isPM) {
-          newDate.setHours(currentHours + 12);
-        }
       }
       onChange(newDate);
     }
@@ -77,84 +85,20 @@ export function DateTimePicker({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="w-auto p-0 pointer-events-auto z-[100]"
-        onPointerDownCapture={(e) => e.stopPropagation()}
-      >
-        <div
-          className="sm:flex"
-          onPointerDownCapture={(e) => e.stopPropagation()}
-        >
+      <PopoverContent className="w-auto p-0">
+        <div className="flex flex-row gap-2 p-3">
           <Calendar
             mode="single"
             selected={value}
             onSelect={handleDateSelect}
             initialFocus
           />
-          <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
-            <ScrollArea className="w-64 sm:w-auto hover:overflow-auto">
-              <div className="flex sm:flex-col p-2">
-                {hours.reverse().map((hour) => (
-                  <Button
-                    key={hour}
-                    size="icon"
-                    variant={
-                      value && value.getHours() % 12 === hour % 12
-                        ? "default"
-                        : "ghost"
-                    }
-                    className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("hour", hour.toString())}
-                  >
-                    {hour}
-                  </Button>
-                ))}
-              </div>
-              <ScrollBar orientation="horizontal" className="sm:hidden " />
-            </ScrollArea>
-            <ScrollArea className="w-64 sm:w-auto">
-              <div className="flex sm:flex-col p-2">
-                {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
-                  <Button
-                    key={minute}
-                    size="icon"
-                    variant={
-                      value && value.getMinutes() === minute
-                        ? "default"
-                        : "ghost"
-                    }
-                    className="sm:w-full shrink-0 aspect-square"
-                    onClick={() =>
-                      handleTimeChange("minute", minute.toString())
-                    }
-                  >
-                    {minute}
-                  </Button>
-                ))}
-              </div>
-              <ScrollBar orientation="horizontal" className="sm:hidden" />
-            </ScrollArea>
-            <ScrollArea className="">
-              <div className="flex sm:flex-col p-2">
-                {["AM", "PM"].map((ampm) => (
-                  <Button
-                    key={ampm}
-                    size="icon"
-                    variant={
-                      value &&
-                      ((ampm === "AM" && value.getHours() < 12) ||
-                        (ampm === "PM" && value.getHours() >= 12))
-                        ? "default"
-                        : "ghost"
-                    }
-                    className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("ampm", ampm)}
-                  >
-                    {ampm}
-                  </Button>
-                ))}
-              </div>
-            </ScrollArea>
+          <div className="border-l my-auto align-middle">
+            <TimePicker
+              mode="time"
+              value={formatTimeString(value)}
+              onChange={handleTimeChange}
+            />
           </div>
         </div>
       </PopoverContent>
