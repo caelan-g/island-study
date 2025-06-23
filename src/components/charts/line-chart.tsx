@@ -8,12 +8,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
-import { sessionProps } from "@/components/types/session";
-
-interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
+import { GroupedSession } from "@/components/types/session";
 
 interface LineChartProps {
   chartData: GroupedSession[];

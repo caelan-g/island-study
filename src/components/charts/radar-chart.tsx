@@ -13,11 +13,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
-
-interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
+import { GroupedSession } from "@/components/types/session";
 
 interface RadarChartProps {
   groupedSessions: GroupedSession[];

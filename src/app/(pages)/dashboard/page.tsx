@@ -4,8 +4,6 @@ import { Progress } from "@/components/ui/progress";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { fetchTotal } from "@/lib/user/fetch-total";
 import { fetchUser } from "@/lib/user/fetch-user";
-import { StackedBarChart } from "@/components/charts/stacked-bar";
-import { SplineAreaChart } from "@/components/charts/spline-area";
 import { checkSession } from "@/lib/sessions/check-session";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -21,9 +19,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { PlusIcon } from "lucide-react";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { sessionProps } from "@/components/types/session";
-import { DashboardSessionCard } from "@/components/sessions/dashboard-session-card";
 import { SessionDayCard } from "@/components/sessions/session-day-card";
-import { RadialChart } from "@/components/charts/radial";
 import { TimeMetric } from "@/components/metrics/time-metric";
 import { SessionMetric } from "@/components/metrics/session-metric";
 import { CourseMetric } from "@/components/metrics/course-metric";
@@ -31,23 +27,12 @@ import { PeriodProgress } from "@/components/metrics/period-progress";
 import { processSessionData } from "@/lib/metrics/process-session-data";
 import { SessionCountMetric } from "@/components/metrics/session-count-metric";
 import { CourseTopMetric } from "@/components/metrics/course-top-metric";
-import { Content } from "@radix-ui/react-navigation-menu";
 import { RadarChart } from "@/components/charts/radar-chart";
 import { LineChart } from "@/components/charts/line-chart";
 import { TotalCourseAreaChart } from "@/components/charts/total-course-area-chart";
 import StudyHeatmap from "@/components/charts/study-heatmap";
-
-interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
-
-interface TimeMetrics {
-  today: number;
-  week: number;
-  month: number;
-  all: number;
-}
+import { toast } from "sonner";
+import { GroupedSession, TimeMetrics } from "@/components/types/session";
 
 export default function Dashboard() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -58,33 +43,23 @@ export default function Dashboard() {
     today: 0,
     week: 0,
     month: 0,
-    all: 0,
   });
   const [courses, setCourses] = useState<courseProps[]>([]);
   const [island, setIsland] = useState<islandProps | null>(null);
-  const [chartCourses, setChartCourses] = useState<{
-    course: string[];
-    total: number[];
-  }>({ course: [], total: [] });
   const [user, setUser] = useState<userProps>();
   const [activeSession, setActiveSession] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [rawSessionData, setRawSessionData] = useState<sessionProps[]>([]);
-  const [allSessions, setAllSessions] = useState<sessionProps[]>([]);
-  const [recentSessions, setRecentSessions] = useState<sessionProps[]>([]);
   const [groupedSessions, setGroupedSessions] = useState<GroupedSession[]>([]);
-  console.log(groupedSessions);
 
   useEffect(() => {
     if (rawSessionData.length > 0) {
-      const [timeMetrics, sessions, groupedArray] = processSessionData(
+      const [timeMetrics, groupedArray] = processSessionData(
         rawSessionData
-      ) || [{ today: 0, week: 0, month: 0, all: 0 }, [], []];
+      ) || [{ today: 0, week: 0, month: 0 }, [], []];
 
-      setTotal(timeMetrics);
-      setAllSessions(sessions);
-      setRecentSessions(sessions.slice(0, 5));
-      setGroupedSessions(groupedArray);
+      setTotal(timeMetrics as TimeMetrics);
+      setGroupedSessions(groupedArray as GroupedSession[]);
     }
   }, [rawSessionData]);
 
@@ -108,13 +83,9 @@ export default function Dashboard() {
         ]) => {
           if (userData) setUser(userData);
           setActiveSession(activeSession ? true : false);
-          if (totalData) setTotal(totalData);
           if (sessionData) setRawSessionData(sessionData);
           if (courseData) {
             setCourses(courseData);
-            const courseNames = courseData.map((course) => course.name);
-            const courseTotals = courseData.map((course) => course.total);
-            setChartCourses({ course: courseNames, total: courseTotals });
           }
           setIsland(islandData);
           setLoading(false);
@@ -122,6 +93,7 @@ export default function Dashboard() {
       )
       .catch((error) => {
         console.error("Error loading data:", error);
+        toast.error("Error loading data. Please try again later.");
         setLoading(false);
       });
   }, [authUser]);
@@ -293,7 +265,7 @@ export default function Dashboard() {
               ) : (
                 <StudyHeatmap
                   groupedSessions={groupedSessions}
-                  goal={user.goal}
+                  goal={user?.goal ?? 0}
                 />
               )}
             </CardContent>
@@ -332,6 +304,17 @@ export default function Dashboard() {
 
           <Card className="w-full">
             <CardContent className="flex flex-col gap-4 mt-6">
+              <h2 className="text-xl font-bold">Average Study By Day</h2>
+              <div className="">
+                {loading && !user ? (
+                  <Spinner className="mt-8" />
+                ) : (
+                  <RadarChart
+                    groupedSessions={groupedSessions}
+                    goal={user?.goal ?? 0}
+                  />
+                )}
+              </div>
               <div className="flex flex-col gap-2">
                 <SessionMetric
                   studyTime={studyTime["week"]}
@@ -342,16 +325,6 @@ export default function Dashboard() {
                   timeframe="week"
                   groupedSessions={groupedSessions}
                 />
-              </div>
-              <div className="">
-                {loading && !user ? (
-                  <Spinner className="mt-8" />
-                ) : (
-                  <RadarChart
-                    groupedSessions={groupedSessions}
-                    goal={user.goal}
-                  />
-                )}
               </div>
             </CardContent>
           </Card>

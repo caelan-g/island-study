@@ -6,3 +6,14 @@ export type sessionProps = {
   user_id: string; // Optional, if not always present
   description?: string;
 };
+
+export type GroupedSession = {
+  date: string;
+  sessions: sessionProps[];
+};
+
+export type TimeMetrics = {
+  today: number; // Total seconds for today
+  week: number; // Total seconds for the last 7 days
+  month: number; // Total seconds for the last 30 days
+};

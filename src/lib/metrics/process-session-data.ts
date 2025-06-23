@@ -1,11 +1,5 @@
 import { sessionProps } from "@/components/types/session";
-import { useCallback, useState } from "react";
-
-interface TimeMetrics {
-  today: number;
-  week: number;
-  month: number;
-}
+import { TimeMetrics } from "@/components/types/session";
 
 export const processSessionData = (sessions: sessionProps[]) => {
   if (!sessions) return;
@@ -14,7 +8,6 @@ export const processSessionData = (sessions: sessionProps[]) => {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const allTime = new Date(0); // Represents the start of time
 
   // Calculate time metrics
   const timeMetrics = sessions.reduce(
@@ -77,5 +70,5 @@ export const processSessionData = (sessions: sessionProps[]) => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 30);
 
-  return [timeMetrics, sessions, groupedArray];
+  return [timeMetrics, groupedArray];
 };

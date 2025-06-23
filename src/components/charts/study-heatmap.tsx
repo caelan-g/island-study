@@ -1,10 +1,6 @@
 "use client";
 import { sessionProps } from "@/components/types/session";
-
-export interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
+import { GroupedSession } from "@/components/types/session";
 
 interface StudyHeatmapProps {
   groupedSessions: GroupedSession[];

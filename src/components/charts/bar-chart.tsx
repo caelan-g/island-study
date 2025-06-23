@@ -6,17 +6,11 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
-import { sessionProps } from "@/components/types/session";
+import { GroupedSession } from "@/components/types/session";
 
 export const description = "A bar chart";
-
-interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
 
 interface BarChartProps {
   chartData: GroupedSession[];

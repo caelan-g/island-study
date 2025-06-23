@@ -10,13 +10,13 @@ import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
 import { EditSessionCard } from "@/components/sessions/edit-session-card";
 import { SessionCardSkeleton } from "@/components/sessions/session-card-skeleton";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Sessions() {
   const { user: authUser, loading: authLoading } = useAuth();
   const [sessions, setSessions] = useState<sessionProps[]>([]);
   const [courses, setCourses] = useState<courseProps[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openSessionDialog, setOpenSessionDialog] = useState(false);
   const [selectedSession, setSelectedSession] = useState<sessionProps | null>(
     null
   );
@@ -63,6 +63,7 @@ export default function Sessions() {
 
   return (
     <>
+      <div className="text-2xl font-bold">Sessions</div>
       <div className="flex flex-row w-full gap-4 justify-between items-start">
         <div className="flex flex-col gap-4 w-full">
           {loading ? (
@@ -86,12 +87,18 @@ export default function Sessions() {
             </>
           )}
         </div>
-
-        <EditSessionCard
-          courses={courses}
-          sessionProps={selectedSession}
-          onSubmitSuccess={handleSessionSubmit}
-        />
+        <div className="flex flex-col gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Filters</CardTitle>
+            </CardHeader>
+          </Card>
+          <EditSessionCard
+            courses={courses}
+            sessionProps={selectedSession}
+            onSubmitSuccess={handleSessionSubmit}
+          />
+        </div>
       </div>
     </>
   );

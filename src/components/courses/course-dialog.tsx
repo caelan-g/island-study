@@ -104,6 +104,7 @@ export function CourseDialog({
 
     onOpenChange(false);
     if (onSubmitSuccess) {
+      toast.success("Successfully updated courses");
       onSubmitSuccess(); // Call the callback after successful submission
     }
   }

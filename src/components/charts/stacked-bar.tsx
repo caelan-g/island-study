@@ -10,11 +10,7 @@ import {
 } from "@/components/ui/chart";
 import { sessionProps } from "@/components/types/session";
 import { timeFilter } from "@/lib/filters/time-filter";
-
-interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
+import { GroupedSession } from "@/components/types/session";
 
 const chartConfig = {
   under: {

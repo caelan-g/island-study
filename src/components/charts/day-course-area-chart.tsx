@@ -5,21 +5,14 @@ import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
-import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
-
-interface GroupedSession {
-  date: string;
-  sessions: sessionProps[];
-}
+import { GroupedSession } from "@/components/types/session";
 
 interface DayCourseAreaChartProps {
   chartData: GroupedSession[];
   courses: courseProps[];
-  timeframe: "week" | "month" | "all";
 }
 
 const chartConfig = {
@@ -32,7 +25,6 @@ const chartConfig = {
 export function DayCourseAreaChart({
   chartData,
   courses,
-  timeframe,
 }: DayCourseAreaChartProps) {
   // Transform grouped sessions into chart data format with course-specific times
   const processedData = chartData.map((day) => {
