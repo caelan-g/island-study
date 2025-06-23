@@ -258,8 +258,8 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-row gap-4">
           <Card className="w-full">
-            <CardContent className="flex flex-col gap-4 mt-6">
-              <h2 className="text-xl font-bold">Recent Sessions</h2>
+            <CardContent className="flex flex-col mt-6">
+              <h2 className="text-xl font-bold mb-4">Recent Sessions</h2>
               {loading ? (
                 <Spinner className="mt-8" />
               ) : (

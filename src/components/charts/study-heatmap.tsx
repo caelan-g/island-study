@@ -135,7 +135,7 @@ export default function StudyHeatmap({
               return (
                 <div
                   key={date.toISOString()}
-                  className={`w-10 h-10 rounded-md flex flex-col items-center justify-center text-xs font-semibold transition-all hover:scale-105 cursor-pointer ${colorClass}`}
+                  className={`w-10 h-10 rounded-md flex flex-col items-center justify-center text-xs transition-all hover:scale-105 cursor-pointer ${colorClass}`}
                   title={`${date.toLocaleDateString()}: ${hours.toFixed(
                     1
                   )}h studied`}

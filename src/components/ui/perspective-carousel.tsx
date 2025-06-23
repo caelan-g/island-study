@@ -113,7 +113,7 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
     let scale = 1;
     let opacity = 1;
     let zIndex = 1;
-    const translateX = position * 600 + offset;
+    const translateX = position * 500 + offset;
 
     if (position === 0) {
       // Center image
@@ -146,7 +146,7 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
   };
 
   return (
-    <div className="w-full grow mx-auto">
+    <div className="w-full min-w-96 min-h-96 grow mx-auto">
       <div className="relative">
         {/* Carousel Container */}
         <div
@@ -177,35 +177,23 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
             </div>
           ))}
         </div>
-
-        {/* Navigation Buttons */}
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-[100]"
-          onClick={handlePrevious}
-          disabled={currentIndex === 0}
-        >
-          <ChevronLeft className="h-4 w-4 " />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-[100]"
-          onClick={handleNext}
-          disabled={currentIndex === images.length - 1}
-        >
-          <ChevronRight className="h-4 w-4 " />
-        </Button>
       </div>
 
       {/* Dot Indicators */}
+
       <div className="flex justify-center space-x-2">
+        <Button
+          size="icon"
+          className="z-[100] bg-background hover:bg-background my-auto hover:-translate-x-1 transition-all"
+          onClick={handlePrevious}
+          disabled={currentIndex === 0}
+        >
+          <ChevronLeft className="h-4 w-4" color={"var(--primary)"} />
+        </Button>
         {images.map((_, index) => (
           <button
             key={index}
-            className={`w-1 h-1 rounded-full transition-all duration-200 ${
+            className={`w-1 h-1 my-auto rounded-full transition-all duration-200 ${
               index === currentIndex
                 ? "bg-gray-800 scale-110"
                 : "bg-gray-300 hover:bg-gray-400"
@@ -214,6 +202,14 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
             aria-label={`Go to image ${index + 1}`}
           />
         ))}
+        <Button
+          size="icon"
+          className="z-[100] bg-background hover:bg-background hover:translate-x-1 transition-all"
+          onClick={handleNext}
+          disabled={currentIndex === images.length - 1}
+        >
+          <ChevronRight className="h-4 w-4" color={"var(--primary)"} />
+        </Button>
       </div>
 
       {/* Current Image Counter */}
