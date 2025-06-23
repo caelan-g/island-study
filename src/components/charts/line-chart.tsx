@@ -30,7 +30,7 @@ export function LineChart({ chartData }: LineChartProps) {
   // Transform grouped sessions into chart data format
   const processedData = chartData.map((day) => {
     // Parse the date string (assuming day/month/year format)
-    const [day_, month_, year_] = day.date.split("/");
+    const [month_, day_, year_] = day.date.split("/");
     const dateObj = new Date(`${month_}/${day_}/${year_}`);
 
     return {
@@ -47,7 +47,7 @@ export function LineChart({ chartData }: LineChartProps) {
   });
 
   return (
-    <ChartContainer config={chartConfig} className="max-h-48">
+    <ChartContainer config={chartConfig} className="max-h-48 w-full">
       <Chart
         accessibilityLayer
         data={processedData.reverse()}
@@ -56,7 +56,7 @@ export function LineChart({ chartData }: LineChartProps) {
           right: 12,
         }}
       >
-        <CartesianGrid vertical={false} />
+        <CartesianGrid horizontal={false} vertical={false} />
         <XAxis
           dataKey="date"
           tickLine={false}
@@ -76,10 +76,10 @@ export function LineChart({ chartData }: LineChartProps) {
             if (active && payload?.[0]) {
               return (
                 <div className="rounded-md bg-white/80 p-2 shadow-sm backdrop-blur-sm dark:bg-black/80">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground ">
                     {new Date(payload[0].payload.date).toLocaleDateString()}
                   </p>
-                  <p className="text-lg font-light">
+                  <p className="text-lg font-bold">
                     {timeFilter(Number(payload[0].value))}
                   </p>
                 </div>
@@ -90,15 +90,14 @@ export function LineChart({ chartData }: LineChartProps) {
         />
         <Line
           dataKey="studyTime"
-          type="natural"
+          type="monotone"
           stroke="var(--chart-green)"
           strokeWidth={2}
           dot={{
+            r: 0,
             fill: "var(--chart-green)",
-            r: 1,
-          }}
-          activeDot={{
-            r: 1,
+            stroke: "white",
+            strokeWidth: 2,
           }}
         />
       </Chart>

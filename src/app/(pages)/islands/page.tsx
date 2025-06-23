@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { islandProps } from "@/components/types/island";
 import { fetchIslands } from "@/lib/island/fetch-islands";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
 import PerspectiveCarousel from "@/components/ui/perspective-carousel";
 
@@ -28,7 +27,7 @@ export default function Islands() {
       {loading ? (
         <>
           <Card className="bg-muted animate-pulse">
-            <CardHeader></CardHeader>
+            <CardHeader>trading card maybe</CardHeader>
             <CardContent className="min-h-48"></CardContent>
           </Card>
         </>

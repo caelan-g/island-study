@@ -32,6 +32,10 @@ import { processSessionData } from "@/lib/metrics/process-session-data";
 import { SessionCountMetric } from "@/components/metrics/session-count-metric";
 import { CourseTopMetric } from "@/components/metrics/course-top-metric";
 import { Content } from "@radix-ui/react-navigation-menu";
+import { RadarChart } from "@/components/charts/radar-chart";
+import { LineChart } from "@/components/charts/line-chart";
+import { TotalCourseAreaChart } from "@/components/charts/total-course-area-chart";
+import StudyHeatmap from "@/components/charts/study-heatmap";
 
 interface GroupedSession {
   date: string;
@@ -240,7 +244,7 @@ export default function Dashboard() {
                     />
                   </div>
                   <div className="flex flex-row justify-between">
-                    <RadialChart
+                    {/*} <RadialChart
                       chartData={[
                         {
                           today: studyTime["today"],
@@ -248,22 +252,14 @@ export default function Dashboard() {
                           fill: "var(--chart-green)",
                         },
                       ]}
-                    />
+                    /> */}
+                    <LineChart chartData={groupedSessions} />
 
-                    <div className="flex flex-col gap-2 my-auto align-middle">
+                    <div className="absolute">
                       <TimeMetric
                         studyTime={studyTime["week"]}
                         goal={user?.goal ?? 0}
                         timeframe="week"
-                      />
-                      <SessionMetric
-                        studyTime={studyTime["week"]}
-                        timeframe="week"
-                        groupedSessions={groupedSessions}
-                      />
-                      <SessionCountMetric
-                        timeframe="week"
-                        groupedSessions={groupedSessions}
                       />
                     </div>
                   </div>
@@ -289,61 +285,77 @@ export default function Dashboard() {
           </Card>
         </div>
         <div className="flex flex-row gap-4">
-          <div className="flex flex-col gap-4">
-            <Card className="min-w-96">
-              <CardContent>
-                <div className="max-h-[21rem]">
-                  {loading ? (
-                    <SplineAreaChart />
-                  ) : (
-                    <SplineAreaChart data={chartCourses} />
-                  )}
-                </div>
-                <div className="flex flex-col gap-4">
-                  <CourseMetric
-                    studyTime={studyTime["week"]}
-                    timeframe="week"
-                    courses={courses}
-                  />
-                  <CourseTopMetric
-                    timeframe="week"
-                    courses={courses}
-                    groupedSessions={groupedSessions}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardContent className="flex flex-col gap-4 my-6">
+          <Card className="w-full">
+            <CardContent className="flex flex-col gap-4 mt-6">
               <h2 className="text-xl font-bold">Recent Sessions</h2>
+              {loading ? (
+                <Spinner className="mt-8" />
+              ) : (
+                <StudyHeatmap
+                  groupedSessions={groupedSessions}
+                  goal={user.goal}
+                />
+              )}
+            </CardContent>
+          </Card>
+          <Card className="min-w-96">
+            <CardContent className="mt-6">
               <div className="flex flex-col gap-2">
-                {recentSessions.map((session) => (
-                  <DashboardSessionCard
-                    key={session.id}
-                    session={session}
+                <CourseTopMetric
+                  timeframe="week"
+                  courses={courses}
+                  groupedSessions={groupedSessions}
+                />
+                <CourseMetric
+                  studyTime={studyTime["week"]}
+                  timeframe="week"
+                  courses={courses}
+                />
+              </div>
+              <div className="max-h-[21rem]">
+                {loading ? (
+                  <TotalCourseAreaChart
+                    chartData={groupedSessions.reverse()}
+                    timeframe={"week"}
                     courses={courses}
                   />
-                ))}
+                ) : (
+                  <TotalCourseAreaChart
+                    chartData={groupedSessions.reverse()}
+                    timeframe={"week"}
+                    courses={courses}
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="w-full">
+            <CardContent className="flex flex-col gap-4 mt-6">
+              <div className="flex flex-col gap-2">
+                <SessionMetric
+                  studyTime={studyTime["week"]}
+                  timeframe="week"
+                  groupedSessions={groupedSessions}
+                />
+                <SessionCountMetric
+                  timeframe="week"
+                  groupedSessions={groupedSessions}
+                />
+              </div>
+              <div className="">
+                {loading && !user ? (
+                  <Spinner className="mt-8" />
+                ) : (
+                  <RadarChart
+                    groupedSessions={groupedSessions}
+                    goal={user.goal}
+                  />
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
-        <Card className="w-full mb-auto">
-          <CardContent className="flex flex-col ">
-            <div className="grow min-w-96">
-              {loading ? (
-                <Spinner className="mt-8" />
-              ) : (
-                <StackedBarChart
-                  groupedSessions={groupedSessions}
-                  goal={user?.goal ?? 0}
-                />
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
