@@ -1,6 +1,3 @@
-import { timeFilter } from "@/lib/filters/time-filter";
-import { courseProps } from "@/components/types/course";
-
 export function IslandXPMetric({
   threshold,
   level,
@@ -10,7 +7,7 @@ export function IslandXPMetric({
   level: number;
   xp: number;
 }) {
-  const total = threshold * level + xp;
+  const total = threshold * (level - 1) + xp;
   const rounded = total > 999 ? (total / 1000).toFixed(1) + "k" : total;
   return (
     <div>

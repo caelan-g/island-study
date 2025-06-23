@@ -25,7 +25,7 @@ import { endSession } from "@/lib/sessions/end-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";

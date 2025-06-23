@@ -5,12 +5,10 @@ import {
   Radar,
   RadarChart as Chart,
 } from "recharts";
-import { sessionProps } from "@/components/types/session";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
 import { GroupedSession } from "@/components/types/session";

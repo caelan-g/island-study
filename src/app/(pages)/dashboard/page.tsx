@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
-import { fetchTotal } from "@/lib/user/fetch-total";
 import { fetchUser } from "@/lib/user/fetch-user";
 import { checkSession } from "@/lib/sessions/check-session";
 import { Spinner } from "@/components/ui/spinner";
@@ -67,20 +66,12 @@ export default function Dashboard() {
     Promise.all([
       fetchUser(authUser),
       checkSession(authUser),
-      fetchTotal(authUser),
       fetchCourses(authUser),
       fetchActiveIsland(authUser),
       fetchSessions(authUser),
     ])
       .then(
-        ([
-          userData,
-          activeSession,
-          totalData,
-          courseData,
-          islandData,
-          sessionData,
-        ]) => {
+        ([userData, activeSession, courseData, islandData, sessionData]) => {
           if (userData) setUser(userData);
           setActiveSession(activeSession ? true : false);
           if (sessionData) setRawSessionData(sessionData);

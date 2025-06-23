@@ -1,5 +1,4 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
-import { sessionProps } from "@/components/types/session";
 import { timeFilter } from "@/lib/filters/time-filter";
 
 export function TimeMetric({

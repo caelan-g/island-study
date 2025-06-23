@@ -29,7 +29,7 @@ export default function Islands() {
       {loading ? (
         <>
           <Card className="bg-muted animate-pulse">
-            <CardHeader>trading card maybe</CardHeader>
+            <CardHeader></CardHeader>
             <CardContent className="min-h-48"></CardContent>
           </Card>
         </>

@@ -6,9 +6,7 @@ import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
-import { sessionProps } from "@/components/types/session";
 import { timeFilter } from "@/lib/filters/time-filter";
 import { GroupedSession } from "@/components/types/session";
 
@@ -72,10 +70,16 @@ export function StackedBarChart({
           content={({ active, payload }) => {
             if (active && payload?.length) {
               return (
-                <ChartTooltipContent
-                  value={timeFilter(payload[0].value)}
-                  label={`Day ${payload[0].payload.date}`}
-                />
+                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                  <div className="grid grid-cols-2 gap-2">
+                    <span className="text-muted-foreground">
+                      Day {payload[0].payload.date}
+                    </span>
+                    <span className="font-medium">
+                      {timeFilter(Number(payload[0].value) || 0)}
+                    </span>
+                  </div>
+                </div>
               );
             }
             return null;

@@ -1,6 +1,3 @@
-import { timeFilter } from "@/lib/filters/time-filter";
-import { courseProps } from "@/components/types/course";
-
 export function IslandLevelMetric({ level }: { level: number }) {
   return (
     <div>

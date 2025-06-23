@@ -20,7 +20,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -87,8 +86,8 @@ export function CourseCard({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "{course.name}" and cannot be undone.
-              All associated sessions will be deleted as well.
+              This will permanently delete &quot;{course.name}&quot; and cannot
+              be undone. All associated sessions will be deleted as well.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -55,7 +55,7 @@ export default function CoursesStep({ form }: StepProps) {
       ) : (
         <div className="grid gap-4">
           {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <CourseCard key={course.id} course={course} user={authUser} />
           ))}
         </div>
       )}

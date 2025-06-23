@@ -15,6 +15,8 @@ interface DayCourseAreaChartProps {
   courses: courseProps[];
 }
 
+// Add interface for tooltip payload
+
 const chartConfig = {
   studyTime: {
     label: "Study Time",
@@ -31,7 +33,7 @@ export function DayCourseAreaChart({
     const dateObj = new Date(day.date);
 
     // Create an object with base date
-    const dayData: { [key: string]: any } = {
+    const dayData: { [key: string]: string | number } = {
       date: dateObj.toLocaleDateString("en-US"),
     };
 
@@ -78,7 +80,7 @@ export function DayCourseAreaChart({
               return (
                 <div className="rounded-lg border bg-background p-2 shadow-sm">
                   <div className="grid gap-2">
-                    {payload.map((entry: any, index: number) => (
+                    {payload.map((entry, index) => (
                       <div
                         key={`item-${index}`}
                         className="flex items-center gap-2"
@@ -94,7 +96,7 @@ export function DayCourseAreaChart({
                         <span className="font-medium">
                           {courses.find((c) => c.id === entry.dataKey)?.name}:
                         </span>
-                        <span>{timeFilter(entry.value)}</span>
+                        <span>{timeFilter(Number(entry.value || 0))}</span>
                       </div>
                     ))}
                   </div>

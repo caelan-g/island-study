@@ -1,11 +1,15 @@
 "use client";
+
 import { sessionProps } from "@/components/types/session";
 import { GroupedSession } from "@/components/types/session";
 
 interface StudyHeatmapProps {
   groupedSessions: GroupedSession[];
-  goal: number; // Optional goal for study hours
+  goal: number;
 }
+
+// Add type for week array
+type WeekData = (Date | null)[];
 
 export default function StudyHeatmap({
   groupedSessions,
@@ -73,8 +77,8 @@ export default function StudyHeatmap({
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   // Group days by week for proper grid layout
-  const weekGroups = [];
-  let currentWeek = [];
+  const weekGroups: WeekData[] = [];
+  let currentWeek: WeekData = [];
 
   last30Days.forEach((date, index) => {
     const dayOfWeek = (date.getDay() + 6) % 7; // Convert Sunday=0 to Monday=0
@@ -103,7 +107,7 @@ export default function StudyHeatmap({
   return (
     <>
       {/* Day headers */}
-      <div className="grid grid-cols-7 ">
+      <div className="grid grid-cols-7">
         {dayNames.map((day) => (
           <div
             key={day}
@@ -136,9 +140,7 @@ export default function StudyHeatmap({
                 <div
                   key={date.toISOString()}
                   className={`w-10 h-10 rounded-md flex flex-col items-center justify-center text-xs transition-all hover:scale-105 cursor-pointer ${colorClass}`}
-                  title={`${date.toLocaleDateString()}: ${hours.toFixed(
-                    1
-                  )}h studied`}
+                  title={`${date.toLocaleDateString()}: ${hours.toFixed(1)}h studied`}
                 >
                   <div className="text-xs">{dayNumber}</div>
                   <div className="text-sm font-bold">
