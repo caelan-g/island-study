@@ -33,19 +33,27 @@ export const SessionCard = ({
 
   return (
     <Card
-      className={`w-full hover:bg-muted/70 transition-all cursor-pointer ${
+      className={`w-full  transition-all ${
         isSelected ? "outline-2 outline-[var(--chart-green)]" : ""
+      } ${
+        session.end_time ? "cursor-pointer hover:bg-muted/70" : "cursor-default"
       }`}
-      onClick={() => onClick?.(session)} // Add onClick handler
+      onClick={session.end_time ? () => onClick?.(session) : undefined}
     >
       <CardHeader>
         <CardTitle className="flex flex-row justify-between">
           <div className="truncate">{course?.name || "Unknown Course"}</div>
           <div>
-            {timeFilter(
-              (new Date(session.end_time).getTime() -
-                new Date(session.start_time).getTime()) /
-                1000
+            {session.end_time ? (
+              timeFilter(
+                (new Date(session.end_time).getTime() -
+                  new Date(session.start_time).getTime()) /
+                  1000
+              )
+            ) : (
+              <p className="text-sm rounded-md bg-emerald-100 flex px-2 py-1 ml-2">
+                Active
+              </p>
             )}
           </div>
         </CardTitle>
@@ -60,15 +68,17 @@ export const SessionCard = ({
         {session.end_time ? (
           <>
             <div className="truncate">
-              {session.description || "No description available"}
-              <p className="text-sm text-gray-500">
+              {session.description}
+              <p className="text-sm text-muted-foreground">
                 {new Date(session.start_time).toLocaleTimeString()} -{" "}
                 {new Date(session.end_time).toLocaleTimeString()}
               </p>
             </div>
           </>
         ) : (
-          <div>Started {new Date(session.start_time).toLocaleTimeString()}</div>
+          <div className="text-muted-foreground text-sm">
+            Started {new Date(session.start_time).toLocaleTimeString()}
+          </div>
         )}
       </CardContent>
     </Card>

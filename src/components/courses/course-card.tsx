@@ -92,10 +92,10 @@ export function CourseCard({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
-              className="bg-destructive text-primary-foreground hover:bg-destructive/90"
+              className="w-full bg-destructive text-primary-foreground hover:bg-destructive/90"
             >
               Delete
             </AlertDialogAction>

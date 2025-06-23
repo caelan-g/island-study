@@ -281,10 +281,12 @@ export function SessionDialog({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="secondary">Cancel</Button>
+                <Button variant="secondary" className="w-full">
+                  Cancel
+                </Button>
               </DialogClose>
 
-              <Button type="submit">
+              <Button type="submit" className="w-full">
                 {sessionProps ? "Update" : "Create"}
               </Button>
             </DialogFooter>

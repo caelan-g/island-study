@@ -192,7 +192,14 @@ export function CourseDialog({
 
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="submit">Create</Button>
+                  <Button variant="secondary" className="w-full">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button type="submit" className="w-full">
+                    Create
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </form>

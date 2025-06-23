@@ -146,7 +146,7 @@ export function EditSessionCard({
   };
 
   return (
-    <Card className="w-full max-w-lg mb-auto align-top">
+    <Card className="w-lg mb-auto align-top">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

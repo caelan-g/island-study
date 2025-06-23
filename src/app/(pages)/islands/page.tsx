@@ -38,9 +38,13 @@ export default function Islands() {
             {islands.map((island) => (
               <div className="flex flex-row" key={island.id}>
                 <div className="relative w-full">
-                  <PerspectiveCarousel
-                    urls={[...island.previous_urls, island.current_url]}
-                  />
+                  {island.previous_urls && island.previous_urls.length > 0 ? (
+                    <PerspectiveCarousel
+                      urls={[...island.previous_urls, island.current_url]}
+                    />
+                  ) : (
+                    <PerspectiveCarousel urls={[island.current_url]} />
+                  )}
                 </div>
                 <Card>
                   <CardHeader>

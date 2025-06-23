@@ -10,7 +10,30 @@ import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
 import { EditSessionCard } from "@/components/sessions/edit-session-card";
 import { SessionCardSkeleton } from "@/components/sessions/session-card-skeleton";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown, ArrowUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Sessions() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -20,8 +43,11 @@ export default function Sessions() {
   const [selectedSession, setSelectedSession] = useState<sessionProps | null>(
     null
   );
-  //need function that updates island table goal when or if user goal changes
-  //need to research whether to do this all serverside or fetching goal from supabase and api new island/updating?
+  const [periodFilter, setPeriodFilter] = useState<"all" | "week" | "month">(
+    "all"
+  );
+  const [selectedCourses, setSelectedCourses] = useState<string[]>(["all"]);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const initializeData = useCallback(async () => {
     try {
@@ -61,6 +87,106 @@ export default function Sessions() {
     }
   }, [authLoading, authUser]);
 
+  // Update filter logic
+  const filteredSessions = sessions
+    .filter((session) => {
+      const matchesCourse =
+        selectedCourses.includes("all") ||
+        selectedCourses.includes(session.course_id);
+
+      if (!matchesCourse) return false;
+
+      if (periodFilter !== "all") {
+        const date = new Date(session.start_time);
+        const now = new Date();
+        const daysDiff = Math.floor(
+          (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (periodFilter === "week" && daysDiff > 7) return false;
+        if (periodFilter === "month" && daysDiff > 30) return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.start_time).getTime();
+      const dateB = new Date(b.start_time).getTime();
+      return sortDirection === "desc" ? dateB - dateA : dateA - dateB;
+    });
+
+  // Replace the course filter with multi-select
+  const CourseFilter = () => (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="w-full justify-between">
+          {selectedCourses.length > 0
+            ? selectedCourses.includes("all")
+              ? "All Courses"
+              : `${selectedCourses.length} selected`
+            : "Select courses"}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0">
+        <Command>
+          <CommandInput placeholder="Search courses..." />
+          <CommandEmpty>No course found.</CommandEmpty>
+          <CommandGroup>
+            <CommandItem
+              onSelect={() => {
+                setSelectedCourses(["all"]);
+              }}
+            >
+              <Check
+                className={cn(
+                  "mr-2 h-4 w-4",
+                  selectedCourses.includes("all") ? "opacity-100" : "opacity-0"
+                )}
+              />
+              All Courses
+            </CommandItem>
+            {courses.map((course) => (
+              <CommandItem
+                key={course.id}
+                onSelect={() => {
+                  setSelectedCourses((current) => {
+                    if (current.includes("all")) {
+                      return [course.id];
+                    }
+
+                    const updated = current.includes(course.id)
+                      ? current.filter((id) => id !== course.id)
+                      : [...current, course.id];
+
+                    return updated.length === 0 ? ["all"] : updated;
+                  });
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 h-4 w-4",
+                    selectedCourses.includes(course.id)
+                      ? "opacity-100"
+                      : "opacity-0"
+                  )}
+                />
+                <div className="flex items-center gap-2">
+                  <div
+                    className="size-3 rounded-sm"
+                    style={{ backgroundColor: course.colour }}
+                  />
+                  {course.name}
+                </div>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+
+  // Update the filters card content
   return (
     <>
       <div className="text-2xl font-bold">Sessions</div>
@@ -74,7 +200,7 @@ export default function Sessions() {
             </>
           ) : (
             <>
-              {sessions.map((session) => (
+              {filteredSessions.map((session) => (
                 <SessionCard
                   key={session.id}
                   session={session}
@@ -92,6 +218,47 @@ export default function Sessions() {
             <CardHeader>
               <CardTitle>Filters</CardTitle>
             </CardHeader>
+            <CardContent className="flex flex-row gap-2">
+              <div className="grid w-full items-center">
+                <Label className="text-xs font-bold">Courses</Label>
+                <CourseFilter />
+              </div>
+
+              <div className="grid w-full items-center">
+                <Label className="text-xs font-bold">Sort Direction</Label>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() =>
+                    setSortDirection((d) => (d === "asc" ? "desc" : "asc"))
+                  }
+                >
+                  {sortDirection === "desc" ? "Newest First" : "Oldest First"}
+                  <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="grid w-full items-center">
+                <Label className="text-xs font-bold" htmlFor="period">
+                  Time Period
+                </Label>
+                <Select
+                  value={periodFilter}
+                  onValueChange={(value: "all" | "week" | "month") =>
+                    setPeriodFilter(value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select time period" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Time</SelectItem>
+                    <SelectItem value="week">Last Week</SelectItem>
+                    <SelectItem value="month">Last Month</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
           </Card>
           <EditSessionCard
             courses={courses}

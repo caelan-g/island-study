@@ -7,17 +7,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { courseProps } from "@/components/types/course";
 import { sessionProps } from "@/components/types/session";
 import Stopwatch from "@/components/ui/stopwatch";
-import { Square } from "lucide-react";
+import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { PlayIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogClose,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
@@ -116,7 +113,7 @@ export function SessionButton({ isActive }: SessionButtonProps) {
         className="w-full"
       >
         <span>
-          <Square strokeWidth={0} fill="rgb(255, 50, 50)" />
+          <Check strokeWidth={3} color="var(--chart-green)" />
         </span>
         <Stopwatch startTime={new Date(activeSession.start_time)} />
       </Button>
