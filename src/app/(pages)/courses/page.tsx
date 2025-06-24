@@ -7,7 +7,6 @@ import { courseProps } from "@/components/types/course";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
-import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";

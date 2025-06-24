@@ -1,5 +1,4 @@
 import { courseProps } from "@/components/types/course";
-import { Card, CardHeader } from "@/components/ui/card";
 import { User } from "@supabase/supabase-js";
 
 interface CoursePreviewProps {

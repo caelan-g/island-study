@@ -34,7 +34,7 @@ export async function addXP(
         //assume user only reaches one level at a time
         console.log(island);
         if (island.next_url) {
-          toast.success("next url found");
+          //toast.success("next url found");
           const { error } = await supabase
             .from("islands")
             .update({

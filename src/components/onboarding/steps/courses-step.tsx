@@ -38,9 +38,7 @@ export default function CoursesStep({ form }: StepProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold tracking-tight">
-        Add your courses.
-      </h2>
+      <h2 className="text-xl font-semibold tracking-tight">Add your courses</h2>
 
       <div className="space-y-2">
         <CourseForm onSuccess={handleCourseCreated} parentForm={true} />

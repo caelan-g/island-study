@@ -46,28 +46,28 @@ export function TotalCourseAreaChart({
     })
     .flatMap((day) => day.sessions);
 
-  // Calculate total study time per course
-  const processedData = courses.map((course) => {
-    const courseTotal = filteredSessions
-      .filter((session) => session.course_id === course.id)
-      .reduce((total, session) => {
-        return (
-          total +
-          (new Date(session.end_time).getTime() -
-            new Date(session.start_time).getTime()) /
-            1000
-        );
-      }, 0);
+  // Calculate total study time per course and sort alphabetically
+  const processedData = courses
+    .map((course) => {
+      const courseTotal = filteredSessions
+        .filter((session) => session.course_id === course.id)
+        .reduce((total, session) => {
+          return (
+            total +
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+              1000
+          );
+        }, 0);
 
-    return {
-      name: course.name,
-      total: courseTotal,
-      color: course.colour,
-    };
-  });
-
-  // Sort by total time descending
-  processedData.sort((a, b) => b.total - a.total);
+      return {
+        name: course.name,
+        total: courseTotal,
+        color: course.colour,
+      };
+    })
+    // Sort alphabetically by course name
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <ChartContainer config={chartConfig} className="w-full min-h-80">

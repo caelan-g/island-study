@@ -13,8 +13,9 @@ import { StepProps } from "@/components/types/onboarding";
 export default function NameStep({ form }: StepProps) {
   return (
     <>
+      <h2 className="text-md tracking-tight">Welcome to Islands</h2>
       <h2 className="text-xl font-semibold tracking-tight">
-        What's your name?
+        What&apos;s your name?
       </h2>
       <div className="grid gap-4 py-4">
         <FormField

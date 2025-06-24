@@ -28,7 +28,7 @@ export default function GoalStep({ form }: StepProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold tracking-tight">
-        What's your study goal?
+        What&apos;s your study goal?
       </h2>
 
       <div className="py-4">

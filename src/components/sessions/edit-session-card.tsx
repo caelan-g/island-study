@@ -123,8 +123,6 @@ export function EditSessionCard({
       // Only call onSubmitSuccess if the endSession was successful
       if (onSubmitSuccess) {
         onSubmitSuccess();
-        console.log("Session ended successfully");
-        toast.success("Session ended successfully");
       }
     } catch (error) {
       console.error("Error ending session:", error);
@@ -250,10 +248,6 @@ export function EditSessionCard({
           <CardFooter className="flex justify-between gap-2 w-full">
             {sessionProps ? (
               <>
-                <Button type="submit" className="w-full">
-                  <Check />
-                  Save
-                </Button>
                 <Button
                   variant="destructive"
                   className="w-full"
@@ -261,6 +255,10 @@ export function EditSessionCard({
                 >
                   <Trash />
                   Delete
+                </Button>
+                <Button type="submit" className="w-full">
+                  <Check />
+                  Save
                 </Button>
               </>
             ) : null}
