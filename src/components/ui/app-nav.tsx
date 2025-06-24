@@ -55,13 +55,13 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="floating" className="text-foreground">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="flex justify-between">
-              Study App
-              <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
-                BETA
-              </span>
+          <SidebarMenuItem className="flex flex-row">
+            <SidebarMenuButton className="justify-between hover:bg-background w-full">
+              <a href="/dashboard">Study App</a>
             </SidebarMenuButton>
+            <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
+              BETA
+            </span>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
