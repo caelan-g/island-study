@@ -21,30 +21,34 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function LineChart({ chartData }: LineChartProps) {
-  // Transform grouped sessions into chart data format
-  const processedData = chartData.map((day) => {
-    // Parse the date string (assuming day/month/year format)
-    const [month_, day_, year_] = day.date.split("/");
-    const dateObj = new Date(`${month_}/${day_}/${year_}`);
+  // Transform grouped sessions into chart data format and sort by date
+  const processedData = chartData
+    .map((day) => {
+      // Parse the date string (assuming day/month/year format)
+      const [month_, day_, year_] = day.date.split("/");
+      const dateObj = new Date(`${month_}/${day_}/${year_}`);
 
-    return {
-      date: dateObj.toLocaleDateString("en-US"), // This will format as month/day/year
-      studyTime: day.sessions.reduce((total, session) => {
-        return (
-          total +
-          (new Date(session.end_time).getTime() -
-            new Date(session.start_time).getTime()) /
-            1000
-        );
-      }, 0),
-    };
-  });
+      return {
+        date: dateObj.toLocaleDateString("en-US"),
+        dateTimestamp: dateObj.getTime(), // Add timestamp for sorting
+        studyTime: day.sessions.reduce((total, session) => {
+          return (
+            total +
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+              1000
+          );
+        }, 0),
+      };
+    })
+    .sort((a, b) => a.dateTimestamp - b.dateTimestamp); // Sort by timestamp
 
   return (
     <ChartContainer config={chartConfig} className="max-h-48 w-full">
       <Chart
         accessibilityLayer
-        data={processedData.reverse()}
+        // Remove the reverse() since we're already sorting
+        data={processedData}
         margin={{
           left: 12,
           right: 12,
