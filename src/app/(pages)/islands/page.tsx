@@ -35,7 +35,9 @@ export default function Islands() {
         </>
       ) : (
         <div className="">
-          <div className="text-2xl font-bold">My Islands</div>
+          <div className="font-semibold tracking-tight text-2xl">
+            My Islands
+          </div>
           <div className="space-y-4">
             {islands.map((island) => (
               <Card key={island.id}>

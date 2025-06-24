@@ -1,5 +1,5 @@
 import { courseProps } from "@/components/types/course";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Ellipsis } from "lucide-react";
 import { deleteCourse } from "@/lib/courses/delete-course";
 import {
@@ -51,10 +51,10 @@ export function CourseCard({
 
   return (
     <Card key={course.name}>
-      <CardHeader className="flex flex-row text-xl font-bold gap-2 justify-between">
+      <CardContent className="flex flex-row text-lg font-semibold tracking-tight gap-2 justify-between px-6 py-4">
         <div className="flex gap-2">
           <div
-            className="size-8 rounded-sm"
+            className="size-4 rounded-sm my-auto "
             style={{ backgroundColor: course.colour }}
           />
           <span>{course.name}</span>
@@ -79,28 +79,28 @@ export function CourseCard({
             </DropdownMenuContent>
           </DropdownMenu>
         ) : null}
-      </CardHeader>
-
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete &quot;{course.name}&quot; and cannot
-              be undone. All associated sessions will be deleted as well.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="w-full bg-destructive text-primary-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete &quot;{course.name}&quot; and
+                cannot be undone. All associated sessions will be deleted as
+                well.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="w-full">Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="w-full bg-destructive text-primary-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </CardContent>
     </Card>
   );
 }

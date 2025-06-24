@@ -18,6 +18,7 @@ import { TimeMetrics } from "@/components/types/session";
 import { DayCourseAreaChart } from "@/components/charts/day-course-area-chart";
 import { CourseMetric } from "@/components/metrics/course-metric";
 import { CourseTopMetric } from "@/components/metrics/course-top-metric";
+import { CourseCardSkeleton } from "@/components/courses/course-card-skeleton";
 
 export default function Courses() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -97,7 +98,7 @@ export default function Courses() {
   return (
     <>
       <div className="flex flex-row justify-between">
-        <div className="font-bold text-2xl">My Courses</div>
+        <h2 className="font-semibold tracking-tight text-2xl">My Courses</h2>
         <Button
           onClick={() => {
             setOpenCourseDialog(true);
@@ -120,9 +121,13 @@ export default function Courses() {
       <div className="flex flex-row gap-4 ">
         <div className="flex flex-col w-1/2 gap-4">
           {loading ? (
-            <div className="w-full mx-auto text-center">
-              <Spinner />
-            </div>
+            <>
+              <CourseCardSkeleton />
+              <CourseCardSkeleton />
+              <CourseCardSkeleton />
+              <CourseCardSkeleton />
+              <CourseCardSkeleton />
+            </>
           ) : (
             courses.map((course) => (
               <CourseCard

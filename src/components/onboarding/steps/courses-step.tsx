@@ -1,7 +1,7 @@
 "use client";
 import { CourseForm } from "@/components/courses/course-form";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
-import { CourseCard } from "@/components/courses/course-card";
+import { CoursePreview } from "@/components/courses/course-preview";
 import { useEffect, useState } from "react";
 import { courseProps } from "@/components/types/course";
 import { FormMessage } from "@/components/ui/form";
@@ -38,10 +38,9 @@ export default function CoursesStep({ form }: StepProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Course Setup</h2>
-      <p className="text-sm text-muted-foreground">
-        Create some courses to study for.
-      </p>
+      <h2 className="text-xl font-semibold tracking-tight">
+        Add your courses.
+      </h2>
 
       <div className="space-y-2">
         <CourseForm onSuccess={handleCourseCreated} parentForm={true} />
@@ -53,9 +52,9 @@ export default function CoursesStep({ form }: StepProps) {
       {loading ? (
         <Spinner />
       ) : (
-        <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-2">
           {courses.map((course) => (
-            <CourseCard key={course.id} course={course} user={authUser} />
+            <CoursePreview key={course.id} course={course} user={authUser} />
           ))}
         </div>
       )}

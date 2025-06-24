@@ -187,7 +187,7 @@ export default function Sessions() {
   // Update the filters card content
   return (
     <>
-      <div className="text-2xl font-bold">Sessions</div>
+      <div className="text-2xl tracking-tight font-semibold">Sessions</div>
       <div className="flex flex-row w-full gap-4 justify-between items-start">
         <div className="flex flex-col gap-4 w-full">
           {loading ? (
@@ -257,11 +257,15 @@ export default function Sessions() {
               </div>
             </CardContent>
           </Card>
-          <EditSessionCard
-            courses={courses}
-            sessionProps={selectedSession}
-            onSubmitSuccess={handleSessionSubmit}
-          />
+          <div className="relative">
+            <div className="sticky top-0 z-10">
+              <EditSessionCard
+                courses={courses}
+                sessionProps={selectedSession}
+                onSubmitSuccess={handleSessionSubmit}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>

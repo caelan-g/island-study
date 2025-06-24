@@ -108,7 +108,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col lg:flex-row gap-4">
           <Card className="w-[600px]">
@@ -148,7 +148,7 @@ export default function Dashboard() {
                     island?.level === 7 ? "hidden" : ""
                   }`}
                 >
-                  {island ? `${island.xp} / ${island.threshold} XP` : null}
+                  {island ? `${island.xp} / ${island.threshold} XP` : `0 XP`}
                 </p>
                 {island?.level == 7 ? (
                   <p className="font-bold mx-auto">MAX</p>
@@ -250,7 +250,9 @@ export default function Dashboard() {
         <div className="flex flex-row gap-4">
           <Card className="w-full">
             <CardContent className="flex flex-col mt-6">
-              <h2 className="text-xl font-bold mb-4">Recent Sessions</h2>
+              <h2 className="text-xl font-semibold tracking-tight mb-4">
+                Last 30 Days
+              </h2>
               {loading ? (
                 <Spinner className="mt-8" />
               ) : (
@@ -295,7 +297,9 @@ export default function Dashboard() {
 
           <Card className="w-full">
             <CardContent className="flex flex-col gap-4 mt-6">
-              <h2 className="text-xl font-bold">Average Study By Day</h2>
+              <h2 className="text-xl font-semibold tracking-tight">
+                Average Study By Day
+              </h2>
               <div className="">
                 {loading && !user ? (
                   <Spinner className="mt-8" />

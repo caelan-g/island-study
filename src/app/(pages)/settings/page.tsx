@@ -462,7 +462,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <h1 className="font-semibold tracking-tight text-2xl">Settings</h1>
       <div className="flex-1 p-2">
         <div className="mx-auto max-w-2xl space-y-2">
           <Card className="space-x-2 flex mx-auto text-center border p-2 rounded-lg relative">

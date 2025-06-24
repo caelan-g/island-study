@@ -127,7 +127,7 @@ export default function Welcome() {
   return (
     <div className="h-screen flex items-center ">
       <Card className="w-lg h-auto mx-auto my-auto ">
-        <CardHeader>
+        <CardHeader className="overflow-x-hidden overflow-y-hidden">
           <StepIndicator
             steps={steps.map((step) => step.title)}
             currentStep={currentStep}
@@ -136,7 +136,7 @@ export default function Welcome() {
         </CardHeader>
         <Form {...form}>
           <form
-            className="mt-8 space-y-6 h-full flex flex-col justify-between"
+            className="mt-2 space-y-6 h-full flex flex-col justify-between"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -149,7 +149,7 @@ export default function Welcome() {
             <CardFooter className="flex justify-between gap-2">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 className="w-full"
                 onClick={goToPreviousStep}
                 disabled={currentStep === 0}

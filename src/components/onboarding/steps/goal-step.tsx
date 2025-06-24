@@ -27,8 +27,8 @@ const timeStringToSeconds = (timeString: string): number => {
 export default function GoalStep({ form }: StepProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">
-        How much do you aim to study each day?
+      <h2 className="text-xl font-semibold tracking-tight">
+        What's your study goal?
       </h2>
 
       <div className="py-4">

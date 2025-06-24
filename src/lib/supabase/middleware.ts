@@ -41,6 +41,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Add condition to allow welcome page access for non-onboarded users
+  /* ADD THIS BACK
   if (request.nextUrl.pathname.startsWith("/welcome")) {
     if (!user) {
       // If no user on welcome page, redirect to login
@@ -48,14 +49,14 @@ export async function updateSession(request: NextRequest) {
     }
     // Allow access to welcome page if user exists (onboarded or not)
     return NextResponse.next({ request });
-  }
+  }*/
 
   // Handle non-authenticated routes
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    request.nextUrl.pathname !== "/"
+    request.nextUrl.pathname !== "/" &&
+    !request.nextUrl.pathname.startsWith("/")
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";

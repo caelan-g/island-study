@@ -39,7 +39,13 @@ export const SessionCard = ({
     >
       <CardHeader>
         <CardTitle className="flex flex-row justify-between">
-          <div className="truncate">{course?.name || "Unknown Course"}</div>
+          <div className="truncate leading-tight flex flex-row">
+            <span
+              className="w-4 h-4 rounded-sm my-auto mr-2"
+              style={{ backgroundColor: course?.colour || "#gray" }}
+            />
+            {course?.name || "Unknown Course"}
+          </div>
           <div>
             {session.end_time ? (
               timeFilter(
