@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SessionButtonProps {
   isActive?: (clicked: boolean) => void;
@@ -66,6 +67,21 @@ export function SessionButton({ isActive }: SessionButtonProps) {
     );
   }
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { y: 5, opacity: 0 },
+    show: { y: 0, opacity: 1 },
+  };
+
   return !activeSession ? (
     <div className="flex flex-col gap-2 grow">
       <div>
@@ -76,29 +92,43 @@ export function SessionButton({ isActive }: SessionButtonProps) {
               Start
             </Button>
           </DialogTrigger>
-          <DialogContent className="">
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Start a Session</DialogTitle>
             </DialogHeader>
-            <div className="p-2 transition-all flex flex-col gap-2">
-              {courses.map((course) => (
-                <div
-                  key={course.id}
-                  className="text-xs text-white font-bold p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis cursor-pointer"
-                  style={{
-                    backgroundColor: course.colour,
-                    //color: `color-mix(in srgb, ${course.colour} 15%, white)`,
-                  }}
-                  onClick={async () => {
-                    await startSession(course.id, authUser);
-                    await initializeActive();
-                    isActive?.(true);
-                  }}
-                >
-                  {course.name}
-                </div>
-              ))}
-            </div>
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="p-2 transition-all flex flex-col gap-2"
+            >
+              <AnimatePresence>
+                {courses.map((course) => (
+                  <motion.div
+                    key={course.id}
+                    variants={item}
+                    className="flex flex-row items-center gap-2 transition-all cursor-pointer"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span
+                      className="h-4 w-4 rounded-sm"
+                      style={{ backgroundColor: course.colour }}
+                    />
+                    <div
+                      className="font-semibold text-xl p-2 rounded-md whitespace-nowrap overflow-x-hidden text-ellipsis cursor-pointer"
+                      onClick={async () => {
+                        await startSession(course.id, authUser);
+                        await initializeActive();
+                        isActive?.(true);
+                      }}
+                    >
+                      {course.name}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           </DialogContent>
         </Dialog>
       </div>

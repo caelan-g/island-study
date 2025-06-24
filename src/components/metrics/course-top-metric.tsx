@@ -52,7 +52,7 @@ export function CourseTopMetric({
   );
 
   return (
-    <div>
+    <div className="w-full">
       <p className="text-xs text-muted-foreground">
         Top Studied Course ({timeframe})
       </p>
@@ -62,7 +62,7 @@ export function CourseTopMetric({
             className="size-4 rounded-sm"
             style={{ backgroundColor: topCourse?.course.colour }}
           />
-          <p className="text-xl font-bold">
+          <p className="text-xl font-bold truncate">
             {topCourse ? topCourse.course.name : "No data"}
           </p>
         </div>

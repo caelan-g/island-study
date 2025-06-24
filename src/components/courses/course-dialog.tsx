@@ -23,13 +23,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { createCourse } from "@/lib/courses/create-course";
 import { useAuth } from "@/contexts/auth-context";
 import { courseProps } from "@/components/types/course";
 import { useEffect } from "react";
 import { updateCourse } from "@/lib/courses/update-course";
 import { toast } from "sonner";
+import { z } from "zod";
+import { courseSchema, colours } from "@/components/types/course";
 
 export function CourseDialog({
   open,
@@ -43,32 +44,6 @@ export function CourseDialog({
   course: courseProps | null;
 }) {
   const { user: authUser } = useAuth();
-  const colours = [
-    { name: "Blue", colour: "#AEC6CF" },
-    { name: "Green", colour: "#B2F2BB" },
-    { name: "Yellow", colour: "#FFFACD" },
-    { name: "Pink", colour: "#FFB6C1" },
-    { name: "Purple", colour: "#D7BDE2" },
-    { name: "Orange", colour: "#FFDAB9" },
-    { name: "Mint", colour: "#AAF0D1" },
-    { name: "Lavender", colour: "#E6E6FA" },
-    { name: "Coral", colour: "#F7CAC9" },
-    { name: "Teal", colour: "#B2DFDB" },
-  ];
-
-  const colourHexValues = colours.map((c) => c.colour);
-
-  const courseSchema = z.object({
-    name: z
-      .string()
-      .min(3, {
-        message: "Username must be at least 2 characters.",
-      })
-      .max(50),
-    colour: z.string().refine((val) => colourHexValues.includes(val), {
-      message: "Please select a valid colour",
-    }),
-  });
 
   const form = useForm<z.infer<typeof courseSchema>>({
     resolver: zodResolver(courseSchema),
@@ -196,11 +171,10 @@ export function CourseDialog({
                     Cancel
                   </Button>
                 </DialogClose>
-                <DialogClose asChild>
-                  <Button type="submit" className="w-full">
-                    Create
-                  </Button>
-                </DialogClose>
+
+                <Button type="submit" className="w-full">
+                  Create
+                </Button>
               </DialogFooter>
             </form>
           </Form>
