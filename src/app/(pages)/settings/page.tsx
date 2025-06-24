@@ -30,6 +30,7 @@ import {
 import { User, Palette, Shield, Lock, Trash2 } from "lucide-react";
 import { updateUser } from "@/lib/user/update-user";
 import { createClient } from "@/lib/supabase/client";
+import TimePicker from "@/components/ui/time-picker";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
@@ -118,29 +119,20 @@ export default function SettingsPage() {
     },
   });
 
-  /*
+  // Helper function to convert seconds to HH:mm format
+  const secondsToTimeString = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
-  const appearanceForm = useForm<z.infer<typeof appearanceSchema>>({
-    resolver: zodResolver(appearanceSchema),
-    defaultValues: {
-      theme: "system",
-      language: "en",
-      compactMode: false,
-    },
-  });
-
-  
-
-  const privacyForm = useForm<z.infer<typeof privacySchema>>({
-    resolver: zodResolver(privacySchema),
-    defaultValues: {
-      profileVisibility: true,
-      analytics: true,
-      thirdPartyCookies: false,
-      dataRetention: "1year",
-    },
-  });
-  */
+  // Helper function to convert HH:mm format to seconds
+  const timeStringToSeconds = (timeString: string): number => {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    return hours * 3600 + minutes * 60;
+  };
 
   useEffect(() => {
     if (user) {
@@ -221,11 +213,21 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="goal">Daily Goal (seconds lol)</Label>
-                  <Input
-                    {...profileForm.register("goal", { valueAsNumber: true })}
-                    type="number"
-                  />
+                  <Label htmlFor="goal">Daily Goal</Label>
+                  {user?.goal ? (
+                    <div className="flex flex-row mx-12">
+                      <TimePicker
+                        mode="duration"
+                        value={secondsToTimeString(user.goal)}
+                        onChange={(value) => {
+                          profileForm.setValue(
+                            "goal",
+                            timeStringToSeconds(value)
+                          );
+                        }}
+                      />
+                    </div>
+                  ) : null}
                   {profileForm.formState.errors.goal && (
                     <p className="text-sm text-destructive">
                       {profileForm.formState.errors.goal.message}

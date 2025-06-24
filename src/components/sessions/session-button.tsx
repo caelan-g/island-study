@@ -94,7 +94,9 @@ export function SessionButton({ isActive }: SessionButtonProps) {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Start a Session</DialogTitle>
+              <DialogTitle className="font-semibold tracking-tight">
+                Start a session
+              </DialogTitle>
             </DialogHeader>
             <motion.div
               variants={container}
