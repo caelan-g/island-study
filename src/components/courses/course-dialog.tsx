@@ -29,6 +29,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { courseProps } from "@/components/types/course";
 import { useEffect } from "react";
 import { updateCourse } from "@/lib/courses/update-course";
+import { toast } from "sonner";
 
 export function CourseDialog({
   open,
@@ -84,13 +85,26 @@ export function CourseDialog({
 
   async function onSubmit(values: z.infer<typeof courseSchema>) {
     if (course === null) {
-      await createCourse(values.name, values.colour, authUser);
+      try {
+        await createCourse(values.name, values.colour, authUser);
+      } catch (error) {
+        toast.error("Failed to create course");
+        console.error("Error creating course:", error);
+        return; // Exit early if there's an error
+      }
     } else {
-      await updateCourse(course.id, values.name, values.colour, authUser);
+      try {
+        await updateCourse(course.id, values.name, values.colour, authUser);
+      } catch (error) {
+        toast.error("Failed to update course");
+        console.error("Error updating course:", error);
+        return; // Exit early if there's an error
+      }
     }
 
     onOpenChange(false);
     if (onSubmitSuccess) {
+      toast.success("Successfully updated courses");
       onSubmitSuccess(); // Call the callback after successful submission
     }
   }
@@ -178,7 +192,14 @@ export function CourseDialog({
 
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="submit">Create</Button>
+                  <Button variant="secondary" className="w-full">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button type="submit" className="w-full">
+                    Create
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </form>

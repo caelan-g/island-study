@@ -25,7 +25,7 @@ import { endSession } from "@/lib/sessions/end-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { checkSession } from "@/lib/sessions/check-session";
 import { sessionProps } from "@/components/types/session";
@@ -119,28 +119,26 @@ export function SessionDialog({
         },
   });
 
-  useEffect(() => {
+  // Move form reset logic to a separate function
+  const resetFormWithCurrentTime = useCallback(() => {
     if (!sessionProps) {
-      // If editing a session, don't check for active session
       if (activeSession) {
-        // If there's an active session, use its values
         form.reset({
           description: "",
           course: activeSession.course_id,
           startTime: new Date(activeSession.start_time),
-          endTime: new Date(),
+          endTime: new Date(), // Current time
         });
       } else {
-        // No active session, use default values
+        const now = new Date();
         form.reset({
           description: "",
           course: "",
-          startTime: new Date(),
-          endTime: new Date(),
+          startTime: now,
+          endTime: now,
         });
       }
     } else {
-      // If editing a session, use session props
       form.reset({
         description: sessionProps.description || "",
         course: sessionProps.course_id || "",
@@ -149,6 +147,13 @@ export function SessionDialog({
       });
     }
   }, [form, activeSession, sessionProps]);
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      resetFormWithCurrentTime();
+    }
+  }, [open, resetFormWithCurrentTime]);
 
   async function onSubmit(values: z.infer<typeof sessionSchema>) {
     try {
@@ -220,7 +225,7 @@ export function SessionDialog({
                       Course
                     </Label>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-[180px]">
+                      <SelectTrigger className="min-w-[300px]">
                         <SelectValue placeholder="Select a course" />
                       </SelectTrigger>
                       <SelectContent className="z-100">
@@ -276,10 +281,12 @@ export function SessionDialog({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="secondary">Cancel</Button>
+                <Button variant="secondary" className="w-full">
+                  Cancel
+                </Button>
               </DialogClose>
 
-              <Button type="submit">
+              <Button type="submit" className="w-full">
                 {sessionProps ? "Update" : "Create"}
               </Button>
             </DialogFooter>

@@ -116,8 +116,13 @@ export function CourseForm({ onSuccess, parentForm = false }: CourseFormProps) {
               </FormItem>
             )}
           />
-          <Button type="button" onClick={form.handleSubmit(onSubmit)}>
-            Create Course
+          <Button
+            type="button"
+            variant="accent"
+            onClick={form.handleSubmit(onSubmit)}
+            className="mt-4"
+          >
+            Create
           </Button>
         </div>
       ) : (

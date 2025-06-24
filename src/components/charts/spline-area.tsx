@@ -27,7 +27,7 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
       {
         name: "course",
         data: data?.total || [0, 0, 0, 0, 0],
-        color: "#121212",
+        color: "#212121", // Default color for the series
       },
     ],
     fill: {
@@ -66,11 +66,30 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
             speed: 350,
           },
         },
+        fontFamily: ", sans-serif",
+      },
+      grid: {
+        borderColor: "var(--muted)",
+        show: true,
+        xaxis: {
+          lines: {
+            show: false,
+          },
+        },
+        yaxis: {
+          lines: {
+            show: true,
+          },
+        },
       },
       dataLabels: {
         enabled: true,
         formatter: function (value: number) {
           return timeFilter(value, "hours");
+        },
+        style: {
+          fontFamily: ", sans-serif",
+          fontSize: "12px",
         },
       },
       stroke: {
@@ -85,6 +104,11 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
           rotate: -45,
           rotateAlways: true,
           offsetY: 10,
+          style: {
+            fontSize: "10px",
+            fontFamily: ", sans-serif",
+            fontWeight: 400,
+          },
         },
       },
       yaxis: {
@@ -92,6 +116,9 @@ export function SplineAreaChart({ data }: SplineAreaChartProps) {
         min: 0,
       },
       tooltip: {
+        style: {
+          fontFamily: ", sans-serif",
+        },
         x: {},
         y: {
           formatter: function (value: number) {

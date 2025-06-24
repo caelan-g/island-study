@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { islandProps } from "@/components/types/island";
 import { fetchIslands } from "@/lib/island/fetch-islands";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
+import PerspectiveCarousel from "@/components/ui/perspective-carousel";
+import { IslandLevelMetric } from "@/components/metrics/islands/island-level-metric";
+import { IslandXPMetric } from "@/components/metrics/islands/island-xp-metric";
 
 export default function Islands() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -15,7 +17,7 @@ export default function Islands() {
     const loadIslands = async () => {
       setLoading(true);
       const data = await fetchIslands(authUser);
-      if (data) setIslands(data);
+      if (data) setIslands(data.reverse());
       setLoading(false);
     };
     if (!authLoading && authUser) {
@@ -32,45 +34,46 @@ export default function Islands() {
           </Card>
         </>
       ) : (
-        <>
-          {islands.map((island) => (
-            <Card key={island.id}>
-              <CardHeader>
-                <CardTitle>{island.created_at}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div>
-                  <Image
-                    src={island.current_url}
-                    alt="Island"
-                    width={512}
-                    height={262}
-                    className="pixelated pointer-events-none select-none"
-                    unoptimized
-                  />
-                </div>
-                <div className="flex flex-row justify-center items-center">
-                  <div className="z-10 font-bold text-background">
-                    {island.level}
+        <div className="">
+          <div className="font-semibold tracking-tight text-2xl">
+            My Islands
+          </div>
+          <div className="space-y-4">
+            {islands.map((island) => (
+              <Card key={island.id}>
+                <CardHeader>
+                  <CardTitle className="flex flex-row gap-4">
+                    {new Date(island.created_at).toLocaleDateString()}
+                    {island.active ? (
+                      <p className="text-sm rounded-md bg-emerald-100 flex px-2 py-1 ml-2">
+                        Active
+                      </p>
+                    ) : null}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 flex flex-row overflow-x-hidden">
+                  <div className="w-full">
+                    {island.previous_urls && island.previous_urls.length > 0 ? (
+                      <PerspectiveCarousel
+                        urls={[...island.previous_urls, island.current_url]}
+                      />
+                    ) : (
+                      <PerspectiveCarousel urls={[island.current_url]} />
+                    )}
                   </div>
-                  <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
-                </div>
-                {[...(island.previous_urls || [])].reverse().map((url) => (
-                  <div key={url}>
-                    <Image
-                      src={url}
-                      alt="Island"
-                      width={256}
-                      height={128}
-                      className="pixelated pointer-events-none select-none"
-                      unoptimized
+                  <div className="absolute ml-6 flex flex-row gap-8 z-100">
+                    <IslandLevelMetric level={island.level} />
+                    <IslandXPMetric
+                      threshold={island.threshold}
+                      level={island.level}
+                      xp={island.xp}
                     />
                   </div>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
-        </>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );

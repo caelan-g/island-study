@@ -5,26 +5,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Ellipsis } from "lucide-react";
 import { useEffect, useState } from "react";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 import { timeFilter } from "@/lib/filters/time-filter";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export const SessionCard = ({
   session,
   courses,
-  onEdit,
+  onClick, // Add onClick to props
+  isSelected, // Add isSelected prop
 }: {
   session: sessionProps;
   courses: courseProps[];
-  onEdit: (session: sessionProps) => void;
+  onClick?: (session: sessionProps) => void; // Add onClick type
+  isSelected?: boolean; // Add type for isSelected
 }) => {
   const [course, setCourse] = useState<courseProps | null>(null);
 
@@ -34,15 +29,34 @@ export const SessionCard = ({
   }, [courses, session.course_id]);
 
   return (
-    <Card className="w-full">
+    <Card
+      className={`w-full  transition-all ${
+        isSelected ? "outline-2 outline-[var(--chart-green)]" : ""
+      } ${
+        session.end_time ? "cursor-pointer hover:bg-muted/70" : "cursor-default"
+      }`}
+      onClick={session.end_time ? () => onClick?.(session) : undefined}
+    >
       <CardHeader>
         <CardTitle className="flex flex-row justify-between">
-          <div className="truncate">{course?.name || "Unknown Course"}</div>
+          <div className="truncate leading-tight flex flex-row">
+            <span
+              className="w-4 h-4 rounded-sm my-auto mr-2"
+              style={{ backgroundColor: course?.colour || "#gray" }}
+            />
+            {course?.name || "Unknown Course"}
+          </div>
           <div>
-            {timeFilter(
-              (new Date(session.end_time).getTime() -
-                new Date(session.start_time).getTime()) /
-                1000
+            {session.end_time ? (
+              timeFilter(
+                (new Date(session.end_time).getTime() -
+                  new Date(session.start_time).getTime()) /
+                  1000
+              )
+            ) : (
+              <p className="text-sm rounded-md bg-emerald-100 flex px-2 py-1 ml-2">
+                Active
+              </p>
             )}
           </div>
         </CardTitle>
@@ -57,26 +71,17 @@ export const SessionCard = ({
         {session.end_time ? (
           <>
             <div className="truncate">
-              {session.description || "No description available"}
-              <p className="text-sm text-gray-500">
+              {session.description}
+              <p className="text-sm text-muted-foreground">
                 {new Date(session.start_time).toLocaleTimeString()} -{" "}
                 {new Date(session.end_time).toLocaleTimeString()}
               </p>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Ellipsis size={16} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => onEdit(session)}>
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </>
         ) : (
-          <div>Started {new Date(session.start_time).toLocaleTimeString()}</div>
+          <div className="text-muted-foreground text-sm">
+            Started {new Date(session.start_time).toLocaleTimeString()}
+          </div>
         )}
       </CardContent>
     </Card>

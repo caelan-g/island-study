@@ -43,7 +43,14 @@ export function LoginForm({
       })) as { data: { user: userProps | null }; error: Error | null };
 
       if (error) throw error;
-
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.rpc("update_user_onboarding_status", {
+          user_id: user.id,
+        });
+      }
       router.push("/dashboard");
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");

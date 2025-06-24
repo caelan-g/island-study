@@ -13,9 +13,7 @@ export async function deleteSession(session: sessionProps, user: User | null) {
         .eq("id", session.id)
         .single();
 
-      if (error) {
-        console.log(error);
-      }
+      if (error) console.log(error);
       return data;
     } catch {
       return;

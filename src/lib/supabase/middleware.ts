@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-//import { cookies } from "next/headers"; //MAKE SURE TO DELETE THE MATCHER THING!!!!!!!!!!!!!!!!!!!!!!!
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -41,19 +40,22 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Add condition to allow welcome page access for non-onboarded users
-  if (request.nextUrl.pathname.startsWith("/welcome")) {
+  if (request.nextUrl.pathname == "/welcome") {
     if (!user) {
       // If no user on welcome page, redirect to login
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
     // Allow access to welcome page if user exists (onboarded or not)
+    if (user.app_metadata.has_onboarded === true) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    console.log(user.app_metadata.has_onboarded);
     return NextResponse.next({ request });
   }
 
   // Handle non-authenticated routes
   if (
     !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
     request.nextUrl.pathname !== "/"
   ) {

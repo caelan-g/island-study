@@ -34,21 +34,21 @@ export function RadialChart({ chartData }: { chartData: chartData[] }) {
     <div className="flex-1 flex-col">
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square max-h-[250px]"
+        className="mx-auto aspect-square max-h-[200px]"
       >
         <RadialBarChart
           data={chartData}
           startAngle={90}
           endAngle={90 - (max / chartData[0].goal) * 360}
-          innerRadius={114}
-          outerRadius={144}
+          innerRadius={89}
+          outerRadius={114}
         >
           <PolarGrid
             gridType="circle"
             radialLines={false}
             stroke="none"
             className="first:fill-muted last:fill-background"
-            polarRadius={[120, 108]}
+            polarRadius={[94, 84]}
           />
           <RadialBar dataKey="today" background cornerRadius={10} />
           <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
@@ -68,7 +68,7 @@ export function RadialChart({ chartData }: { chartData: chartData[] }) {
                       <tspan
                         x={viewBox.cx}
                         y={viewBox.cy}
-                        className="fill-foreground text-4xl font-bold"
+                        className="fill-foreground text-3xl font-bold"
                       >
                         {timeFilter(chartData[0].today)}
                       </tspan>

@@ -2,236 +2,337 @@
 
 import type React from "react";
 
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { ControllerRenderProps } from "react-hook-form";
-import { FormItem, FormControl } from "@/components/ui/form";
-
-type Period = "AM" | "PM";
 
 interface TimePickerProps {
-  value?: number; // time in seconds
-  onChange?: (seconds: number) => void;
+  value?: string;
+  onChange?: (value: string) => void;
+  mode?: "time" | "duration";
   className?: string;
-  use24Hour?: boolean;
-  field?: ControllerRenderProps<
-    {
-      goal: number;
-      name: string;
-      hasCourse: boolean;
+}
+
+interface PickerColumnProps {
+  values: string[];
+  selectedIndex: number;
+  onChange: (index: number) => void;
+  className?: string;
+}
+
+function PickerColumn({
+  values,
+  selectedIndex,
+  onChange,
+  className,
+}: PickerColumnProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startY = useRef(0);
+  const startScrollTop = useRef(0);
+  const velocity = useRef(0);
+  const lastY = useRef(0);
+  const lastTime = useRef(0);
+  const animationFrame = useRef<number | null>(null);
+
+  const itemHeight = 40;
+  const visibleItems = 5;
+  const centerIndex = Math.floor(visibleItems / 2);
+
+  const scrollToIndex = useCallback(
+    (index: number, smooth = true) => {
+      if (!containerRef.current) return;
+
+      const scrollTop = index * itemHeight;
+      if (smooth) {
+        containerRef.current.scrollTo({
+          top: scrollTop,
+          behavior: "smooth",
+        });
+      } else {
+        containerRef.current.scrollTop = scrollTop;
+      }
     },
-    "goal"
-  >;
+    [itemHeight]
+  );
+
+  useEffect(() => {
+    scrollToIndex(selectedIndex, false);
+  }, [selectedIndex, scrollToIndex]);
+
+  const applyMomentum = useCallback(() => {
+    if (!containerRef.current || isDragging.current) return;
+
+    const container = containerRef.current;
+    const currentScrollTop = container.scrollTop;
+    const maxScrollTop = (values.length - 1) * itemHeight;
+
+    // Apply velocity to scroll position
+    const newScrollTop = currentScrollTop - velocity.current * 16; // 16ms frame time
+
+    // Clamp to bounds
+    const clampedScrollTop = Math.max(0, Math.min(newScrollTop, maxScrollTop));
+    container.scrollTop = clampedScrollTop;
+
+    // Apply friction to velocity
+    velocity.current *= 0.7;
+
+    // Continue momentum if velocity is significant
+    if (Math.abs(velocity.current) > 0.2) {
+      animationFrame.current = requestAnimationFrame(applyMomentum);
+    } else {
+      // Momentum has stopped, now snap to nearest item with softer easing
+      const nearestIndex = Math.round(clampedScrollTop / itemHeight);
+      const clampedIndex = Math.max(
+        0,
+        Math.min(nearestIndex, values.length - 1)
+      );
+
+      // Softer snapping with custom easing
+      const targetScrollTop = clampedIndex * itemHeight;
+      const currentScroll = container.scrollTop;
+      const distance = targetScrollTop - currentScroll;
+
+      if (Math.abs(distance) > 1) {
+        // Smooth easing towards target
+        container.scrollTop = currentScroll + distance * 0.15;
+        animationFrame.current = requestAnimationFrame(applyMomentum);
+      } else {
+        // Final snap
+        container.scrollTop = targetScrollTop;
+        onChange(clampedIndex);
+      }
+    }
+  }, [values.length, itemHeight, onChange]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+
+    // Cancel any ongoing momentum animation
+    if (animationFrame.current) {
+      cancelAnimationFrame(animationFrame.current);
+    }
+
+    isDragging.current = true;
+    startY.current = e.clientY;
+    startScrollTop.current = containerRef.current.scrollTop;
+    velocity.current = 0;
+    lastY.current = e.clientY;
+    lastTime.current = Date.now();
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging.current || !containerRef.current) return;
+
+    const deltaY = e.clientY - startY.current;
+    const newScrollTop = startScrollTop.current - deltaY;
+
+    containerRef.current.scrollTop = Math.max(
+      0,
+      Math.min(newScrollTop, (values.length - 1) * itemHeight)
+    );
+
+    // Calculate velocity more accurately
+    const now = Date.now();
+    const timeDelta = now - lastTime.current;
+    if (timeDelta > 0) {
+      const yDelta = e.clientY - lastY.current;
+      velocity.current = (yDelta / timeDelta) * 16; // Convert to pixels per frame
+    }
+    lastY.current = e.clientY;
+    lastTime.current = now;
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging.current) return;
+
+    isDragging.current = false;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+
+    // Start momentum animation
+    applyMomentum();
+  };
+
+  const handleScroll = () => {
+    if (isDragging.current || !containerRef.current) return;
+
+    const scrollTop = containerRef.current.scrollTop;
+    const currentIndex = Math.round(scrollTop / itemHeight);
+
+    if (
+      currentIndex !== selectedIndex &&
+      Math.abs(scrollTop - currentIndex * itemHeight) < 5
+    ) {
+      onChange(currentIndex);
+    }
+  };
+
+  // Cleanup animation frame on unmount
+  useEffect(() => {
+    return () => {
+      if (animationFrame.current) {
+        cancelAnimationFrame(animationFrame.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div className={cn("relative overflow-hidden", className)}>
+      <div
+        ref={containerRef}
+        className="h-[200px] overflow-y-scroll scrollbar-hide cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+        onScroll={handleScroll}
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+      >
+        <div style={{ height: centerIndex * itemHeight }} />
+        {values.map((value, index) => (
+          <div
+            key={index}
+            className={cn(
+              "flex items-center justify-center text-2xl font-medium transition-all duration-300 select-none",
+              "h-10",
+              index === selectedIndex
+                ? "text-foreground scale-110"
+                : "text-muted-foreground scale-95"
+            )}
+            style={{ height: itemHeight }}
+          >
+            {value}
+          </div>
+        ))}
+        <div style={{ height: centerIndex * itemHeight }} />
+      </div>
+
+      {/* Selection indicator */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-10 border-y border-border/20 pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+    </div>
+  );
 }
 
 export default function TimePicker({
-  value = 0,
+  value = "12:00 AM",
   onChange,
+  mode = "time",
   className,
-  use24Hour = true,
-  field,
 }: TimePickerProps) {
-  // Use field value if available, otherwise use direct value prop
-  const currentValue = field?.value ?? value;
-
-  const [selectedHour, setSelectedHour] = useState(() =>
-    Math.floor(currentValue / 3600)
-  );
-  const [selectedMinute, setSelectedMinute] = useState(() =>
-    Math.floor((currentValue % 3600) / 60)
-  );
-  const [selectedPeriod, setSelectedPeriod] = useState<"AM" | "PM">("AM");
-
-  const hourRef = useRef<HTMLDivElement>(null);
-  const minuteRef = useRef<HTMLDivElement>(null);
-  const periodRef = useRef<HTMLDivElement>(null);
-
-  const hours = use24Hour
-    ? Array.from({ length: 13 }, (_, i) => i.toString().padStart(2, "0"))
-    : Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+  const hours =
+    mode === "time"
+      ? Array.from({ length: 12 }, (_, i) => (i + 1).toString())
+      : Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
 
   const minutes = Array.from({ length: 60 }, (_, i) =>
     i.toString().padStart(2, "0")
   );
   const periods = ["AM", "PM"];
 
-  useEffect(() => {
-    setSelectedHour(Math.floor(currentValue / 3600));
-    setSelectedMinute(Math.floor((currentValue % 3600) / 60));
-  }, [currentValue]);
-
-  // Convert 24-hour to 12-hour format
-  useEffect(() => {
-    if (!use24Hour) {
-      const hour24 = Math.floor(value / 3600);
-      const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
-      const period = hour24 >= 12 ? "PM" : "AM";
-      setSelectedHour(hour12);
-      setSelectedPeriod(period);
+  const parseValue = (val: string) => {
+    if (mode === "duration") {
+      const [h, m] = val.split(":").map(Number);
+      return { hour: h, minute: m, period: 0 };
     } else {
-      setSelectedHour(Math.floor(value / 3600));
+      const match = val.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      if (match) {
+        const hour = Number.parseInt(match[1]);
+        const minute = Number.parseInt(match[2]);
+        const period = match[3].toUpperCase() === "PM" ? 1 : 0;
+        return { hour, minute, period };
+      }
     }
-    setSelectedMinute(Math.floor((value % 3600) / 60));
-  }, [value, use24Hour]);
+    return { hour: mode === "time" ? 12 : 0, minute: 0, period: 0 };
+  };
 
-  // Update form when time changes
-  useEffect(() => {
-    const totalSeconds = selectedHour * 3600 + selectedMinute * 60;
-
-    if (field) {
-      field.onChange(totalSeconds);
+  const formatValue = (hour: number, minute: number, period: number) => {
+    if (mode === "duration") {
+      return `${hour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")}`;
     } else {
-      onChange?.(totalSeconds);
+      const displayHour = hour === 0 ? 12 : hour;
+      const periodStr = periods[period];
+      return `${displayHour}:${minute
+        .toString()
+        .padStart(2, "0")} ${periodStr}`;
     }
-  }, [selectedHour, selectedMinute, field, onChange]);
-
-  const handleHourScroll = (element: HTMLDivElement) => {
-    const itemHeight = 40;
-    const scrollTop = element.scrollTop;
-    const index = Math.round(scrollTop / itemHeight);
-    const clampedIndex = Math.max(0, Math.min(index, hours.length - 1));
-    setSelectedHour(Number.parseInt(hours[clampedIndex]));
-
-    element.scrollTo({
-      //top: clampedIndex * itemHeight,
-      //behavior: "smooth",
-    });
   };
 
-  const handleMinuteScroll = (element: HTMLDivElement) => {
-    const itemHeight = 40;
-    const scrollTop = element.scrollTop;
-    const index = Math.round(scrollTop / itemHeight);
-    const clampedIndex = Math.max(0, Math.min(index, minutes.length - 1));
-    setSelectedMinute(Number.parseInt(minutes[clampedIndex]));
+  const parsed = parseValue(value);
+  const [selectedHour, setSelectedHour] = useState(
+    mode === "time" ? (parsed.hour === 0 ? 11 : parsed.hour - 1) : parsed.hour
+  );
+  const [selectedMinute, setSelectedMinute] = useState(parsed.minute);
+  const [selectedPeriod, setSelectedPeriod] = useState(parsed.period);
 
-    element.scrollTo({
-      //top: clampedIndex * itemHeight,
-      //behavior: "smooth",
-    });
-  };
-
-  const handlePeriodScroll = (element: HTMLDivElement) => {
-    const itemHeight = 40;
-    const scrollTop = element.scrollTop;
-    const index = Math.round(scrollTop / itemHeight);
-    const clampedIndex = Math.max(0, Math.min(index, periods.length - 1));
-    setSelectedPeriod(periods[clampedIndex] as Period);
-
-    element.scrollTo({
-      //top: clampedIndex * itemHeight,
-      //behavior: "smooth",
-    });
-  };
-
-  const renderColumn = (
-    items: string[],
-    selectedValue: string | number,
-    onScroll: (element: HTMLDivElement) => void,
-    ref: React.RefObject<HTMLDivElement | null>
-  ) => (
-    <div className="relative h-[200px] overflow-hidden">
-      <div
-        ref={ref}
-        className="h-full overflow-y-scroll scrollbar-hide scroll-smooth overflow-x-hidden"
-        style={{ scrollSnapType: "y mandatory" }}
-        onScroll={(e) => onScroll(e.currentTarget)}
-      >
-        <div className="py-20">
-          {items.map((item) => {
-            const isSelected =
-              item === selectedValue.toString() ||
-              (typeof selectedValue === "number" &&
-                Number.parseInt(item) === selectedValue);
-            return (
-              <div
-                key={item}
-                className={cn(
-                  "h-10 flex items-center justify-center text-2xl p-[0.5px] font-medium transition-all duration-200",
-                  "scroll-snap-align-center",
-                  isSelected
-                    ? "text-foreground scale-110"
-                    : "text-muted-foreground scale-90 opacity-60"
-                )}
-                style={{ scrollSnapAlign: "center" }}
-              >
-                {item}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      {/* Selection indicator */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-10 border-y border-border/20 pointer-events-none" />
-      {/* Gradient overlays */}
-      <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-background to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
-    </div>
+  const handleChange = useCallback(
+    (newHour: number, newMinute: number, newPeriod: number) => {
+      const actualHour = mode === "time" ? newHour + 1 : newHour;
+      const formattedValue = formatValue(actualHour, newMinute, newPeriod);
+      onChange?.(formattedValue);
+    },
+    [mode, onChange]
   );
 
+  const handleHourChange = (index: number) => {
+    setSelectedHour(index);
+    handleChange(index, selectedMinute, selectedPeriod);
+  };
+
+  const handleMinuteChange = (index: number) => {
+    setSelectedMinute(index);
+    handleChange(selectedHour, index, selectedPeriod);
+  };
+
+  const handlePeriodChange = (index: number) => {
+    setSelectedPeriod(index);
+    handleChange(selectedHour, selectedMinute, index);
+  };
+
   return (
-    <FormItem className={className}>
-      <FormControl>
-        <div
-          className={cn(
-            "flex items-center justify-center bg-background ",
-            className
-          )}
-        >
-          <div className="flex items-center space-x-4 p-4">
-            {use24Hour ? (
-              <div className="text-sm bottom-1/2 text-white relative">
-                hours
-              </div>
-            ) : null}
-            {/* Hours */}
-            <div className="flex flex-col items-center">
-              {renderColumn(
-                hours,
-                use24Hour ? selectedHour : selectedHour,
-                handleHourScroll,
-                hourRef
-              )}
-            </div>
+    <div className={cn("flex items-center justify-center", className)}>
+      <div className="flex items-center">
+        {mode === "duration" && (
+          <div className="text-sm text-muted-foreground hidden">hours</div>
+        )}
+        <PickerColumn
+          values={hours}
+          selectedIndex={selectedHour}
+          onChange={handleHourChange}
+          className="w-16"
+        />
 
-            {/* Separator */}
-            <div className="text-2xl bottom-[2px] relative text-muted-foreground">
-              :
-            </div>
+        <div className="text-2xl font-bold text-muted-foreground mb-1">:</div>
 
-            {/* Minutes */}
-            <div className="flex flex-col items-center">
-              {renderColumn(
-                minutes,
-                selectedMinute,
-                handleMinuteScroll,
-                minuteRef
-              )}
-            </div>
+        <PickerColumn
+          values={minutes}
+          selectedIndex={selectedMinute}
+          onChange={handleMinuteChange}
+          className="w-16"
+        />
+        {mode === "duration" && (
+          <div className="text-sm text-muted-foreground">hours</div>
+        )}
 
-            {use24Hour ? (
-              <div className="text-sm bottom-1/2 text-muted-foreground relative">
-                hours
-              </div>
-            ) : null}
-
-            {/* AM/PM for 12-hour format */}
-            {!use24Hour && (
-              <>
-                <div className="w-px h-32 bg-border mx-2" />
-                <div className="flex flex-col items-center">
-                  {renderColumn(
-                    periods,
-                    selectedPeriod,
-                    handlePeriodScroll,
-                    periodRef
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </FormControl>
-    </FormItem>
+        {mode === "time" && (
+          <>
+            <div className="w-4" />
+            <PickerColumn
+              values={periods}
+              selectedIndex={selectedPeriod}
+              onChange={handlePeriodChange}
+              className="w-16"
+            />
+          </>
+        )}
+      </div>
+    </div>
   );
 }

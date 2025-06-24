@@ -13,6 +13,12 @@ import CoursesStep from "@/components/onboarding/steps/courses-step";
 import CompletionStep from "@/components/onboarding/steps/completion-step";
 import { onboardUser } from "@/lib/user/onboard";
 import { toast } from "sonner";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 const formSchema = z.object({
   name: z
@@ -32,7 +38,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function OnboardingForm() {
+export default function Welcome() {
   const [currentStep, setCurrentStep] = useState(0);
 
   const steps = [
@@ -119,52 +125,57 @@ export default function OnboardingForm() {
   };
 
   return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm w-[30em] min-h-[30em] mx-auto mt-24">
-      <StepIndicator
-        steps={steps.map((step) => step.title)}
-        currentStep={currentStep}
-        onStepClick={goToStep}
-      />
+    <div className="h-screen flex items-center ">
+      <Card className="w-lg h-auto mx-auto my-auto ">
+        <CardHeader className="overflow-x-hidden overflow-y-hidden">
+          <StepIndicator
+            steps={steps.map((step) => step.title)}
+            currentStep={currentStep}
+            onStepClick={goToStep}
+          />
+        </CardHeader>
+        <Form {...form}>
+          <form
+            className="mt-2 space-y-6 h-full flex flex-col justify-between"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                goToNextStep();
+              }
+            }}
+          >
+            <CardContent className="flex-1">{renderStepContent()}</CardContent>
 
-      <Form {...form}>
-        <form
-          className="mt-8 space-y-6 h-full flex flex-col justify-between"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              goToNextStep();
-            }
-          }}
-        >
-          {renderStepContent()}
-
-          <div className="flex justify-between pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={goToPreviousStep}
-              disabled={currentStep === 0}
-            >
-              Back
-            </Button>
-
-            {currentStep < steps.length - 1 ? (
-              <Button type="button" onClick={goToNextStep}>
-                Continue
-              </Button>
-            ) : (
+            <CardFooter className="flex justify-between gap-2">
               <Button
                 type="button"
-                onClick={() => {
-                  form.handleSubmit(onSubmit)();
-                }}
+                variant="secondary"
+                className="w-full"
+                onClick={goToPreviousStep}
+                disabled={currentStep === 0}
               >
-                Complete
+                Back
               </Button>
-            )}
-          </div>
-        </form>
-      </Form>
+
+              {currentStep < steps.length - 1 ? (
+                <Button type="button" className="w-full" onClick={goToNextStep}>
+                  Continue
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => {
+                    form.handleSubmit(onSubmit)();
+                  }}
+                >
+                  Complete
+                </Button>
+              )}
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
     </div>
   );
 }

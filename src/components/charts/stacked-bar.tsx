@@ -5,122 +5,105 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
-/*const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 224, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 24, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 1 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];*/
-const chartData = [
-  { month: "January", desktop: 0, mobile: 0 },
-  { month: "February", desktop: 0, mobile: 0 },
-  { month: "March", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-  { month: "April", desktop: 0, mobile: 0 },
-  { month: "May", desktop: 0, mobile: 0 },
-  { month: "June", desktop: 0, mobile: 0 },
-];
+import { timeFilter } from "@/lib/filters/time-filter";
+import { GroupedSession } from "@/components/types/session";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "#232323",
+  under: {
+    label: "Under Goal",
+    color: "var(--muted)",
   },
-  mobile: {
-    label: "Mobile",
-    color: "#646464",
+  achieved: {
+    label: "Achieved",
+    color: "var(--chart-green)",
+  },
+  over: {
+    label: "Over Goal",
+    color: "var(--muted)",
   },
 } satisfies ChartConfig;
 
-export function StackedBarChart() {
+export function StackedBarChart({
+  groupedSessions,
+  goal,
+}: {
+  groupedSessions: GroupedSession[];
+  goal: number;
+}) {
+  const processedData = groupedSessions.map((day) => {
+    const totalDuration = day.sessions.reduce(
+      (acc, session) =>
+        acc +
+        (new Date(session.end_time).getTime() -
+          new Date(session.start_time).getTime()) /
+          1000,
+      0
+    );
+
+    const date = new Date(day.date);
+
+    return {
+      date: date.getDate(),
+      under: totalDuration < goal ? totalDuration : 0,
+      achieved: totalDuration >= goal ? goal : 0,
+      over: totalDuration > goal ? totalDuration - goal : 0,
+    };
+  });
+
   return (
-    <div
-      style={
-        {
-          "--color-desktop": "hsl(var(--chart-1))",
-          "--color-mobile": "hsl(var(--chart-2))",
-        } as React.CSSProperties
-      }
-    >
-      <ChartContainer config={chartConfig}>
-        <BarChart accessibilityLayer data={chartData}>
-          <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="month"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value) => value.slice(0, 3)}
-          />
-          <ChartTooltip
-            content={<ChartTooltipContent />}
-            cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
-            wrapperStyle={{ outline: "none" }}
-            isAnimationActive={true}
-          />
-          <ChartLegend content={<ChartLegendContent />} />
-          <Bar
-            dataKey="desktop"
-            stackId="a"
-            fill="var(--color-desktop)"
-            radius={[0, 0, 4, 4]}
-          />
-          <Bar
-            dataKey="mobile"
-            stackId="a"
-            fill="var(--color-mobile)"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ChartContainer>
-    </div>
+    <ChartContainer config={chartConfig}>
+      <BarChart
+        data={processedData.reverse()}
+        margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+      >
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="date"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+        />
+        <ChartTooltip
+          cursor={{ fill: "var(--muted)" }}
+          content={({ active, payload }) => {
+            if (active && payload?.length) {
+              return (
+                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                  <div className="grid grid-cols-2 gap-2">
+                    <span className="text-muted-foreground">
+                      Day {payload[0].payload.date}
+                    </span>
+                    <span className="font-medium">
+                      {timeFilter(Number(payload[0].value) || 0)}
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Bar
+          dataKey="under"
+          stackId="a"
+          fill="var(--muted-foreground)"
+          radius={[4, 4, 4, 4]}
+        />
+        <Bar
+          dataKey="achieved"
+          stackId="a"
+          fill="var(--chart-green)"
+          radius={[0, 0, 4, 4]}
+        />
+        <Bar
+          dataKey="over"
+          stackId="a"
+          fill="var(--muted-foreground)"
+          radius={[4, 4, 0, 0]}
+        />
+      </BarChart>
+    </ChartContainer>
   );
 }
