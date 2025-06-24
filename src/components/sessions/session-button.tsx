@@ -50,7 +50,7 @@ export function SessionButton({ isActive }: SessionButtonProps) {
     } finally {
       setActiveLoading(false);
     }
-  }, [authUser]);
+  }, [authUser, isActive]);
 
   // Run effect only once on mount
   useEffect(() => {
@@ -91,7 +91,7 @@ export function SessionButton({ isActive }: SessionButtonProps) {
                   }}
                   onClick={async () => {
                     await startSession(course.id, authUser);
-                    initializeActive();
+                    await initializeActive();
                     isActive?.(true);
                   }}
                 >
@@ -106,9 +106,9 @@ export function SessionButton({ isActive }: SessionButtonProps) {
   ) : (
     <>
       <Button
-        onClick={() => {
+        onClick={async () => {
           isActive?.(false);
-          initializeActive();
+          await initializeActive();
         }}
         className="w-full"
       >
