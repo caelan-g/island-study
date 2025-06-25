@@ -40,7 +40,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function Welcome() {
   const [currentStep, setCurrentStep] = useState(0);
-
+  const sound = "/sounds/level-up.mp3";
   const steps = [
     {
       title: "Name",
@@ -87,6 +87,15 @@ export default function Welcome() {
     );
 
     if (result) {
+      // Create the audio object only when needed
+      try {
+        const audio = new Audio(sound);
+        audio.play().catch((e) => console.log("Audio playback failed:", e));
+      } catch (error) {
+        console.log("Audio creation failed:", error);
+        // Continue even if audio fails
+      }
+
       if (currentStep < steps.length - 1) {
         setCurrentStep(currentStep + 1);
       } else {

@@ -167,6 +167,8 @@ export function SessionDialog({
       );
       // Only call onSubmitSuccess if the endSession was successful
       if (onSubmitSuccess) {
+        const sound = "/sounds/quick-tone.mp3";
+        new Audio(sound).play();
         onSubmitSuccess();
       }
       form.reset();

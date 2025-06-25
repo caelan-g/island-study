@@ -15,7 +15,7 @@ import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
 import { fetchActiveIsland } from "@/lib/island/fetch-active-island";
 import { useAuth } from "@/contexts/auth-context";
-import { PlusIcon } from "lucide-react";
+import { ArrowBigUpDash, PlusIcon } from "lucide-react";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { sessionProps } from "@/components/types/session";
 import { SessionDayCard } from "@/components/sessions/session-day-card";
@@ -34,6 +34,7 @@ import { toast } from "sonner";
 import { GroupedSession, TimeMetrics } from "@/components/types/session";
 import ReviewDialog from "@/components/islands/review-dialog";
 import { resetIsland } from "@/lib/island/reset-island";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Dashboard() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -56,6 +57,10 @@ export default function Dashboard() {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [oldIsland, setOldIsland] = useState<islandProps | null>(null);
 
+  // Add this state to track level-ups
+  const [previousLevel, setPreviousLevel] = useState<number | null>(null);
+  const [isLevelUp, setIsLevelUp] = useState(false);
+
   useEffect(() => {
     if (rawSessionData.length > 0) {
       const [timeMetrics, groupedArray] = processSessionData(
@@ -66,6 +71,16 @@ export default function Dashboard() {
       setGroupedSessions(groupedArray as GroupedSession[]);
     }
   }, [rawSessionData]);
+
+  useEffect(() => {
+    if (isLevelUp) {
+      const sound = "/sounds/level-up.mp3";
+      const audio = new Audio(sound);
+      setTimeout(() => {
+        audio.play();
+      }, 500);
+    }
+  }, [isLevelUp]);
 
   const loadDatabases = useCallback(async () => {
     Promise.all([
@@ -129,6 +144,17 @@ export default function Dashboard() {
     }
   }, [island]);
 
+  // Add this effect to detect level changes
+  useEffect(() => {
+    if (previousLevel !== null && island && island.level > previousLevel) {
+      setIsLevelUp(true);
+      setTimeout(() => setIsLevelUp(false), 2000); // Reset after animation
+    }
+    if (island) {
+      setPreviousLevel(island.level);
+    }
+  }, [island?.level, previousLevel]);
+
   return (
     <div className="flex flex-col">
       <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
@@ -138,20 +164,60 @@ export default function Dashboard() {
             <CardHeader></CardHeader>
             <CardContent className="flex flex-col gap-2">
               <div>
-                <Image
-                  src={
-                    loading
-                      ? "/images/loading_island.png"
-                      : island
-                      ? island.current_url
-                      : "/images/loading_island.png" //change later
-                  }
-                  alt="My Island"
-                  width={600}
-                  height={300}
-                  className="pixelated floating pointer-events-none select-none w-full max-w-[800px]"
-                  unoptimized
-                />
+                <div className="relative">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={island?.current_url || "loading"}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.1 }}
+                      transition={{
+                        duration: 0.5,
+                        type: "spring",
+                        bounce: 0.4,
+                      }}
+                      className="relative"
+                    >
+                      <Image
+                        src={
+                          loading
+                            ? "/images/loading_island.png"
+                            : island
+                            ? island.current_url
+                            : "/images/loading_island.png"
+                        }
+                        alt="My Island"
+                        width={600}
+                        height={300}
+                        className={`pixelated pointer-events-none select-none w-full max-w-[800px] floating ${
+                          isLevelUp ? "animate-shimmer" : ""
+                        }`}
+                        unoptimized
+                      />
+
+                      {isLevelUp && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{
+                              scale: [1, 1.2, 1],
+                              opacity: [0.8, 1, 0],
+                            }}
+                            transition={{ duration: 1.5, times: [0, 0.5, 1] }}
+                            className="text-4xl font-bold text-emerald-500 bg-black/30 px-6 py-3 rounded-full"
+                          >
+                            <ArrowBigUpDash className="w-24 h-24" />
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
               <div className="flex flex-row justify-center items-center">
                 <div className="z-10 font-bold text-background">

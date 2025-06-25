@@ -151,6 +151,45 @@ body {
   animation: float 5s ease-in-out infinite;
 }
 
+@keyframes shimmer {
+  0% {
+    filter: brightness(1);
+  }
+  25% {
+    filter: brightness(1.5);
+  }
+  50% {
+    filter: brightness(1);
+  }
+  75% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out;
+}
+
+/* Your existing floating animation */
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating {
+  animation: floating 5s ease-in-out infinite;
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;

@@ -30,7 +30,6 @@ export function SessionButton({ isActive }: SessionButtonProps) {
   const [activeLoading, setActiveLoading] = useState(true);
   const [activeSession, setActiveSession] = useState<sessionProps | null>(null);
 
-  // Move functions outside useEffect and memoize them
   const initializeCourses = useCallback(async () => {
     try {
       const courseData = await fetchCourses(authUser);

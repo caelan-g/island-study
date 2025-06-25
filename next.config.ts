@@ -11,6 +11,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Add webpack configuration for handling audio files
+  webpack: (config) => {
+    // Configure how audio files are handled
+    config.module.rules.push({
+      test: /\.(mp3|wav|ogg)$/i,
+      type: "asset/resource",
+      generator: {
+        filename: "static/media/[name].[hash][ext]",
+      },
+    });
+
+    return config;
+  },
 };
 
 export default nextConfig;
