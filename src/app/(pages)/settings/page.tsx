@@ -25,6 +25,7 @@ import { createClient } from "@/lib/supabase/client";
 import TimePicker from "@/components/ui/time-picker";
 import { resetIsland } from "@/lib/island/reset-island";
 import { weekEndIsland } from "@/lib/island/week-end-island";
+import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,6 +74,7 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("profile");
   const [user, setUser] = useState<userProps | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   const initializeUser = useCallback(async () => {
     try {
@@ -86,6 +88,23 @@ export default function SettingsPage() {
   useEffect(() => {
     initializeUser();
   }, [initializeUser]);
+
+  useEffect(() => {
+    // Check initial theme from localStorage or system preference
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    // Set initial state based on saved preference or system default
+    const initialIsDark =
+      savedTheme === "dark" || (savedTheme === null && prefersDark);
+
+    setIsDarkTheme(initialIsDark);
+
+    // Apply theme on initial load
+    document.documentElement.classList.toggle("dark", initialIsDark);
+  }, []);
 
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
@@ -138,7 +157,6 @@ export default function SettingsPage() {
       console.error("Failed to update user:", error);
       toast.error("Failed to update profile");
     } finally {
-      toast.success("Profile updated successfully");
       initializeUser(); // Refresh user data after update
     }
   }
@@ -228,6 +246,37 @@ export default function SettingsPage() {
                       {profileForm.formState.errors.goal.message}
                     </p>
                   )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="theme">Theme</Label>
+                  <div className="flex items-center space-x-2 mb-8">
+                    <Switch
+                      id="theme"
+                      checked={isDarkTheme}
+                      onCheckedChange={(checked) => {
+                        // Update state
+                        setIsDarkTheme(checked);
+
+                        // Update DOM
+                        document.documentElement.classList.toggle(
+                          "dark",
+                          checked
+                        );
+
+                        // Save preference
+                        localStorage.setItem(
+                          "theme",
+                          checked ? "dark" : "light"
+                        );
+                      }}
+                    />
+                    <Label htmlFor="theme">
+                      Dark mode{" "}
+                      <span className="text-muted-foreground font-normal">
+                        (not recommended)
+                      </span>
+                    </Label>
+                  </div>
                 </div>
                 <Button type="submit">Save changes</Button>
               </form>

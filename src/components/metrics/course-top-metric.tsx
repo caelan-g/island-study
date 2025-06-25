@@ -66,7 +66,7 @@ export function CourseTopMetric({
             {topCourse ? topCourse.course.name : "No data"}
           </p>
         </div>
-        <p className="text-xs rounded-md bg-emerald-100 flex px-2 py-1 ml-2">
+        <p className="text-xs rounded-md bg-emerald-100 dark:bg-emerald-500 dark:text-background flex px-2 py-1 ml-2">
           <ArrowUp className="size-4 mr-1" />
           {timeFilter(topCourse?.total || 0)}
         </p>

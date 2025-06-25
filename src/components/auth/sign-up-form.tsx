@@ -24,8 +24,39 @@ export function SignUpForm({
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  // Password validation function
+  const validatePassword = (password: string): string[] => {
+    const errors = [];
+
+    if (password.length < 8) {
+      errors.push("Password must be at least 8 characters");
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errors.push("Password must contain an uppercase letter");
+    }
+
+    if (!/[a-z]/.test(password)) {
+      errors.push("Password must contain a lowercase letter");
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push("Password must contain a special character");
+    }
+
+    return errors;
+  };
+
+  // Update password validation on change
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    setPasswordErrors(validatePassword(newPassword));
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +64,15 @@ export function SignUpForm({
     setIsLoading(true);
     setError(null);
 
+    // Validate password requirements
+    const validationErrors = validatePassword(password);
+    if (validationErrors.length > 0) {
+      setPasswordErrors(validationErrors);
+      setIsLoading(false);
+      return;
+    }
+
+    // Check if passwords match
     if (password !== repeatPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -86,7 +126,7 @@ export function SignUpForm({
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                 />
               </div>
               <div className="grid gap-2">
@@ -101,6 +141,18 @@ export function SignUpForm({
                   onChange={(e) => setRepeatPassword(e.target.value)}
                 />
               </div>
+              <div className="space-y-1">
+                {password && passwordErrors.length > 0 && (
+                  <>
+                    {passwordErrors.map((err, index) => (
+                      <p key={index} className="text-xs text-red-500">
+                        {err}
+                      </p>
+                    ))}
+                  </>
+                )}
+                {error && <p className="text-xs text-red-500">{error}</p>}
+              </div>
               <div>
                 <p className="text-xs text-muted-foreground">
                   By signing up, you agree to our{" "}
@@ -110,8 +162,12 @@ export function SignUpForm({
                   .
                 </p>
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || passwordErrors.length > 0}
+              >
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
             </div>

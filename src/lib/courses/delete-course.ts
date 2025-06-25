@@ -37,8 +37,6 @@ export async function deleteCourse(course: courseProps, user: User | null) {
       if (error) {
         console.log(error);
         toast.error("Failed to delete course. Please try again.");
-      } else {
-        toast.success("Course deleted successfully");
       }
       return data;
     } catch {

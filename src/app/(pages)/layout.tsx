@@ -23,7 +23,7 @@ export default function LoginLayout({
       {isMobile && <MobileNavbar />}
 
       <main
-        className="pl-2 pr-2 lg:pr-12 w-full py-4 overflow-x-hidden lg:pt-0 pt-16"
+        className="pl-2 pr-2 lg:pr-12 w-full py-4 overflow-x-hidden lg:pt-4 pt-16"
         suppressHydrationWarning
       >
         {children}
