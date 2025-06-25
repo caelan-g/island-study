@@ -65,7 +65,7 @@ export function RadarChart({ groupedSessions, goal }: RadarChartProps) {
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-square max-h-[250px]"
+      className="mx-auto aspect-square max-h-[500px]"
     >
       <Chart data={chartData}>
         <ChartTooltip

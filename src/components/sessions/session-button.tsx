@@ -109,7 +109,7 @@ export function SessionButton({ isActive }: SessionButtonProps) {
                   <motion.div
                     key={course.id}
                     variants={item}
-                    className="flex flex-row items-center gap-2 transition-all cursor-pointer"
+                    className="flex flex-row items-center transition-all cursor-pointer"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >

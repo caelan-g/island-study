@@ -101,6 +101,15 @@ export function SignUpForm({
                   onChange={(e) => setRepeatPassword(e.target.value)}
                 />
               </div>
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  By signing up, you agree to our{" "}
+                  <a href="/privacy-policy" className="underline">
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
+              </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}

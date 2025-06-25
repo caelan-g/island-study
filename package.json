@@ -29,6 +29,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "apexcharts": "^4.7.0",
     "class-variance-authority": "^0.7.1",
+    "cloc": "^2.4.0-cloc",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",

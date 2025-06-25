@@ -50,6 +50,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [rawSessionData, setRawSessionData] = useState<sessionProps[]>([]);
   const [groupedSessions, setGroupedSessions] = useState<GroupedSession[]>([]);
+  const [daysRemaining, setDaysRemaining] = useState<number>(0);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
 
   useEffect(() => {
     if (rawSessionData.length > 0) {
@@ -61,6 +63,21 @@ export default function Dashboard() {
       setGroupedSessions(groupedArray as GroupedSession[]);
     }
   }, [rawSessionData]);
+
+  useEffect(() => {
+    if (island) {
+      const deadline = new Date(island.created_at);
+      deadline.setDate(deadline.getDate() + 7); // Add 1 week
+      const daysRemaining =
+        (deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+      if (daysRemaining < 0) {
+        setDaysRemaining(0);
+        setReviewDialogOpen(true);
+      } else {
+        setDaysRemaining(daysRemaining);
+      }
+    }
+  }, [island]);
 
   const loadDatabases = useCallback(async () => {
     Promise.all([
@@ -111,7 +128,7 @@ export default function Dashboard() {
       <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col lg:flex-row gap-4">
-          <Card className="w-[600px]">
+          <Card className="lg:min-w-[600px] w-full max-w-[800px]">
             <CardHeader></CardHeader>
             <CardContent className="flex flex-col gap-2">
               <div>
@@ -126,7 +143,7 @@ export default function Dashboard() {
                   alt="My Island"
                   width={600}
                   height={300}
-                  className="pixelated floating pointer-events-none select-none"
+                  className="pixelated floating pointer-events-none select-none w-full max-w-[800px]"
                   unoptimized
                 />
               </div>
@@ -137,19 +154,35 @@ export default function Dashboard() {
                 <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
               </div>
               <div className="flex flex-row justify-between space-x-4 items-center">
-                <Progress
-                  className={`bg-muted [&>div]:bg-muted-foreground ${
-                    island?.level === 7 ? "hidden" : ""
-                  }`}
-                  value={island ? (island.xp / island.threshold) * 100 : 0}
-                />
-                <p
-                  className={`text-xs font-bold whitespace-nowrap ${
-                    island?.level === 7 ? "hidden" : ""
-                  }`}
-                >
-                  {island ? `${island.xp} / ${island.threshold} XP` : `0 XP`}
-                </p>
+                <div className="flex flex-col w-full">
+                  <Progress
+                    className={`bg-muted [&>div]:bg-muted-foreground ${
+                      island?.level === 7 ? "hidden" : ""
+                    }`}
+                    value={island ? (island.xp / island.threshold) * 100 : 0}
+                  />
+                  <div className="flex flex-row justify-between">
+                    <p className="text-xs tracking-tight whitespace-nowrap">
+                      {island
+                        ? (() => {
+                            return daysRemaining > 0
+                              ? `${Math.round(daysRemaining)} days remaining`
+                              : "Time expired";
+                          })()
+                        : ""}
+                    </p>
+
+                    <p
+                      className={`text-xs whitespace-nowrap tracking-tight ${
+                        island?.level === 7 ? "hidden" : ""
+                      }`}
+                    >
+                      {island
+                        ? `${island.xp} / ${island.threshold} XP`
+                        : `0 XP`}
+                    </p>
+                  </div>
+                </div>
                 {island?.level == 7 ? (
                   <p className="font-bold mx-auto">MAX</p>
                 ) : null}
@@ -185,7 +218,7 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="grow px-4">
+          <Card className="w-full px-4">
             <CardContent className="mt-8">
               <div className="flex flex-col py-auto gap-2 justify-center h-full">
                 <div className="min-w-48 flex flex-col gap-6">
@@ -231,6 +264,7 @@ export default function Dashboard() {
                       <Spinner className="mt-8" />
                     ) : (
                       [...groupedSessions]
+                        .reverse()
                         .slice(0, 7)
                         .reverse()
                         .map((day) => (
@@ -247,8 +281,8 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-        <div className="flex flex-row gap-4">
-          <Card className="w-full">
+        <div className="flex lg:flex-row flex-col gap-4">
+          <Card className="w-full max-w-96">
             <CardContent className="flex flex-col mt-6">
               <h2 className="text-xl font-semibold tracking-tight mb-4">
                 Last 30 Days
@@ -263,7 +297,7 @@ export default function Dashboard() {
               )}
             </CardContent>
           </Card>
-          <Card className="min-w-96">
+          <Card className="lg:min-w-96 w-full">
             <CardContent className="mt-6">
               <div className="flex flex-col gap-2">
                 <CourseTopMetric
@@ -277,7 +311,7 @@ export default function Dashboard() {
                   courses={courses}
                 />
               </div>
-              <div className="max-h-[21rem]">
+              <div className="">
                 {loading ? (
                   <TotalCourseAreaChart
                     chartData={groupedSessions.reverse()}

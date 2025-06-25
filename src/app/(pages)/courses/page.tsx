@@ -117,8 +117,8 @@ export default function Courses() {
           course={selectedCourse}
         />
       </div>
-      <div className="flex flex-row gap-4 ">
-        <div className="flex flex-col w-1/2 gap-4">
+      <div className="flex lg:flex-row flex-col-reverse gap-4 ">
+        <div className="flex flex-col w-full lg:w-1/2 gap-4">
           {loading ? (
             <>
               <CourseCardSkeleton />

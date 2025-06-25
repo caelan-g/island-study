@@ -27,7 +27,7 @@ export const SessionDayCard = ({
   return (
     <div className="text-sm flex flex-col">
       <div className="text-muted-foreground text-center">
-        {new Date(day.sessions[0]?.end_time).toLocaleDateString(undefined, {
+        {new Date(day.sessions[0]?.start_time).toLocaleDateString(undefined, {
           weekday: "short",
         })}
       </div>

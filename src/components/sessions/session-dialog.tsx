@@ -258,7 +258,7 @@ export function SessionDialog({
                     render={({ field: endField }) => (
                       <FormItem>
                         <Label className="text-xs font-bold">Duration</Label>
-                        <div className="flex gap-2">
+                        <div className="flex lg:flex-row flex-col gap-2">
                           <DateTimePicker
                             value={startField.value}
                             onChange={(date) => startField.onChange(date)}

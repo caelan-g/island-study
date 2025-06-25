@@ -1,4 +1,5 @@
 "use client";
+import Footer from "@/components/ui/footer";
 import { LandingNavigationMenu } from "@/components/ui/navbar";
 
 export default function LandingLayout({
@@ -10,6 +11,7 @@ export default function LandingLayout({
     <div className="min-h-screen overflow-x-hidden">
       <LandingNavigationMenu />
       <main className="w-full">{children}</main>
+      <Footer />
     </div>
   );
 }

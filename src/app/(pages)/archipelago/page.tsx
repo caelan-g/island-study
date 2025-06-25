@@ -36,7 +36,7 @@ export default function Islands() {
       ) : (
         <div className="">
           <div className="font-semibold tracking-tight text-2xl">
-            My Islands
+            My Archipelago
           </div>
           <div className="space-y-4">
             {islands.map((island) => (

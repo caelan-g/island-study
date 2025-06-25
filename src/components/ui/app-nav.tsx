@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 
 const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "/dashboard",
     icon: Home,
   },
@@ -34,8 +34,8 @@ const items = [
     icon: Table,
   },
   {
-    title: "Islands",
-    url: "/islands",
+    title: "Archipelago",
+    url: "/archipelago",
     icon: TreePalm,
   },
   {
@@ -57,7 +57,12 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem className="flex flex-row">
             <SidebarMenuButton className="justify-between hover:bg-background w-full">
-              <a href="/dashboard">Study App</a>
+              <a
+                href="/dashboard"
+                className="text-xl font-semibold tracking-tight"
+              >
+                Islands.
+              </a>
             </SidebarMenuButton>
             <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
               BETA
@@ -76,7 +81,7 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         "flex gap-2 text-foreground text-md",
-                        pathname === item.url && "font-bold bg-muted"
+                        pathname === item.url && "font-semibold bg-muted"
                       )}
                     >
                       <item.icon />
