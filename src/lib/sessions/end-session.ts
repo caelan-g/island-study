@@ -4,8 +4,31 @@ import { toast } from "sonner";
 import { addXP } from "@/lib/island/add-xp";
 import { User } from "@supabase/supabase-js";
 
+/**
+ * Supabase client instance for database operations
+ */
 const supabase = createClient();
 
+/**
+ * Ends or updates a study session
+ *
+ * Process:
+ * 1. Calculates session duration
+ * 2. Updates existing session or creates new one
+ * 3. Adds XP based on duration
+ *
+ * Database operations:
+ * - Updates session if session_id provided
+ * - Updates active session if exists
+ * - Creates new session if no active session
+ *
+ * @param session_id - Optional ID of session to update
+ * @param start_time - Session start time
+ * @param end_time - Session end time
+ * @param course_id - Course ID for the session
+ * @param user - Authenticated user object
+ * @param description - Optional session description
+ */
 export async function endSession(
   session_id: string,
   start_time: Date,
@@ -33,9 +56,9 @@ export async function endSession(
 
         if (error) {
           console.log(error);
-          toast.error("Failed to end session");
+          toast.error("Failed to save session. Try again.");
         } else {
-          toast.success("Session updated");
+          toast.success("Session saved");
         }
         return;
       }
@@ -52,9 +75,9 @@ export async function endSession(
 
         if (error) {
           console.log(error);
-          toast.error("Failed to end session");
+          toast.error("Failed to save session. Try again.");
         } else {
-          toast.success("Session created");
+          toast.success("Session saved");
         }
       } else {
         const { error } = await supabase.from("sessions").insert({
@@ -67,16 +90,19 @@ export async function endSession(
 
         if (error) {
           console.log(error);
-          toast.error("Failed to end session");
+          toast.error("Failed to save session. Try again.");
         } else {
           toast.success("Session created");
         }
       }
       await addXP(supabase, user.id, duration, user);
-    } catch {
+    } catch (error) {
+      console.error("Session end failed:", error);
+      toast.error("Can't save session. Please refresh.");
       return;
     }
   } else {
     console.log("no user logged in");
+    toast.error("Please log in to save sessions");
   }
 }

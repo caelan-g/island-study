@@ -72,7 +72,7 @@ export function MiniRadialChart({ chartData }: { chartData: chartData[] }) {
                       dominantBaseline="middle"
                       className={`font-bold opacity-90 ${
                         hasReachedGoal
-                          ? "text-foreground"
+                          ? "text-foreground "
                           : "text-muted-foreground"
                       }`}
                     >

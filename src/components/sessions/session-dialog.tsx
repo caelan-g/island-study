@@ -167,6 +167,8 @@ export function SessionDialog({
       );
       // Only call onSubmitSuccess if the endSession was successful
       if (onSubmitSuccess) {
+        const sound = "/sounds/quick-tone.mp3";
+        new Audio(sound).play();
         onSubmitSuccess();
       }
       form.reset();
@@ -258,7 +260,7 @@ export function SessionDialog({
                     render={({ field: endField }) => (
                       <FormItem>
                         <Label className="text-xs font-bold">Duration</Label>
-                        <div className="flex gap-2">
+                        <div className="flex lg:flex-row flex-col gap-2">
                           <DateTimePicker
                             value={startField.value}
                             onChange={(date) => startField.onChange(date)}

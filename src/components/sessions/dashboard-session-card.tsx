@@ -34,7 +34,7 @@ export const DashboardSessionCard = ({
             : new Date(session.start_time).toLocaleDateString()}
         </div>
       </div>
-      <div className="bg-emerald-100 rounded-md text-xs my-auto items-center px-2 py-1">
+      <div className="bg-emerald-100 dark:bg-emerald-500 dark:text-background rounded-md text-xs my-auto items-center px-2 py-1">
         {timeFilter(
           (new Date(session.end_time).getTime() -
             new Date(session.start_time).getTime()) /

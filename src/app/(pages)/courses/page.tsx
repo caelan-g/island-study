@@ -117,8 +117,8 @@ export default function Courses() {
           course={selectedCourse}
         />
       </div>
-      <div className="flex flex-row gap-4 ">
-        <div className="flex flex-col w-1/2 gap-4">
+      <div className="flex lg:flex-row flex-col-reverse gap-4 ">
+        <div className="flex flex-col w-full lg:w-1/2 gap-4">
           {loading ? (
             <>
               <CourseCardSkeleton />
@@ -141,7 +141,7 @@ export default function Courses() {
         </div>
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Course Allocated Study Time</CardTitle>
+            <CardTitle>Study Time by Course</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col">
             <DayCourseAreaChart chartData={groupedSessions} courses={courses} />

@@ -7,7 +7,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -20,10 +20,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { logout } from "@/lib/user/logout";
+import { cn } from "@/lib/utils";
 
 const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "/dashboard",
     icon: Home,
   },
@@ -33,8 +34,8 @@ const items = [
     icon: Table,
   },
   {
-    title: "Islands",
-    url: "/islands",
+    title: "Archipelago",
+    url: "/archipelago",
     icon: TreePalm,
   },
   {
@@ -48,19 +49,24 @@ const items = [
     icon: Settings,
   },
 ];
-
 export function AppSidebar() {
+  const pathname = usePathname();
   return (
     <Sidebar collapsible="icon" variant="floating" className="text-foreground">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="flex justify-between">
-              Study App
-              <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
-                BETA
-              </span>
+          <SidebarMenuItem className="flex flex-row">
+            <SidebarMenuButton className="justify-between hover:bg-background w-full">
+              <a
+                href="/dashboard"
+                className="text-xl font-semibold tracking-tight"
+              >
+                Islands.
+              </a>
             </SidebarMenuButton>
+            <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
+              BETA
+            </span>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -73,7 +79,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild size="default">
                     <a
                       href={item.url}
-                      className="flex gap-2 text-foreground text-md"
+                      className={cn(
+                        "flex gap-2 text-foreground text-md",
+                        pathname === item.url && "font-semibold bg-muted"
+                      )}
                     >
                       <item.icon />
                       <span>{item.title}</span>

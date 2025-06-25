@@ -1,8 +1,28 @@
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
+import { toast } from "sonner";
 
+/**
+ * Supabase client instance for database operations
+ */
 const supabase = createClient();
 
+/**
+ * Fetches total study time for user
+ *
+ * Process:
+ * 1. Fetches all user sessions
+ * 2. Calculates total study time
+ * 3. Calculates today's study time
+ *
+ * Time calculations:
+ * - Total: Sum of all session durations
+ * - Today: Sessions since start of current day
+ * - All times converted to seconds
+ *
+ * @param user - The authenticated user object
+ * @returns Object with total and today's study time
+ */
 export const fetchTotal = async (user: User | null) => {
   if (user) {
     try {
@@ -12,7 +32,8 @@ export const fetchTotal = async (user: User | null) => {
         .eq("user_id", user.id);
 
       if (error) {
-        console.log(error);
+        console.error("Database error:", error);
+        toast.error("Failed to load study time. Try refreshing.");
         return 0;
       }
       if (!data) return 0;
@@ -42,10 +63,13 @@ export const fetchTotal = async (user: User | null) => {
       }
 
       return studyTime;
-    } catch {
+    } catch (error) {
+      console.error("Failed to fetch total:", error);
+      toast.error("Can't load study time. Please refresh.");
       return;
     }
   } else {
     console.log("no user logged in");
+    toast.error("Please log in to view stats");
   }
 };

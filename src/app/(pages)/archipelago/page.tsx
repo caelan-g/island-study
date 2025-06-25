@@ -17,7 +17,14 @@ export default function Islands() {
     const loadIslands = async () => {
       setLoading(true);
       const data = await fetchIslands(authUser);
-      if (data) setIslands(data.reverse());
+      if (data)
+        setIslands(
+          data.sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+        );
       setLoading(false);
     };
     if (!authLoading && authUser) {
@@ -36,7 +43,7 @@ export default function Islands() {
       ) : (
         <div className="">
           <div className="font-semibold tracking-tight text-2xl">
-            My Islands
+            My Archipelago
           </div>
           <div className="space-y-4">
             {islands.map((island) => (
@@ -45,7 +52,7 @@ export default function Islands() {
                   <CardTitle className="flex flex-row gap-4">
                     {new Date(island.created_at).toLocaleDateString()}
                     {island.active ? (
-                      <p className="text-sm rounded-md bg-emerald-100 flex px-2 py-1 ml-2">
+                      <p className="text-sm rounded-md bg-emerald-100 dark:bg-emerald-500 dark:text-background flex px-2 py-1 ml-2">
                         Active
                       </p>
                     ) : null}

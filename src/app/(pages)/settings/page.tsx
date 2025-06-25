@@ -15,27 +15,33 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { fetchUser } from "@/lib/user/fetch-user";
 import { userProps } from "@/components/types/user";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { User, Palette, Shield, Lock, Trash2 } from "lucide-react";
+import { User, TreePalm, Lock, Trash2 } from "lucide-react";
 import { updateUser } from "@/lib/user/update-user";
 import { createClient } from "@/lib/supabase/client";
+import TimePicker from "@/components/ui/time-picker";
+import { resetIsland } from "@/lib/island/reset-island";
+import { weekEndIsland } from "@/lib/island/week-end-island";
+import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
-  { id: "appearance", label: "Appearance", icon: Palette },
+  { id: "reset", label: "Reset Island", icon: TreePalm },
   { id: "account", label: "Account", icon: Lock },
-  { id: "privacy", label: "Privacy", icon: Shield },
 ];
 
 const profileSchema = z.object({
@@ -63,29 +69,12 @@ const accountSchema = z
     path: ["confirmPassword"],
   });
 
-/*
-
-const appearanceSchema = z.object({
-  theme: z.enum(["light", "dark", "system"]),
-  language: z.enum(["en", "es", "fr", "de"]),
-  compactMode: z.boolean(),
-});
-
-
-
-const privacySchema = z.object({
-  profileVisibility: z.boolean(),
-  analytics: z.boolean(),
-  thirdPartyCookies: z.boolean(),
-  dataRetention: z.enum(["30days", "6months", "1year", "forever"]),
-});
-
-*/
-
 export default function SettingsPage() {
   const { user: authUser } = useAuth();
   const [activeSection, setActiveSection] = useState("profile");
   const [user, setUser] = useState<userProps | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   const initializeUser = useCallback(async () => {
     try {
@@ -100,12 +89,29 @@ export default function SettingsPage() {
     initializeUser();
   }, [initializeUser]);
 
+  useEffect(() => {
+    // Check initial theme from localStorage or system preference
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    // Set initial state based on saved preference or system default
+    const initialIsDark =
+      savedTheme === "dark" || (savedTheme === null && prefersDark);
+
+    setIsDarkTheme(initialIsDark);
+
+    // Apply theme on initial load
+    document.documentElement.classList.toggle("dark", initialIsDark);
+  }, []);
+
   const profileForm = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user?.name || "",
       email: authUser?.email || "",
-      goal: user?.goal || 4,
+      goal: user?.goal || 1,
     },
   });
 
@@ -118,29 +124,20 @@ export default function SettingsPage() {
     },
   });
 
-  /*
+  // Helper function to convert seconds to HH:mm format
+  const secondsToTimeString = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
-  const appearanceForm = useForm<z.infer<typeof appearanceSchema>>({
-    resolver: zodResolver(appearanceSchema),
-    defaultValues: {
-      theme: "system",
-      language: "en",
-      compactMode: false,
-    },
-  });
-
-  
-
-  const privacyForm = useForm<z.infer<typeof privacySchema>>({
-    resolver: zodResolver(privacySchema),
-    defaultValues: {
-      profileVisibility: true,
-      analytics: true,
-      thirdPartyCookies: false,
-      dataRetention: "1year",
-    },
-  });
-  */
+  // Helper function to convert HH:mm format to seconds
+  const timeStringToSeconds = (timeString: string): number => {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    return hours * 3600 + minutes * 60;
+  };
 
   useEffect(() => {
     if (user) {
@@ -160,22 +157,30 @@ export default function SettingsPage() {
       console.error("Failed to update user:", error);
       toast.error("Failed to update profile");
     } finally {
-      toast.success("Profile updated successfully");
       initializeUser(); // Refresh user data after update
     }
   }
 
-  /*
-  async function onAppearanceSubmit(values: z.infer<typeof appearanceSchema>) {
-    // Handle appearance update
-    console.log(values);
-  }
-*/
-  /*
-  async function onPrivacySubmit(values: z.infer<typeof privacySchema>) {
-    // Handle privacy settings update
-    console.log(values);
-  }*/
+  const handleDeleteAccount = async () => {
+    if (!authUser) return;
+
+    try {
+      setIsDeleting(true);
+      const supabase = createClient();
+      await supabase.rpc("delete_user");
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        throw signOutError;
+      }
+      toast.success("Account deleted successfully");
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      toast.error("Failed to delete account");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const getSliderPosition = () => {
     const index = sidebarItems.findIndex((item) => item.id === activeSection);
@@ -221,16 +226,57 @@ export default function SettingsPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="goal">Daily Goal (seconds lol)</Label>
-                  <Input
-                    {...profileForm.register("goal", { valueAsNumber: true })}
-                    type="number"
-                  />
+                  <Label htmlFor="goal">Daily Goal</Label>
+                  {user?.goal ? (
+                    <div className="flex flex-row mx-12">
+                      <TimePicker
+                        mode="duration"
+                        value={secondsToTimeString(user.goal)}
+                        onChange={(value) => {
+                          profileForm.setValue(
+                            "goal",
+                            timeStringToSeconds(value)
+                          );
+                        }}
+                      />
+                    </div>
+                  ) : null}
                   {profileForm.formState.errors.goal && (
                     <p className="text-sm text-destructive">
                       {profileForm.formState.errors.goal.message}
                     </p>
                   )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="theme">Theme</Label>
+                  <div className="flex items-center space-x-2 mb-8">
+                    <Switch
+                      id="theme"
+                      checked={isDarkTheme}
+                      onCheckedChange={(checked) => {
+                        // Update state
+                        setIsDarkTheme(checked);
+
+                        // Update DOM
+                        document.documentElement.classList.toggle(
+                          "dark",
+                          checked
+                        );
+
+                        // Save preference
+                        localStorage.setItem(
+                          "theme",
+                          checked ? "dark" : "light"
+                        );
+                      }}
+                    />
+                    <Label htmlFor="theme">
+                      Dark mode{" "}
+                      <span className="text-muted-foreground font-normal">
+                        (not recommended)
+                      </span>
+                    </Label>
+                  </div>
                 </div>
                 <Button type="submit">Save changes</Button>
               </form>
@@ -238,53 +284,45 @@ export default function SettingsPage() {
           </Card>
         );
 
-      case "appearance":
+      case "reset":
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Appearance</CardTitle>
+              <CardTitle>Reset Island</CardTitle>
               <CardDescription>
-                Customize how the application looks and feels.
+                Start a new island. This will archive your current island.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Theme</Label>
-                <Select defaultValue="system">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Language</Label>
-                <Select defaultValue="en">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
-                    <SelectItem value="fr">French</SelectItem>
-                    <SelectItem value="de">German</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Compact mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Use a more compact layout to fit more content on screen.
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <Button>Save changes</Button>
+            <CardContent>
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={async () => {
+                  toast.success("Resetting island...");
+                  await resetIsland(authUser);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Reset Island
+              </Button>
+              <h1 className="font-semibold text-2xl mt-12">
+                Simulate Week End (for Mr. Jaques)
+              </h1>
+              <p className="text-sm text-muted-foreground mb-6">
+                This will simulate a week end where your island has reached 7
+                day maturity{" "}
+              </p>
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={async () => {
+                  toast.success("Simulating... Please return to dashboard.");
+                  await weekEndIsland(authUser);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Simulate
+              </Button>
             </CardContent>
           </Card>
         );
@@ -384,77 +422,51 @@ export default function SettingsPage() {
 
             <Card className="border-destructive">
               <CardHeader>
-                <CardTitle className="text-destructive">Danger Zone</CardTitle>
+                <CardTitle className="text-destructive">
+                  Delete Your Account
+                </CardTitle>
                 <CardDescription>
-                  Irreversible and destructive actions.
+                  Once you delete your account, there is no going back. Please
+                  be certain.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="destructive" className="w-full">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Account
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="w-full">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Account
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="w-full">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteAccount}
+                        disabled={isDeleting}
+                        className="bg-destructive w-full text-background hover:bg-destructive/90"
+                      >
+                        {isDeleting ? "Deleting..." : "Delete Account"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardContent>
             </Card>
           </div>
         );
-
-      case "privacy":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Privacy</CardTitle>
-              <CardDescription>
-                Control your privacy and data sharing preferences.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Profile visibility</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Make your profile visible to other users.
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Analytics</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Help us improve by sharing anonymous usage data.
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Third-party cookies</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Allow third-party services to set cookies.
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <div className="space-y-2">
-                <Label>Data retention</Label>
-                <Select defaultValue="1year">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="30days">30 days</SelectItem>
-                    <SelectItem value="6months">6 months</SelectItem>
-                    <SelectItem value="1year">1 year</SelectItem>
-                    <SelectItem value="forever">Forever</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button>Save preferences</Button>
-            </CardContent>
-          </Card>
-        );
-
       default:
         return null;
     }
@@ -472,7 +484,7 @@ export default function SettingsPage() {
               initial={false}
               animate={{
                 x: getSliderPosition(),
-                width: `${100 / sidebarItems.length - 0.5}%`,
+                width: `${100 / sidebarItems.length - 0.7}%`,
               }}
               transition={{
                 type: "spring",

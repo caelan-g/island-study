@@ -15,7 +15,7 @@ import { userProps } from "@/components/types/user";
 import { islandProps } from "@/components/types/island";
 import { fetchActiveIsland } from "@/lib/island/fetch-active-island";
 import { useAuth } from "@/contexts/auth-context";
-import { PlusIcon } from "lucide-react";
+import { ArrowBigUpDash, PlusIcon } from "lucide-react";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { sessionProps } from "@/components/types/session";
 import { SessionDayCard } from "@/components/sessions/session-day-card";
@@ -32,6 +32,9 @@ import { TotalCourseAreaChart } from "@/components/charts/total-course-area-char
 import StudyHeatmap from "@/components/charts/study-heatmap";
 import { toast } from "sonner";
 import { GroupedSession, TimeMetrics } from "@/components/types/session";
+import ReviewDialog from "@/components/islands/review-dialog";
+import { resetIsland } from "@/lib/island/reset-island";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Dashboard() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -50,6 +53,13 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [rawSessionData, setRawSessionData] = useState<sessionProps[]>([]);
   const [groupedSessions, setGroupedSessions] = useState<GroupedSession[]>([]);
+  const [daysRemaining, setDaysRemaining] = useState<number>(0);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [oldIsland, setOldIsland] = useState<islandProps | null>(null);
+
+  // Add this state to track level-ups
+  const [previousLevel, setPreviousLevel] = useState<number | null>(null);
+  const [isLevelUp, setIsLevelUp] = useState(false);
 
   useEffect(() => {
     if (rawSessionData.length > 0) {
@@ -61,6 +71,16 @@ export default function Dashboard() {
       setGroupedSessions(groupedArray as GroupedSession[]);
     }
   }, [rawSessionData]);
+
+  useEffect(() => {
+    if (isLevelUp) {
+      const sound = "/sounds/level-up.mp3";
+      const audio = new Audio(sound);
+      setTimeout(() => {
+        audio.play();
+      }, 500);
+    }
+  }, [isLevelUp]);
 
   const loadDatabases = useCallback(async () => {
     Promise.all([
@@ -92,7 +112,7 @@ export default function Dashboard() {
   const handleSessionSubmit = async () => {
     setLoading(true);
     try {
-      await loadDatabases(); // Reuse existing loadDatabases function
+      await loadDatabases();
     } catch (error) {
       console.error("Error refreshing data:", error);
     } finally {
@@ -106,29 +126,97 @@ export default function Dashboard() {
     }
   }, [authLoading, authUser, loadDatabases]);
 
+  useEffect(() => {
+    if (island) {
+      const deadline = new Date(island.created_at);
+      deadline.setDate(deadline.getDate() + 7); // Add 1 week
+      const daysRemaining =
+        (deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+      if (daysRemaining < 0) {
+        setDaysRemaining(0);
+        setReviewDialogOpen(true);
+        resetIsland(authUser);
+        setOldIsland(island);
+        loadDatabases(); // Reload data after resetting island
+      } else {
+        setDaysRemaining(daysRemaining);
+      }
+    }
+  }, [island]);
+
+  useEffect(() => {
+    if (previousLevel !== null && island && island.level > previousLevel) {
+      setIsLevelUp(true);
+      setTimeout(() => setIsLevelUp(false), 2000); // Reset after animation
+    }
+    if (island) {
+      setPreviousLevel(island.level);
+    }
+  }, [island?.level, previousLevel]);
+
   return (
     <div className="flex flex-col">
       <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col lg:flex-row gap-4">
-          <Card className="w-[600px]">
+          <Card className="lg:min-w-[600px] w-full max-w-[800px]">
             <CardHeader></CardHeader>
             <CardContent className="flex flex-col gap-2">
               <div>
-                <Image
-                  src={
-                    loading
-                      ? "/images/loading_island.png"
-                      : island
-                      ? island.current_url
-                      : "/images/loading_island.png" //change later
-                  }
-                  alt="My Island"
-                  width={600}
-                  height={300}
-                  className="pixelated floating pointer-events-none select-none"
-                  unoptimized
-                />
+                <div className="relative">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={island?.current_url || "loading"}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1 }}
+                      transition={{
+                        duration: 0.5,
+                        type: "spring",
+                        bounce: 0.4,
+                      }}
+                      className="relative"
+                    >
+                      <Image
+                        src={
+                          loading
+                            ? "/images/loading_island.png"
+                            : island
+                            ? island.current_url
+                            : "/images/loading_island.png"
+                        }
+                        alt="My Island"
+                        width={600}
+                        height={300}
+                        className={`pixelated pointer-events-none select-none w-full max-w-[800px] floating ${
+                          isLevelUp ? "animate-shimmer" : ""
+                        }`}
+                        unoptimized
+                      />
+
+                      {isLevelUp && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute inset-0 flex items-center justify-center"
+                        >
+                          <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{
+                              scale: [1, 1.2, 1],
+                              opacity: [0.8, 1, 0],
+                            }}
+                            transition={{ duration: 1.5, times: [0, 0.5, 1] }}
+                            className="text-4xl font-bold text-emerald-500 bg-black/30 px-6 py-3 rounded-full"
+                          >
+                            <ArrowBigUpDash className="w-24 h-24" />
+                          </motion.div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
               <div className="flex flex-row justify-center items-center">
                 <div className="z-10 font-bold text-background">
@@ -137,22 +225,35 @@ export default function Dashboard() {
                 <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
               </div>
               <div className="flex flex-row justify-between space-x-4 items-center">
-                <Progress
-                  className={`bg-muted [&>div]:bg-muted-foreground ${
-                    island?.level === 7 ? "hidden" : ""
-                  }`}
-                  value={island ? (island.xp / island.threshold) * 100 : 0}
-                />
-                <p
-                  className={`text-xs font-bold whitespace-nowrap ${
-                    island?.level === 7 ? "hidden" : ""
-                  }`}
-                >
-                  {island ? `${island.xp} / ${island.threshold} XP` : `0 XP`}
-                </p>
-                {island?.level == 7 ? (
-                  <p className="font-bold mx-auto">MAX</p>
-                ) : null}
+                <div className="flex flex-col w-full">
+                  <Progress
+                    className={`bg-muted [&>div]:bg-muted-foreground ${
+                      island?.level === 7 ? "hidden" : ""
+                    }`}
+                    value={island ? (island.xp / island.threshold) * 100 : 0}
+                  />
+                  <div className="flex flex-row justify-between">
+                    <p className="text-xs tracking-tight whitespace-nowrap">
+                      {island
+                        ? (() => {
+                            return daysRemaining > 0
+                              ? `${Math.round(daysRemaining)} days remaining`
+                              : "Time expired";
+                          })()
+                        : ""}
+                    </p>
+
+                    <p
+                      className={`text-xs whitespace-nowrap tracking-tight ${
+                        island?.level === 7 ? "hidden" : ""
+                      }`}
+                    >
+                      {island
+                        ? `${island.xp} / ${island.threshold} XP`
+                        : `0 XP`}
+                    </p>
+                  </div>
+                </div>
               </div>
               <div className="flex flex-row gap-2">
                 <SessionButton
@@ -185,11 +286,11 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
-          <Card className="grow px-4">
+          <Card className="w-full px-4">
             <CardContent className="mt-8">
               <div className="flex flex-col py-auto gap-2 justify-center h-full">
                 <div className="min-w-48 flex flex-col gap-6">
-                  <div className="flex flex-row justify-between w-full">
+                  <div className="hidden lg:flex flex-row justify-between w-full">
                     <PeriodProgress
                       studyTime={studyTime["today"]}
                       goal={user?.goal ?? 0}
@@ -204,6 +305,13 @@ export default function Dashboard() {
                       studyTime={studyTime["month"]}
                       goal={user?.goal ?? 0}
                       timeframe="month"
+                    />
+                  </div>
+                  <div className="mx-auto lg:hidden ">
+                    <PeriodProgress
+                      studyTime={studyTime["today"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="day"
                     />
                   </div>
                   <div className="flex flex-row justify-between">
@@ -226,13 +334,27 @@ export default function Dashboard() {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-row justify-between gap-2">
+                  <div className="lg:flex flex-row justify-between gap-2 hidden">
                     {loading ? (
                       <Spinner className="mt-8" />
                     ) : (
                       [...groupedSessions]
                         .slice(0, 7)
-                        .reverse()
+                        .map((day) => (
+                          <SessionDayCard
+                            key={day.date}
+                            day={day}
+                            goal={user?.goal ?? 0}
+                          />
+                        ))
+                    )}
+                  </div>
+                  <div className="flex flex-row justify-between lg:hidden">
+                    {loading ? (
+                      <Spinner className="mt-8" />
+                    ) : (
+                      [...groupedSessions]
+                        .slice(0, 5)
                         .map((day) => (
                           <SessionDayCard
                             key={day.date}
@@ -247,8 +369,8 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-        <div className="flex flex-row gap-4">
-          <Card className="w-full">
+        <div className="flex lg:flex-row flex-col gap-4">
+          <Card className="w-full max-w-96">
             <CardContent className="flex flex-col mt-6">
               <h2 className="text-xl font-semibold tracking-tight mb-4">
                 Last 30 Days
@@ -263,7 +385,7 @@ export default function Dashboard() {
               )}
             </CardContent>
           </Card>
-          <Card className="min-w-96">
+          <Card className="lg:min-w-96 w-full">
             <CardContent className="mt-6">
               <div className="flex flex-col gap-2">
                 <CourseTopMetric
@@ -277,7 +399,7 @@ export default function Dashboard() {
                   courses={courses}
                 />
               </div>
-              <div className="max-h-[21rem]">
+              <div className="">
                 {loading ? (
                   <TotalCourseAreaChart
                     chartData={groupedSessions.reverse()}
@@ -325,6 +447,18 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+
+      <ReviewDialog
+        open={reviewDialogOpen}
+        onOpenChange={(open: boolean) => {
+          setReviewDialogOpen(open);
+        }}
+        groupedSessions={groupedSessions}
+        studyTime={studyTime["week"]}
+        goal={user?.goal ?? 0}
+        courses={courses}
+        island={oldIsland}
+      />
     </div>
   );
 }

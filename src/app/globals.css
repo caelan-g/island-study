@@ -124,6 +124,11 @@
   }
 }
 
+body {
+  --tw-tracking: var(--tracking-tight) /* -0.025em */;
+  letter-spacing: var(--tracking-tight) /* -0.025em */;
+}
+
 .pixelated {
   image-rendering: pixelated;
   /* fallback for older browsers */
@@ -144,6 +149,44 @@
 
 .floating {
   animation: float 5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    filter: brightness(1);
+  }
+  25% {
+    filter: brightness(1.5);
+  }
+  50% {
+    filter: brightness(1);
+  }
+  75% {
+    filter: brightness(1.5);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s ease-in-out;
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating {
+  animation: floating 7s ease-in-out infinite;
 }
 
 @layer utilities {
