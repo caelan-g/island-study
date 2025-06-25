@@ -173,7 +173,6 @@ body {
   animation: shimmer 2s ease-in-out;
 }
 
-/* Your existing floating animation */
 @keyframes floating {
   0% {
     transform: translateY(0px);
@@ -187,7 +186,7 @@ body {
 }
 
 .floating {
-  animation: floating 5s ease-in-out infinite;
+  animation: floating 7s ease-in-out infinite;
 }
 
 @layer utilities {

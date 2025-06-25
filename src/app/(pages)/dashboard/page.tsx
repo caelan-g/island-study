@@ -112,7 +112,7 @@ export default function Dashboard() {
   const handleSessionSubmit = async () => {
     setLoading(true);
     try {
-      await loadDatabases(); // Reuse existing loadDatabases function
+      await loadDatabases();
     } catch (error) {
       console.error("Error refreshing data:", error);
     } finally {
@@ -144,7 +144,6 @@ export default function Dashboard() {
     }
   }, [island]);
 
-  // Add this effect to detect level changes
   useEffect(() => {
     if (previousLevel !== null && island && island.level > previousLevel) {
       setIsLevelUp(true);
@@ -168,9 +167,9 @@ export default function Dashboard() {
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={island?.current_url || "loading"}
-                      initial={{ opacity: 0, scale: 0.8 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.1 }}
+                      exit={{ opacity: 0, scale: 1 }}
                       transition={{
                         duration: 0.5,
                         type: "spring",

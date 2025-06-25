@@ -28,7 +28,7 @@ export async function deleteSession(session: sessionProps, user: User | null) {
   }
 
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("sessions")
       .delete()
       .eq("id", session.id)

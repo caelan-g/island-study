@@ -36,7 +36,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { SupabaseClient } from "@supabase/supabase-js";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
