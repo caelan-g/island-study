@@ -39,11 +39,14 @@ export const fetchUser = async (user: User | null | null) => {
     } catch (err) {
       // Log any unexpected errors
       console.error(err);
+      toast.error(
+        "An error occurred while fetching user data. Please try again."
+      );
       return;
     }
   } else {
     // Show error if no user is authenticated
-    toast.error("No user logged in");
+    toast.error("No user logged in. Please login to continue.");
     return null;
   }
 };
