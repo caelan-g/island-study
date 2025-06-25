@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
 
 /**
  * Handles user logout process
@@ -19,21 +18,10 @@ import { toast } from "sonner";
  */
 export const logout = async () => {
   const supabase = createClient();
-
-  try {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.error("Error:", error);
-      toast.error("Failed to log out. Try again.");
-      return error;
-    }
-
-    toast.success("Logged out successfully");
-    redirect("/auth/login");
-  } catch (error) {
-    console.error("Logout failed:", error);
-    toast.error("Can't log out. Please refresh.");
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Error:", error);
     return error;
   }
+  redirect("/auth/login");
 };

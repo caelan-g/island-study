@@ -24,7 +24,7 @@ export function PeriodProgress({
         <p className="text-xl font-bold text-center">{timeFilter(studyTime)}</p>
 
         <Progress
-          className={`bg-muted min-w-24 w-full ${
+          className={`bg-muted lg:min-w-24 w-full ${
             studyTime >= goal * period
               ? "[&>div]:bg-[var(--chart-green)]"
               : "[&>div]:bg-muted-foreground"

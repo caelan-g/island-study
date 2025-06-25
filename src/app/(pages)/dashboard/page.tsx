@@ -290,7 +290,7 @@ export default function Dashboard() {
             <CardContent className="mt-8">
               <div className="flex flex-col py-auto gap-2 justify-center h-full">
                 <div className="min-w-48 flex flex-col gap-6">
-                  <div className="flex flex-row justify-between w-full">
+                  <div className="hidden lg:flex flex-row justify-between w-full">
                     <PeriodProgress
                       studyTime={studyTime["today"]}
                       goal={user?.goal ?? 0}
@@ -305,6 +305,13 @@ export default function Dashboard() {
                       studyTime={studyTime["month"]}
                       goal={user?.goal ?? 0}
                       timeframe="month"
+                    />
+                  </div>
+                  <div className="mx-auto lg:hidden ">
+                    <PeriodProgress
+                      studyTime={studyTime["today"]}
+                      goal={user?.goal ?? 0}
+                      timeframe="day"
                     />
                   </div>
                   <div className="flex flex-row justify-between">
@@ -327,14 +334,27 @@ export default function Dashboard() {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-row justify-between gap-2">
+                  <div className="lg:flex flex-row justify-between gap-2 hidden">
                     {loading ? (
                       <Spinner className="mt-8" />
                     ) : (
                       [...groupedSessions]
-                        .reverse()
                         .slice(0, 7)
-                        .reverse()
+                        .map((day) => (
+                          <SessionDayCard
+                            key={day.date}
+                            day={day}
+                            goal={user?.goal ?? 0}
+                          />
+                        ))
+                    )}
+                  </div>
+                  <div className="flex flex-row justify-between lg:hidden">
+                    {loading ? (
+                      <Spinner className="mt-8" />
+                    ) : (
+                      [...groupedSessions]
+                        .slice(0, 5)
                         .map((day) => (
                           <SessionDayCard
                             key={day.date}
