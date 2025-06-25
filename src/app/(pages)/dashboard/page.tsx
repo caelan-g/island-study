@@ -32,6 +32,8 @@ import { TotalCourseAreaChart } from "@/components/charts/total-course-area-char
 import StudyHeatmap from "@/components/charts/study-heatmap";
 import { toast } from "sonner";
 import { GroupedSession, TimeMetrics } from "@/components/types/session";
+import ReviewDialog from "@/components/islands/review-dialog";
+import { resetIsland } from "@/lib/island/reset-island";
 
 export default function Dashboard() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -52,6 +54,7 @@ export default function Dashboard() {
   const [groupedSessions, setGroupedSessions] = useState<GroupedSession[]>([]);
   const [daysRemaining, setDaysRemaining] = useState<number>(0);
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [oldIsland, setOldIsland] = useState<islandProps | null>(null);
 
   useEffect(() => {
     if (rawSessionData.length > 0) {
@@ -63,21 +66,6 @@ export default function Dashboard() {
       setGroupedSessions(groupedArray as GroupedSession[]);
     }
   }, [rawSessionData]);
-
-  useEffect(() => {
-    if (island) {
-      const deadline = new Date(island.created_at);
-      deadline.setDate(deadline.getDate() + 7); // Add 1 week
-      const daysRemaining =
-        (deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
-      if (daysRemaining < 0) {
-        setDaysRemaining(0);
-        setReviewDialogOpen(true);
-      } else {
-        setDaysRemaining(daysRemaining);
-      }
-    }
-  }, [island]);
 
   const loadDatabases = useCallback(async () => {
     Promise.all([
@@ -122,6 +110,24 @@ export default function Dashboard() {
       loadDatabases();
     }
   }, [authLoading, authUser, loadDatabases]);
+
+  useEffect(() => {
+    if (island) {
+      const deadline = new Date(island.created_at);
+      deadline.setDate(deadline.getDate() + 7); // Add 1 week
+      const daysRemaining =
+        (deadline.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24);
+      if (daysRemaining < 0) {
+        setDaysRemaining(0);
+        setReviewDialogOpen(true);
+        resetIsland(authUser);
+        setOldIsland(island);
+        loadDatabases(); // Reload data after resetting island
+      } else {
+        setDaysRemaining(daysRemaining);
+      }
+    }
+  }, [island]);
 
   return (
     <div className="flex flex-col">
@@ -183,9 +189,6 @@ export default function Dashboard() {
                     </p>
                   </div>
                 </div>
-                {island?.level == 7 ? (
-                  <p className="font-bold mx-auto">MAX</p>
-                ) : null}
               </div>
               <div className="flex flex-row gap-2">
                 <SessionButton
@@ -359,6 +362,18 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+
+      <ReviewDialog
+        open={reviewDialogOpen}
+        onOpenChange={(open: boolean) => {
+          setReviewDialogOpen(open);
+        }}
+        groupedSessions={groupedSessions}
+        studyTime={studyTime["week"]}
+        goal={user?.goal ?? 0}
+        courses={courses}
+        island={oldIsland}
+      />
     </div>
   );
 }

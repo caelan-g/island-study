@@ -15,28 +15,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { fetchUser } from "@/lib/user/fetch-user";
 import { userProps } from "@/components/types/user";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { User, Palette, Shield, Lock, Trash2 } from "lucide-react";
+import { User, TreePalm, Lock, Trash2, TableOfContents } from "lucide-react";
 import { updateUser } from "@/lib/user/update-user";
 import { createClient } from "@/lib/supabase/client";
 import TimePicker from "@/components/ui/time-picker";
+import { resetIsland } from "@/lib/island/reset-island";
+import { weekEndIsland } from "@/lib/island/week-end-island";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
-  { id: "appearance", label: "Appearance", icon: Palette },
+  { id: "reset", label: "Reset Island", icon: TreePalm },
   { id: "account", label: "Account", icon: Lock },
-  { id: "privacy", label: "Privacy", icon: Shield },
 ];
 
 const profileSchema = z.object({
@@ -106,7 +99,7 @@ export default function SettingsPage() {
     defaultValues: {
       name: user?.name || "",
       email: authUser?.email || "",
-      goal: user?.goal || 4,
+      goal: user?.goal || 1,
     },
   });
 
@@ -240,53 +233,45 @@ export default function SettingsPage() {
           </Card>
         );
 
-      case "appearance":
+      case "reset":
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Appearance</CardTitle>
+              <CardTitle>Reset Island</CardTitle>
               <CardDescription>
-                Customize how the application looks and feels.
+                Start a new island. This will archive your current island.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Theme</Label>
-                <Select defaultValue="system">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Language</Label>
-                <Select defaultValue="en">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
-                    <SelectItem value="fr">French</SelectItem>
-                    <SelectItem value="de">German</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Compact mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Use a more compact layout to fit more content on screen.
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <Button>Save changes</Button>
+            <CardContent>
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={async () => {
+                  toast.success("Resetting island...");
+                  await resetIsland(authUser);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Reset Island
+              </Button>
+              <h1 className="font-semibold text-2xl mt-12">
+                Simulate Week End (for Mr. Jaques)
+              </h1>
+              <p className="text-sm text-muted-foreground mb-6">
+                This will simulate a week end where your island has reached 7
+                day maturity{" "}
+              </p>
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={async () => {
+                  toast.success("Simulating... Please return to dashboard.");
+                  await weekEndIsland(authUser);
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Simulate
+              </Button>
             </CardContent>
           </Card>
         );
@@ -400,63 +385,6 @@ export default function SettingsPage() {
             </Card>
           </div>
         );
-
-      case "privacy":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Privacy</CardTitle>
-              <CardDescription>
-                Control your privacy and data sharing preferences.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Profile visibility</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Make your profile visible to other users.
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Analytics</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Help us improve by sharing anonymous usage data.
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Third-party cookies</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Allow third-party services to set cookies.
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <div className="space-y-2">
-                <Label>Data retention</Label>
-                <Select defaultValue="1year">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="30days">30 days</SelectItem>
-                    <SelectItem value="6months">6 months</SelectItem>
-                    <SelectItem value="1year">1 year</SelectItem>
-                    <SelectItem value="forever">Forever</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button>Save preferences</Button>
-            </CardContent>
-          </Card>
-        );
-
       default:
         return null;
     }
@@ -474,7 +402,7 @@ export default function SettingsPage() {
               initial={false}
               animate={{
                 x: getSliderPosition(),
-                width: `${100 / sidebarItems.length - 0.5}%`,
+                width: `${100 / sidebarItems.length - 0.7}%`,
               }}
               transition={{
                 type: "spring",
