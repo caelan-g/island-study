@@ -17,7 +17,14 @@ export default function Islands() {
     const loadIslands = async () => {
       setLoading(true);
       const data = await fetchIslands(authUser);
-      if (data) setIslands(data.reverse());
+      if (data)
+        setIslands(
+          data.sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          )
+        );
       setLoading(false);
     };
     if (!authLoading && authUser) {
