@@ -44,7 +44,7 @@ export default function ReviewDialog({
             Your Week in Review
           </AlertDialogTitle>
           <AlertDialogDescription className="text-muted-foreground">
-            Here's how you did this week
+            Here&apos;s how you did this week
           </AlertDialogDescription>
         </AlertDialogHeader>
 

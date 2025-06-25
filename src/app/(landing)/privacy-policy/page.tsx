@@ -6,10 +6,10 @@ export default function PrivacyPolicyPage() {
 
       <section className="space-y-6 text-base leading-relaxed">
         <p>
-          Welcome to <strong>Islands</strong> ("we", "us", or "our"). This
-          Privacy Policy explains how we collect, use, disclose, and safeguard
-          your personal information when you use our app,{" "}
-          <strong>Islands</strong>.
+          Welcome to <strong>Islands</strong> (&quot;we&quot;, &quot;us&quot;,
+          or &quot;our&quot;). This Privacy Policy explains how we collect, use,
+          disclose, and safeguard your personal information when you use our
+          app, <strong>Islands</strong>.
         </p>
 
         <p>

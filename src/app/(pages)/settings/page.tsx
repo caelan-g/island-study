@@ -19,7 +19,7 @@ import { fetchUser } from "@/lib/user/fetch-user";
 import { userProps } from "@/components/types/user";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
-import { User, TreePalm, Lock, Trash2, TableOfContents } from "lucide-react";
+import { User, TreePalm, Lock, Trash2 } from "lucide-react";
 import { updateUser } from "@/lib/user/update-user";
 import { createClient } from "@/lib/supabase/client";
 import TimePicker from "@/components/ui/time-picker";
