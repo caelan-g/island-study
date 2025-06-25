@@ -25,6 +25,18 @@ import { createClient } from "@/lib/supabase/client";
 import TimePicker from "@/components/ui/time-picker";
 import { resetIsland } from "@/lib/island/reset-island";
 import { weekEndIsland } from "@/lib/island/week-end-island";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
@@ -57,29 +69,11 @@ const accountSchema = z
     path: ["confirmPassword"],
   });
 
-/*
-
-const appearanceSchema = z.object({
-  theme: z.enum(["light", "dark", "system"]),
-  language: z.enum(["en", "es", "fr", "de"]),
-  compactMode: z.boolean(),
-});
-
-
-
-const privacySchema = z.object({
-  profileVisibility: z.boolean(),
-  analytics: z.boolean(),
-  thirdPartyCookies: z.boolean(),
-  dataRetention: z.enum(["30days", "6months", "1year", "forever"]),
-});
-
-*/
-
 export default function SettingsPage() {
   const { user: authUser } = useAuth();
   const [activeSection, setActiveSection] = useState("profile");
   const [user, setUser] = useState<userProps | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const initializeUser = useCallback(async () => {
     try {
@@ -150,17 +144,26 @@ export default function SettingsPage() {
     }
   }
 
-  /*
-  async function onAppearanceSubmit(values: z.infer<typeof appearanceSchema>) {
-    // Handle appearance update
-    console.log(values);
-  }
-*/
-  /*
-  async function onPrivacySubmit(values: z.infer<typeof privacySchema>) {
-    // Handle privacy settings update
-    console.log(values);
-  }*/
+  const handleDeleteAccount = async () => {
+    if (!authUser) return;
+
+    try {
+      setIsDeleting(true);
+      const supabase = createClient();
+      await supabase.rpc("delete_user");
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        throw signOutError;
+      }
+      toast.success("Account deleted successfully");
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      toast.error("Failed to delete account");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const getSliderPosition = () => {
     const index = sidebarItems.findIndex((item) => item.id === activeSection);
@@ -371,16 +374,47 @@ export default function SettingsPage() {
 
             <Card className="border-destructive">
               <CardHeader>
-                <CardTitle className="text-destructive">Danger Zone</CardTitle>
+                <CardTitle className="text-destructive">
+                  Delete Your Account
+                </CardTitle>
                 <CardDescription>
-                  Irreversible and destructive actions.
+                  Once you delete your account, there is no going back. Please
+                  be certain.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button variant="destructive" className="w-full">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Account
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="w-full">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Account
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="w-full">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteAccount}
+                        disabled={isDeleting}
+                        className="bg-destructive w-full text-background hover:bg-destructive/90"
+                      >
+                        {isDeleting ? "Deleting..." : "Delete Account"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardContent>
             </Card>
           </div>

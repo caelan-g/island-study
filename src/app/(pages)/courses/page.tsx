@@ -141,7 +141,7 @@ export default function Courses() {
         </div>
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>Course Allocated Study Time</CardTitle>
+            <CardTitle>Study Time by Course</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col">
             <DayCourseAreaChart chartData={groupedSessions} courses={courses} />
