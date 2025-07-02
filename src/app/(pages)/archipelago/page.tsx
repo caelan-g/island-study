@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/auth-context";
 import PerspectiveCarousel from "@/components/ui/perspective-carousel";
 import { IslandLevelMetric } from "@/components/metrics/islands/island-level-metric";
 import { IslandXPMetric } from "@/components/metrics/islands/island-xp-metric";
+import { IslandTimeMetric } from "@/components/metrics/islands/island-time-metric";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Islands() {
   const { user: authUser, loading: authLoading } = useAuth();
@@ -35,10 +37,31 @@ export default function Islands() {
     <>
       {loading ? (
         <>
-          <Card className="bg-muted animate-pulse">
-            <CardHeader></CardHeader>
-            <CardContent className="min-h-48"></CardContent>
-          </Card>
+          <div className="font-semibold tracking-tight text-2xl">
+            My Archipelago
+          </div>
+          <div className="space-y-4">
+            <Card className="min-h-[31rem]">
+              <CardHeader>
+                <CardTitle className="flex flex-row gap-4">
+                  <Skeleton className="h-8 w-48"></Skeleton>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="">
+                <Skeleton className="h-10 w-72"></Skeleton>
+              </CardContent>
+            </Card>
+            <Card className="">
+              <CardHeader>
+                <CardTitle className="flex flex-row gap-4">
+                  <Skeleton className="h-8 w-48"></Skeleton>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="min-h-[27.6rem]">
+                <Skeleton className="h-12 w-72"></Skeleton>
+              </CardContent>
+            </Card>
+          </div>
         </>
       ) : (
         <div className="">
@@ -71,6 +94,11 @@ export default function Islands() {
                   <div className="absolute ml-6 flex flex-row gap-8 z-100">
                     <IslandLevelMetric level={island.level} />
                     <IslandXPMetric
+                      threshold={island.threshold}
+                      level={island.level}
+                      xp={island.xp}
+                    />
+                    <IslandTimeMetric
                       threshold={island.threshold}
                       level={island.level}
                       xp={island.xp}

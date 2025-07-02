@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { GroupedSession } from "@/components/types/session";
-import { CourseTopMetric } from "@/components/metrics/course-top-metric";
-import { TimeMetric } from "@/components/metrics/time-metric";
+import { CourseTopMetric } from "@/components/metrics/courses/course-top-metric";
+import { TimeMetric } from "@/components/metrics/time/time-metric";
 import { courseProps } from "@/components/types/course";
 import { IslandLevelMetric } from "@/components/metrics/islands/island-level-metric";
 import { IslandXPMetric } from "@/components/metrics/islands/island-xp-metric";
