@@ -15,8 +15,8 @@ import { GroupedSession } from "@/components/types/session";
 import { processSessionData } from "@/lib/metrics/process-session-data";
 import { TimeMetrics } from "@/components/types/session";
 import { DayCourseAreaChart } from "@/components/charts/day-course-area-chart";
-import { CourseMetric } from "@/components/metrics/course-metric";
-import { CourseTopMetric } from "@/components/metrics/course-top-metric";
+import { CourseMetric } from "@/components/metrics/courses/course-metric";
+import { CourseTopMetric } from "@/components/metrics/courses/course-top-metric";
 import { CourseCardSkeleton } from "@/components/courses/course-card-skeleton";
 
 export default function Courses() {
