@@ -91,8 +91,23 @@ export async function addXP(
 
         if (error) {
           console.error(error);
-          toast.error("Failed to update island xp. Please try again,");
+          toast.error("Failed to update island xp. Please try again later.");
         }
+      }
+    } else {
+      const total = duration + island.xp;
+
+      const { error } = await supabase
+        .from("islands")
+        .update({
+          xp: total, // Set new XP total
+        })
+        .eq("user_id", userId)
+        .eq("active", true);
+
+      if (error) {
+        console.error(error);
+        toast.error("Failed to update island. Please try again later.");
       }
     }
   } else {
