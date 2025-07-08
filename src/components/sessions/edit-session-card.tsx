@@ -136,10 +136,11 @@ export function EditSessionCard({
         return;
       }
       await deleteSession(sessionProps, authUser);
-      toast.success("Session deleted");
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      }
     } catch (error) {
       console.error("Failed to delete session:", error);
-      toast.error("Failed to delete session");
     }
   };
 
@@ -249,6 +250,7 @@ export function EditSessionCard({
             {sessionProps ? (
               <>
                 <Button
+                  type="button"
                   variant="destructive"
                   className="w-full"
                   onClick={() => handleDelete()}

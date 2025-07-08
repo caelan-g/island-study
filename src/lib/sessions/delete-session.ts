@@ -33,6 +33,7 @@ export async function deleteSession(session: sessionProps, user: User | null) {
       .delete()
       .eq("id", session.id)
       .single();
+    toast.success("Session deleted");
 
     if (error) {
       console.log(error);
