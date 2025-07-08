@@ -25,7 +25,6 @@ import { createClient } from "@/lib/supabase/client";
 import TimePicker from "@/components/ui/time-picker";
 import { resetIsland } from "@/lib/island/reset-island";
 import { weekEndIsland } from "@/lib/island/week-end-island";
-import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -74,7 +73,7 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("profile");
   const [user, setUser] = useState<userProps | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  //const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   const initializeUser = useCallback(async () => {
     try {
@@ -100,7 +99,7 @@ export default function SettingsPage() {
     const initialIsDark =
       savedTheme === "dark" || (savedTheme === null && prefersDark);
 
-    setIsDarkTheme(initialIsDark);
+    //setIsDarkTheme(initialIsDark);
 
     // Apply theme on initial load
     document.documentElement.classList.toggle("dark", initialIsDark);
@@ -311,8 +310,8 @@ export default function SettingsPage() {
 
               <h1 className="font-semibold text-2xl mt-12">End Week Early</h1>
               <p className="text-sm text-muted-foreground mb-6">
-                This will end your island's week early, resetting your island in
-                the process.
+                This will end your island&apos;s week early, resetting your
+                island in the process.
               </p>
               <Button
                 variant="destructive"
