@@ -55,16 +55,33 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="floating" className="text-foreground">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem className="flex flex-row">
-            <SidebarMenuButton className="justify-between hover:bg-background w-full">
-              <a
-                href="/dashboard"
-                className="text-xl font-semibold tracking-tight"
+          <SidebarMenuItem className="flex flex-row justify-between">
+            <a
+              href="/dashboard"
+              className="text-2xl font-semibold tracking-tight mx-2 mt-1 flex flex-row"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="2 2 20 15"
+                stroke="currentColor"
+                className="size-6 my-auto mr-2"
               >
-                Islands.
-              </a>
-            </SidebarMenuButton>
-            <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs">
+                <path
+                  d="m21 7.5-9-4.25L3 7.5v4l9 4.25 9-4.25z"
+                  fill="#fff"
+                  stroke="none"
+                />
+                <path
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 7.5-9-4.25L3 7.5m18 0-9 4.25m9-4.25v4l-9 4.25M3 7.5l9 4.25M3 7.5v4l9 4.25m0-4v4"
+                />
+              </svg>
+              Islands
+            </a>
+
+            <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs my-auto">
               BETA
             </span>
           </SidebarMenuItem>

@@ -14,7 +14,8 @@ export default function RootLayout({
   return (
     <html dir="ltr" lang="en" suppressHydrationWarning>
       <head>
-        <title>Islands.</title>
+        <title>Islands</title>
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
       </head>
       <body>
         <SpeedInsights />
