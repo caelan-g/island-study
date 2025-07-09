@@ -236,9 +236,16 @@ export default function Dashboard() {
                     <p className="text-xs tracking-tight whitespace-nowrap">
                       {island
                         ? (() => {
-                            return daysRemaining > 0
-                              ? `${Math.round(daysRemaining)} days remaining`
-                              : "Time expired";
+                            if (Math.round(daysRemaining) > 0) {
+                              return `${Math.round(
+                                daysRemaining
+                              )} days remaining`;
+                            } else if (Math.round(daysRemaining) == 0) {
+                              return `${Math.round(
+                                daysRemaining * 24
+                              )} hours remaining`;
+                            }
+                            return "Time expired";
                           })()
                         : ""}
                     </p>

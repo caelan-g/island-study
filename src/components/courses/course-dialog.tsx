@@ -28,7 +28,6 @@ import { useAuth } from "@/contexts/auth-context";
 import { courseProps } from "@/components/types/course";
 import { useEffect } from "react";
 import { updateCourse } from "@/lib/courses/update-course";
-import { toast } from "sonner";
 import { z } from "zod";
 import { courseSchema, colours } from "@/components/types/course";
 
@@ -63,7 +62,6 @@ export function CourseDialog({
       try {
         await createCourse(values.name, values.colour, authUser);
       } catch (error) {
-        toast.error("Failed to create course");
         console.error("Error creating course:", error);
         return; // Exit early if there's an error
       }
@@ -71,7 +69,6 @@ export function CourseDialog({
       try {
         await updateCourse(course.id, values.name, values.colour, authUser);
       } catch (error) {
-        toast.error("Failed to update course");
         console.error("Error updating course:", error);
         return; // Exit early if there's an error
       }
@@ -79,7 +76,6 @@ export function CourseDialog({
 
     onOpenChange(false);
     if (onSubmitSuccess) {
-      toast.success("Successfully updated courses");
       onSubmitSuccess(); // Call the callback after successful submission
     }
   }

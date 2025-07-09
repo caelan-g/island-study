@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { User } from "@supabase/supabase-js";
-import { toast } from "sonner";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -41,11 +40,9 @@ export function CourseCard({
   const handleDelete = async () => {
     try {
       await deleteCourse(course, user);
-      toast.success("Course deleted");
       onDelete?.();
     } catch (error) {
       console.error("Failed to delete course:", error);
-      toast.error("Failed to delete course");
     }
   };
 

@@ -19,13 +19,12 @@ import { fetchUser } from "@/lib/user/fetch-user";
 import { userProps } from "@/components/types/user";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
-import { User, TreePalm, Lock, Trash2 } from "lucide-react";
+import { User, RotateCcw, Lock, Trash2 } from "lucide-react";
 import { updateUser } from "@/lib/user/update-user";
 import { createClient } from "@/lib/supabase/client";
 import TimePicker from "@/components/ui/time-picker";
 import { resetIsland } from "@/lib/island/reset-island";
 import { weekEndIsland } from "@/lib/island/week-end-island";
-import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +39,7 @@ import {
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
-  { id: "reset", label: "Reset Island", icon: TreePalm },
+  { id: "reset", label: "Reset", icon: RotateCcw },
   { id: "account", label: "Account", icon: Lock },
 ];
 
@@ -74,7 +73,7 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState("profile");
   const [user, setUser] = useState<userProps | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  //const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   const initializeUser = useCallback(async () => {
     try {
@@ -100,7 +99,7 @@ export default function SettingsPage() {
     const initialIsDark =
       savedTheme === "dark" || (savedTheme === null && prefersDark);
 
-    setIsDarkTheme(initialIsDark);
+    //setIsDarkTheme(initialIsDark);
 
     // Apply theme on initial load
     document.documentElement.classList.toggle("dark", initialIsDark);
@@ -247,38 +246,41 @@ export default function SettingsPage() {
                     </p>
                   )}
                 </div>
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="theme">Theme</Label>
                   <div className="flex items-center space-x-2 mb-8">
-                    <Switch
-                      id="theme"
-                      checked={isDarkTheme}
-                      onCheckedChange={(checked) => {
-                        // Update state
-                        setIsDarkTheme(checked);
+                  <Switch
+                    id="theme"
+                    checked={isDarkTheme}
+                    onCheckedChange={(checked) => {
+                    // Update state
+                    setIsDarkTheme(checked);
 
-                        // Update DOM
-                        document.documentElement.classList.toggle(
-                          "dark",
-                          checked
-                        );
+                    // Update DOM
+                    document.documentElement.classList.toggle(
+                      "dark",
+                      checked
+                    );
 
-                        // Save preference
-                        localStorage.setItem(
-                          "theme",
-                          checked ? "dark" : "light"
-                        );
-                      }}
-                    />
-                    <Label htmlFor="theme">
-                      Dark mode{" "}
-                      <span className="text-muted-foreground font-normal">
-                        (not recommended)
-                      </span>
-                    </Label>
+                    // Save preference
+                    localStorage.setItem(
+                      "theme",
+                      checked ? "dark" : "light"
+                    );
+                    }}
+                  />
+
+                  <Label htmlFor="theme">
+                    Dark mode{" "}
+                    <span className="text-muted-foreground font-normal">
+                    (not recommended)
+                    </span>
+                  </Label>
                   </div>
-                </div>
-                <Button type="submit">Save changes</Button>
+                </div> */}
+                <Button type="submit" className="mt-6">
+                  Save Changes
+                </Button>
               </form>
             </CardContent>
           </Card>
@@ -288,7 +290,7 @@ export default function SettingsPage() {
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Reset Island</CardTitle>
+              <CardTitle>Reset</CardTitle>
               <CardDescription>
                 Start a new island. This will archive your current island.
               </CardDescription>
@@ -305,12 +307,11 @@ export default function SettingsPage() {
                 <Trash2 className="mr-2 h-4 w-4" />
                 Reset Island
               </Button>
-              <h1 className="font-semibold text-2xl mt-12">
-                Simulate Week End (for Mr. Jaques)
-              </h1>
+
+              <h1 className="font-semibold text-2xl mt-12">End Week Early</h1>
               <p className="text-sm text-muted-foreground mb-6">
-                This will simulate a week end where your island has reached 7
-                day maturity{" "}
+                This will end your island&apos;s week early, resetting your
+                island in the process.
               </p>
               <Button
                 variant="destructive"
@@ -321,7 +322,7 @@ export default function SettingsPage() {
                 }}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Simulate
+                End
               </Button>
             </CardContent>
           </Card>
