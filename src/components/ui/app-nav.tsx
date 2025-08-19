@@ -60,7 +60,7 @@ export function AppSidebar() {
               href="/dashboard"
               className="text-2xl font-semibold tracking-tight mx-2 mt-1 flex flex-row"
             >
-              Islands
+              Islands.
             </a>
 
             <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs my-auto">
@@ -83,7 +83,9 @@ export function AppSidebar() {
                         pathname === item.url && "font-semibold bg-muted"
                       )}
                     >
-                      <item.icon />
+                      <item.icon
+                        strokeWidth={pathname === item.url ? "2.5" : "2"}
+                      />
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>

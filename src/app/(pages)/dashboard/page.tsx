@@ -321,7 +321,7 @@ export default function Dashboard() {
                       timeframe="day"
                     />
                   </div>
-                  <div className="flex flex-row justify-between">
+                  <div className="flex flex-col justify-between">
                     {/*} <RadialChart
                       chartData={[
                         {
@@ -331,15 +331,14 @@ export default function Dashboard() {
                         },
                       ]}
                     /> */}
-                    <LineChart chartData={groupedSessions} />
-
-                    <div className="absolute">
+                    <div className="">
                       <TimeMetric
                         studyTime={studyTime["week"]}
                         goal={user?.goal ?? 0}
                         timeframe="week"
                       />
                     </div>
+                    <LineChart chartData={groupedSessions} />
                   </div>
                   <div className="lg:flex flex-row justify-between gap-2 hidden">
                     {loading ? (

@@ -8,7 +8,7 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen overflow-x-hidden w-full">
+    <div className="min-h-screen w-full">
       <LandingNavigationMenu />
       <main className="w-full">{children}</main>
       <Footer />
