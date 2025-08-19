@@ -189,6 +189,30 @@ body {
   animation: floating 7s ease-in-out infinite;
 }
 
+/* --- Marquee Animations --- */
+@keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    /* Translate by -50% because the content is duplicated (200% height) */
+    transform: translateY(-50%);
+  }
+}
+
+/* Apply the animation with different durations */
+.animate-marquee-reverse {
+  animation: marquee-vertical 40s linear infinite;
+}
+
+.animate-marquee-reverse-delayed {
+  animation: marquee-vertical 80s linear infinite reverse;
+}
+
+.animate-marquee-reverse-slow {
+  animation: marquee-vertical 100s linear infinite;
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;

@@ -210,7 +210,7 @@ export default function Sessions() {
             </>
           )}
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 h-full">
           <Card>
             <CardHeader>
               <CardTitle>Filters</CardTitle>
@@ -257,7 +257,7 @@ export default function Sessions() {
               </div>
             </CardContent>
           </Card>
-          <div className="relative">
+          <div className="relative h-full">
             <div className="sticky top-0 z-10">
               <EditSessionCard
                 courses={courses}

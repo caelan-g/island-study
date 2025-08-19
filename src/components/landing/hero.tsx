@@ -1,32 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import ImageCarousel from "@/components/ui/image-carousel";
+import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="container flex min-h-[calc(100vh-3.5rem)] max-w-screen-2xl flex-col items-center justify-center space-y-8 py-24 text-center md:py-32">
-      <div className="space-y-4">
-        <h1 className="bg-gradient-to-br from-foreground from-30% via-foreground/90 to-foreground/70 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
-          Study Smarter with
-          <br />
-          Island Study
-        </h1>
-        <p className="mx-auto max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-          Empowering students with cutting-edge software solutions. From
-          AI-driven analytics to seamless cloud integrations, we&apos;re shaping
-          the future of studying.
-        </p>
+    <div className="relative lg:min-h-screen w-full mx-8">
+      {/* Text and buttons aligned to the left */}
+      <div className="lg:pl-36 relative z-10 max-w-md">
+        <div className="font-semibold text-5xl md:text-6xl lg:text-8xl tracking-tight pt-24 lg:pt-48">
+          Islands.
+        </div>
+        <div className="font-normal text-xl md:text-2xl lg:text-3xl tracking-tight mt-2">
+          Gamified study tracking.
+        </div>
+        <div className="flex flex-row gap-4 mt-8">
+          <Link href="/auth/sign-up">
+            <Button size="lg" variant="default">
+              Start Studying
+            </Button>
+          </Link>
+          <Link href="/auth/login">
+            <Button size="lg" variant="secondary">
+              Login
+            </Button>
+          </Link>
+        </div>
       </div>
-      <div className="flex gap-4">
-        <Button size="lg" asChild>
-          <a href="/auth/sign-up" className="flex items-center">
-            Get Started
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </a>
-        </Button>
-        <Button variant="outline" size="lg" asChild>
-          <a href="/auth/login">Login</a>
-        </Button>
+
+      {/* Image carousel positioned in the middle right */}
+      <div className="lg:absolute lg:right-10 lg:top-1/2 lg:transform lg:-translate-y-1/2 w-80 pt-12 lg:pt-0 lg:w-[900px] z-5">
+        <ImageCarousel />
       </div>
-    </section>
+    </div>
   );
 }

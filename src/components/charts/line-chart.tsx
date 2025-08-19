@@ -44,7 +44,7 @@ export function LineChart({ chartData }: LineChartProps) {
     .sort((a, b) => a.dateTimestamp - b.dateTimestamp); // Sort by timestamp
 
   return (
-    <ChartContainer config={chartConfig} className="max-h-48 w-full">
+    <ChartContainer config={chartConfig} className="max-h-44 w-full">
       <Chart
         accessibilityLayer
         // Remove the reverse() since we're already sorting
@@ -73,13 +73,15 @@ export function LineChart({ chartData }: LineChartProps) {
           content={({ active, payload }) => {
             if (active && payload?.[0]) {
               return (
-                <div className="rounded-md bg-white/80 p-2 shadow-sm backdrop-blur-sm dark:bg-black/80">
-                  <p className="text-sm text-muted-foreground ">
-                    {new Date(payload[0].payload.date).toLocaleDateString()}
-                  </p>
-                  <p className="text-lg font-bold">
-                    {timeFilter(Number(payload[0].value))}
-                  </p>
+                <div className="rounded-lg border bg-background p-2 shadow-sm">
+                  <div className="flex item-center gap-2">
+                    <p className="">
+                      {new Date(payload[0].payload.date).toLocaleDateString()}
+                    </p>
+                    <p className="font-medium">
+                      {timeFilter(Number(payload[0].value))}
+                    </p>
+                  </div>
                 </div>
               );
             }
