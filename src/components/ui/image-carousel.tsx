@@ -63,7 +63,7 @@ export default function ImageCarousel() {
               alt={`Pixel art island ${currentImageIndex + 1}`}
               width={512}
               height={256}
-              className="w-full h-full object-contain pixelated floating"
+              className="w-full h-full object-contain pixelated floating -z-50"
               unoptimized
             />
           </motion.div>
