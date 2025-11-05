@@ -55,7 +55,7 @@ const features = [
 ];
 
 export default function Component() {
-  const [activeFeature, setActiveFeature] = useState(features[4]); // Default to market intelligence
+  const [activeFeature, setActiveFeature] = useState(features[0]); // Default to market intelligence
 
   return (
     <div className="min-h-screen  text-gray-900 overflow-hidden">

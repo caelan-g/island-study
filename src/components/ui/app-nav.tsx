@@ -8,6 +8,10 @@ import {
   LogOut,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
+import { useState, useEffect, useCallback } from "react";
+import { fetchUser } from "@/lib/user/fetch-user";
+import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +25,8 @@ import {
 } from "@/components/ui/sidebar";
 import { logout } from "@/lib/user/logout";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { userProps } from "@/components/types/user";
 
 const items = [
   {
@@ -50,7 +56,23 @@ const items = [
   },
 ];
 export function AppSidebar() {
+  const { user: authUser, loading: authLoading } = useAuth();
+  const [user, setUser] = useState<userProps | null>(null);
   const pathname = usePathname();
+
+  const initializeUser = useCallback(async () => {
+    try {
+      const userData = await fetchUser(authUser);
+      if (userData) setUser(userData);
+    } catch (error) {
+      console.error("Failed to load user:", error);
+    }
+  }, [authUser]);
+
+  useEffect(() => {
+    initializeUser();
+  }, [initializeUser]);
+
   return (
     <Sidebar collapsible="icon" variant="floating" className="text-foreground">
       <SidebarHeader>
@@ -97,6 +119,18 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {authUser && !authLoading && !user?.is_subscribed && (
+            <SidebarMenuItem className="flex flex-col">
+              <span className="text-sm font-semibold">Free Trial</span>
+
+              <Button asChild>
+                <Link href="/subscribe">Subscribe</Link>
+              </Button>
+
+              {/*<SidebarTrigger />*/}
+            </SidebarMenuItem>
+          )}
+
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <button className="cursor-pointer" onClick={logout}>

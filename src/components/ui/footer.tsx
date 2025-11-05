@@ -25,6 +25,8 @@ export default function Footer() {
       <p className="text-sm">&copy; {new Date().getFullYear()} Islands</p>
       <div className="flex flex-row gap-4 text-xs justify-center text-muted-foreground mt-2">
         <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a>ABN 21 718 700 624</a>
       </div>
     </footer>
   );
