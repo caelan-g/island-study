@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import SubscribeButton from "@/components/ui/subscribe-button";
 import {
   Card,
@@ -14,14 +14,8 @@ import { ChartArea, Check, CloudUpload, Infinity } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { userProps } from "@/components/types/user";
-import { fetchUser } from "@/lib/user/fetch-user";
-import { sessionProps } from "@/components/types/session";
-import { courseProps } from "@/components/types/course";
-import { islandProps } from "@/components/types/island";
 import { fetchIslands } from "@/lib/island/fetch-islands";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
-import { set } from "date-fns";
 
 const currencies = {
   AUD: {
@@ -96,10 +90,8 @@ export default function SubscribePage() {
   const [islandCount, setIslandCount] = useState<number>(0);
   const [sessionCount, setSessionCount] = useState<number>(0);
   const [totalStudy, setTotalStudy] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
 
   const initializeData = useCallback(async () => {
-    setLoading(true);
     const islandData = await fetchIslands(authUser);
     const sessionData = await fetchSessions(authUser);
 
@@ -117,7 +109,6 @@ export default function SubscribePage() {
       const totalSeconds = Math.round(totalMilliseconds / 1000);
       setTotalStudy(totalSeconds);
     }
-    setLoading(false);
   }, [authUser]);
 
   useEffect(() => {
@@ -133,7 +124,7 @@ export default function SubscribePage() {
           Invest in your study with Islands.
         </div>
         <div className="text-xl mb-1 lg:justify-center lg:text-center lg:flex">
-          You've logged{" "}
+          You&apos;ve logged{" "}
           <span className="font-semibold ml-0.5 lg:ml-1.5">
             {Math.floor(totalStudy / 3600)} hours
           </span>
@@ -221,7 +212,9 @@ export default function SubscribePage() {
               </div>
             </CardContent>
             <CardFooter className="block">
-              <SubscribeButton priceId={option.priceId} />
+              <Suspense fallback={<div>Loading...</div>}>
+                <SubscribeButton priceId={option.priceId} />
+              </Suspense>
               <p className="text-sm text-muted-foreground mt-1">
                 Fast and secure checkout with Stripe
               </p>

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { userProps } from "@/components/types/user";
 import { TriangleAlert } from "lucide-react";
 
 export default function TrialCounter({

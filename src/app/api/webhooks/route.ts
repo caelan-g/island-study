@@ -6,6 +6,11 @@ import { updateUserSubscription } from "@/lib/supabase/update-user-subscription"
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+interface StripeError {
+  message: string;
+  statusCode?: number;
+}
+
 export async function POST(req: Request) {
   //console.log("very=fying webhook");
   const body = await req.text();
@@ -16,9 +21,10 @@ export async function POST(req: Request) {
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as StripeError;
     //console.error(`❌ Webhook signature verification failed: ${err.message}`);
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+    return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
   //console.log(`✅ Received webhook event: ${event.type}`);
@@ -28,7 +34,6 @@ export async function POST(req: Request) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.user_id;
-        const mode = session.mode;
         const customerId =
           typeof session.customer === "string"
             ? session.customer
@@ -109,7 +114,8 @@ export async function POST(req: Request) {
         break;
       }
     }
-  } catch (error: any) {
+  } catch (err) {
+    const error = err as StripeError;
     console.error(`Webhook handler error: ${error.message}`);
     return new NextResponse(`Webhook handler error: ${error.message}`, {
       status: 400,

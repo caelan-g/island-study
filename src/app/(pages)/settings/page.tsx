@@ -38,7 +38,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import ManageSubscriptionButton from "@/components/ui/manage-subscription-button";
-import SubscribeButton from "@/components/ui/subscribe-button";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },

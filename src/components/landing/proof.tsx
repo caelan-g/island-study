@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
 import { ScrollCounter } from "@/components/ui/scroll-counter";
-import Link from "next/link";
 
 export default function Proof() {
   return (

@@ -6,10 +6,10 @@ export default function PrivacyPolicyPage() {
         <p className="text-sm text-slate-500">Last updated: November 6, 2025</p>
         <p>
           Effective: This Privacy Policy explains how <strong>Islands</strong>{" "}
-          ("we", "us", "our") collects, uses, discloses and protects personal
-          information from users of our mobile and web applications (the "App").
-          If you have questions or want to exercise your privacy rights, contact
-          us at{" "}
+          (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) collects, uses,
+          discloses and protects personal information from users of our mobile
+          and web applications (the &quot;App&quot;). If you have questions or
+          want to exercise your privacy rights, contact us at{" "}
           <a href="mailto:contact@islands.study" className="text-neutral-600">
             contact@islands.study
           </a>
@@ -103,7 +103,7 @@ export default function PrivacyPolicyPage() {
             <strong>Stripe</strong> — payment processing.{" "}
             <em>We do not collect or store your full payment card details</em>.
             Stripe handles card storage, charging and refunds according to
-            Stripe’s privacy and security practices.
+            Stripe&apos;s privacy and security practices.
           </li>
           <li>
             <strong>Retrodiffusion</strong> — AI pixel-art generation. Inputs

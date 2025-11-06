@@ -6,7 +6,6 @@ import {
   GraduationCap,
   Settings,
   LogOut,
-  ChartArea,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
@@ -25,7 +24,6 @@ import { logout } from "@/lib/user/logout";
 import { cn } from "@/lib/utils";
 import { useSubscription } from "@/contexts/subscription-context";
 import TrialCounter from "@/components/ui/trial-counter";
-import { sub } from "date-fns";
 
 const items = [
   {

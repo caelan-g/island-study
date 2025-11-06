@@ -61,8 +61,7 @@ export function SessionDialog({
     null
   );
   const { user: authUser } = useAuth();
-  const { subscriptionStatus, endDate, subscriptionLoading } =
-    useSubscription();
+  const { subscriptionStatus } = useSubscription();
 
   useEffect(() => {
     const checkForActiveSession = async () => {

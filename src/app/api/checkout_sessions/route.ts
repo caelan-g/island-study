@@ -1,6 +1,11 @@
 import { stripe } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 
+interface StripeError {
+  message: string;
+  statusCode?: number;
+}
+
 export async function POST(req: Request) {
   try {
     const origin = req.headers.get("origin");
@@ -38,10 +43,12 @@ export async function POST(req: Request) {
       automatic_tax: { enabled: true },
     });
     return NextResponse.redirect(session.url!, 303);
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as StripeError;
+    console.error(`Checkout session error: ${error.message}`);
     return NextResponse.json(
-      { error: err.message },
-      { status: err.statusCode || 500 }
+      { error: error.message },
+      { status: error.statusCode || 500 }
     );
   }
 }

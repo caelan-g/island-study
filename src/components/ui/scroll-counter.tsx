@@ -32,7 +32,6 @@ export function ScrollCounter({
             setHasAnimated(true);
 
             const startTime = Date.now();
-            const startValue = 0;
 
             const animate = () => {
               const currentTime = Date.now();

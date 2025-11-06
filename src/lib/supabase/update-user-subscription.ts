@@ -1,5 +1,4 @@
 import { toast } from "sonner";
-import { stripe } from "../stripe";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 
 /**

@@ -1,25 +1,35 @@
 import { NextResponse } from "next/server";
-import { userProps } from "@/components/types/user";
+import { stripe } from "@/lib/stripe";
+
+interface StripeError {
+  message: string;
+  statusCode?: number;
+}
 
 export async function POST(req: Request) {
   try {
+    const origin = req.headers.get("origin") || "https://islands.study";
     const formData = await req.formData();
-    const user: userProps = JSON.parse(formData.get("user") as string);
-    const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+    const customerId = formData.get("customer_id") as string;
 
-    if (!user) {
-      return NextResponse.json({ error: "No user" }, { status: 401 });
+    if (!customerId) {
+      return NextResponse.json(
+        { error: "Stripe Customer ID is missing" },
+        { status: 400 }
+      );
     }
 
     const session = await stripe.billingPortal.sessions.create({
-      customer: user?.stripe_customer_id,
-      return_url: "https://islands.study/settings",
+      customer: customerId,
+      return_url: `${origin}/settings`,
     });
     return NextResponse.redirect(session.url!, 303);
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as StripeError;
+    console.error(`Checkout session error: ${error.message}`);
     return NextResponse.json(
-      { error: err.message },
-      { status: err.statusCode || 500 }
+      { error: error.message },
+      { status: error.statusCode || 500 }
     );
   }
 }

@@ -48,8 +48,7 @@ export function EditSessionCard({
   onSubmitSuccess,
 }: SessionDialogProps) {
   const { user: authUser } = useAuth();
-  const { subscriptionStatus, endDate, subscriptionLoading } =
-    useSubscription();
+  const { subscriptionStatus } = useSubscription();
 
   const sessionSchema = z.object({
     description: z
