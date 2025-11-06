@@ -8,6 +8,11 @@ import { userProps } from "@/components/types/user";
 import { fetchUser } from "@/lib/user/fetch-user";
 import { toast } from "sonner";
 
+interface StripeError {
+  message: string;
+  statusCode?: number;
+}
+
 export default function ManageSubscriptionButton() {
   const searchParams = useSearchParams();
   const canceled = searchParams.get("canceled");
@@ -53,9 +58,10 @@ export default function ManageSubscriptionButton() {
       } else {
         toast.error(data.error || "Unable to open billing portal");
       }
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as StripeError;
       console.error(err);
-      toast.error(err.message || "Unexpected error");
+      toast.error(error.message || "Unexpected error");
     } finally {
       setLoading(false);
     }
