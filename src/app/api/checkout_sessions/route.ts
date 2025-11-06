@@ -6,6 +6,9 @@ export async function POST(req: Request) {
     const origin = req.headers.get("origin");
     const formData = await req.formData();
     const userId = formData.get("user_id") as string;
+    const priceId = formData.get("price_id") as string;
+    const mode =
+      priceId === process.env.LIFETIME_PRICE_ID ? "payment" : "subscription";
 
     if (!userId) {
       return NextResponse.json(
@@ -15,15 +18,16 @@ export async function POST(req: Request) {
     }
 
     // Create Checkout Sessions from body params.
+    console.log(userId);
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
           // Provide the exact Price ID (for example, price_1234) of the product you want to sell
-          price: "price_1SPk43ISV8ZRYGf7DxT7EeiN",
+          price: priceId,
           quantity: 1,
         },
       ],
-      mode: "subscription",
+      mode: mode,
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/subscribe/?canceled=true`,
       metadata: {

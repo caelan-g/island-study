@@ -1,14 +1,12 @@
 import { redirect } from "next/navigation";
 
-import { stripe } from "../../lib/stripe";
+import { stripe } from "../../../lib/stripe";
 
 export default async function Success({
-  searchParams,
+  searchParams: { session_id },
 }: {
   searchParams: { session_id: string };
 }) {
-  const { session_id } = searchParams;
-
   if (!session_id)
     throw new Error("Please provide a valid session_id (`cs_test_...`)");
 

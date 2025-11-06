@@ -5,18 +5,20 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 /**
  * Updates the subscription info for a user in Supabase
  * @param userId - Your Supabase user ID (from metadata.user_id)
+ * @param subscriptionStatus - Stripe subscription status ("active", "trialing", "canceled", etc.)
  * @param stripeCustomerId - Stripe customer ID (cus_...)
  * @param stripeSubscriptionId - Stripe subscription ID (sub_...)
- * @param subscriptionStatus - Stripe subscription status ("active", "trialing", "canceled", etc.)
+ *
  *
  */
 export async function updateUserSubscription(
   userId: string,
-  stripeCustomerId: string,
-  stripeSubscriptionId: string,
-  subscriptionStatus: string
+  subscriptionStatus: string,
+  stripeCustomerId: string | undefined,
+  stripeSubscriptionId: string | undefined
 ) {
   // Adjust these column names to match your DB schema
+  console.log("updating user");
   try {
     const { data, error } = await supabaseAdmin
       .from("users")
@@ -25,6 +27,7 @@ export async function updateUserSubscription(
         subscription_status: subscriptionStatus,
         stripe_customer_id: stripeCustomerId,
         stripe_subscription_id: stripeSubscriptionId,
+        trial_end: null,
       })
       .eq("id", userId)
       .select()

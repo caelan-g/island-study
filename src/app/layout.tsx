@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "@/app/globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "sonner";
+import { SubscriptionProvider } from "@/contexts/subscription-context";
 
 export default function RootLayout({
   children,
@@ -21,10 +22,12 @@ export default function RootLayout({
         <SpeedInsights />
         <Analytics />
         <AuthProvider>
-          <Providers>
-            {children}
-            <Toaster />
-          </Providers>
+          <SubscriptionProvider>
+            <Providers>
+              {children}
+              <Toaster />
+            </Providers>
+          </SubscriptionProvider>
         </AuthProvider>
       </body>
     </html>

@@ -6,12 +6,10 @@ import {
   GraduationCap,
   Settings,
   LogOut,
+  ChartArea,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { useState, useEffect, useCallback } from "react";
-import { fetchUser } from "@/lib/user/fetch-user";
-import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
@@ -25,8 +23,9 @@ import {
 } from "@/components/ui/sidebar";
 import { logout } from "@/lib/user/logout";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { userProps } from "@/components/types/user";
+import { useSubscription } from "@/contexts/subscription-context";
+import TrialCounter from "@/components/ui/trial-counter";
+import { sub } from "date-fns";
 
 const items = [
   {
@@ -57,21 +56,9 @@ const items = [
 ];
 export function AppSidebar() {
   const { user: authUser, loading: authLoading } = useAuth();
-  const [user, setUser] = useState<userProps | null>(null);
+  const { subscriptionStatus, endDate, subscriptionLoading } =
+    useSubscription();
   const pathname = usePathname();
-
-  const initializeUser = useCallback(async () => {
-    try {
-      const userData = await fetchUser(authUser);
-      if (userData) setUser(userData);
-    } catch (error) {
-      console.error("Failed to load user:", error);
-    }
-  }, [authUser]);
-
-  useEffect(() => {
-    initializeUser();
-  }, [initializeUser]);
 
   return (
     <Sidebar collapsible="icon" variant="floating" className="text-foreground">
@@ -119,17 +106,25 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {authUser && !authLoading && !user?.is_subscribed && (
-            <SidebarMenuItem className="flex flex-col">
-              <span className="text-sm font-semibold">Free Trial</span>
-
-              <Button asChild>
-                <Link href="/subscribe">Subscribe</Link>
-              </Button>
-
-              {/*<SidebarTrigger />*/}
+          {subscriptionStatus == "active" && (
+            <SidebarMenuItem className="flex">
+              <span className="text-sm font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
+                Subscribed
+              </span>
             </SidebarMenuItem>
           )}
+          {authUser &&
+            !authLoading &&
+            !subscriptionLoading &&
+            (subscriptionStatus === "trialing" ||
+              subscriptionStatus === "expired") && (
+              <SidebarMenuItem className="flex">
+                <TrialCounter
+                  subscriptionStatus={subscriptionStatus}
+                  endDate={endDate}
+                />
+              </SidebarMenuItem>
+            )}
 
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
