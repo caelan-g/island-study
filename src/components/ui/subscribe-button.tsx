@@ -29,7 +29,7 @@ export default function SubscribeButton({
           className="w-full"
           disabled={authLoading || !authUser || !priceId}
         >
-          Subscribe
+          Purchase
         </Button>
       </form>
     </>

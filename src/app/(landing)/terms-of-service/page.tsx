@@ -79,17 +79,17 @@ export default function PrivacyPolicyPage() {
                 <tbody>
                   <tr className="border-t">
                     <td className="p-3">Monthly</td>
-                    <td className="p-3">$7.99</td>
+                    <td className="p-3">AUD$7.99</td>
                     <td className="p-3">Automatic monthly renewal</td>
                   </tr>
                   <tr className="border-t bg-slate-50">
                     <td className="p-3">6-Month</td>
-                    <td className="p-3">$39.99</td>
+                    <td className="p-3">AUD$39.99</td>
                     <td className="p-3">Billed every six months</td>
                   </tr>
                   <tr className="border-t">
                     <td className="p-3">Lifetime</td>
-                    <td className="p-3">$149.99</td>
+                    <td className="p-3">AUD$99.99</td>
                     <td className="p-3">One-time purchase</td>
                   </tr>
                   <tr className="border-t bg-slate-50">

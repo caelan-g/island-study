@@ -8,7 +8,9 @@ export async function POST(req: Request) {
     const userId = formData.get("user_id") as string;
     const priceId = formData.get("price_id") as string;
     const mode =
-      priceId === process.env.LIFETIME_PRICE_ID ? "payment" : "subscription";
+      priceId === process.env.NEXT_PUBLIC_LIFETIME_PRICE_ID
+        ? "payment"
+        : "subscription";
 
     if (!userId) {
       return NextResponse.json(
