@@ -36,7 +36,7 @@ export default function SubscribePage() {
     },
   ];
   return (
-    <div className="h-screen w-full">
+    <div className="lg:min-h-screen w-full">
       <div className="font-semibold text-2xl mb-1">Choose your plan</div>
       <section className="flex flex-col lg:flex-row gap-4">
         {options.map((option) => (

@@ -41,7 +41,7 @@ export function BarChart({ chartData }: BarChartProps) {
       }, 0),
     };
   });
-  console.log("Processed Data:", processedData);
+  //console.log("Processed Data:", processedData);
 
   return (
     <ChartContainer config={chartConfig}>

@@ -25,12 +25,12 @@ export function LandingNavigationMenu() {
 
         <div className="space-x-4">
           <Button variant="ghost" asChild>
-            <Link href="/login" className="">
+            <Link href="/auth/login" className="">
               Login
             </Link>
           </Button>
           <Button asChild>
-            <Link href="/signup" className="">
+            <Link href="/auth/signup" className="">
               Sign Up
             </Link>
           </Button>

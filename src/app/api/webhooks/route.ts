@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
-  console.log("very=fying webhook");
+  //console.log("very=fying webhook");
   const body = await req.text();
   const hdrs = await headers(); // ✅ await here
   const sig = hdrs.get("stripe-signature")!;
@@ -17,11 +17,11 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret);
   } catch (err: any) {
-    console.error(`❌ Webhook signature verification failed: ${err.message}`);
+    //console.error(`❌ Webhook signature verification failed: ${err.message}`);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  console.log(`✅ Received webhook event: ${event.type}`);
+  //console.log(`✅ Received webhook event: ${event.type}`);
 
   try {
     switch (event.type) {
@@ -71,9 +71,9 @@ export async function POST(req: Request) {
           );
         }
 
-        console.log(
-          "Updating subscription for customer.subscription.updated..."
-        );
+        //console.log(
+        //  "Updating subscription for customer.subscription.updated..."
+        //);
         await updateUserSubscription(
           userId,
           subscription.status,
@@ -97,9 +97,9 @@ export async function POST(req: Request) {
           );
         }
 
-        console.log(
-          "Updating subscription for customer.subscription.deleted..."
-        );
+        //console.log(
+        //  "Updating subscription for customer.subscription.deleted..."
+        //);
         await updateUserSubscription(
           userId,
           subscription.status,

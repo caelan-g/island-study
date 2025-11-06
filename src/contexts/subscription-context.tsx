@@ -56,7 +56,7 @@ export function SubscriptionProvider({
       setSubscriptionStatus("expired");
       setEndDate(null);
     } else {
-      console.log(data);
+      //console.log(data);
       setEndDate(data.trial_end);
       if (["active", "lifetime"].includes(data.subscription_status)) {
         setSubscriptionStatus("active");
