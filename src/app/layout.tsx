@@ -13,7 +13,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html dir="ltr" lang="en" suppressHydrationWarning>
+    <html
+      dir="ltr"
+      lang="en"
+      suppressHydrationWarning
+      className="scroll-smooth"
+    >
       <head>
         <title>Islands</title>
         <link rel="icon" href="/logo.svg" type="image/svg+xml" />

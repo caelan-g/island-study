@@ -55,7 +55,7 @@ const features = [
 ];
 
 export default function Component() {
-  const [activeFeature, setActiveFeature] = useState(features[0]); // Default to market intelligence
+  const [activeFeature, setActiveFeature] = useState(features[3]); // Default to market intelligence
 
   return (
     <div className="min-h-screen  text-gray-900 overflow-hidden">
@@ -80,17 +80,13 @@ export default function Component() {
                   key={activeFeature.id}
                   src={activeFeature.image}
                   alt={activeFeature.title}
-                  className="w-full h-full object-cover rounded-2xl border"
+                  className="w-full h-full object-cover rounded-2xl border [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                 />
               </AnimatePresence>
-              <div className="absolute inset-x-0 bottom-0 lg:block hidden">
-                <div className="h-64 bg-gradient-to-t from-white to-transparent" />
-                <div className="bg-white h-48" />
-              </div>
             </div>
           </div>
 
