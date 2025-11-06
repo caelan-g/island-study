@@ -13,23 +13,21 @@ export async function POST(req: Request) {
     const customerId = formData.get("customer_id") as string;
 
     if (!customerId) {
-      return NextResponse.json(
-        { error: "Stripe Customer ID is missing" },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        success: false,
+        error: "Stripe Customer ID is missing",
+      });
     }
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: `${origin}/settings`,
     });
-    return NextResponse.redirect(session.url!, 303);
+
+    return NextResponse.json({ success: true, url: session.url });
   } catch (err) {
     const error = err as StripeError;
     console.error(`Checkout session error: ${error.message}`);
-    return NextResponse.json(
-      { error: error.message },
-      { status: error.statusCode || 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message });
   }
 }
