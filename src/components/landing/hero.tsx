@@ -34,7 +34,7 @@ export default function Hero() {
           alt="dashboard"
           width={2902}
           height={1838}
-          className="w-[1280px] max-h-screen object-contain absolute left-[40rem] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
+          className="w-[1280px] max-h-screen object-cover object-top absolute left-[40rem] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
         />
       </div>
       <div className="absolute bottom-20 text-xs lg:w-full justify-center text-neutral-600 lg:flex hidden">
