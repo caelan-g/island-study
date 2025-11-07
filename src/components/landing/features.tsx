@@ -87,7 +87,7 @@ export default function StickyFeaturesSection() {
   }, []);
 
   return (
-    <section className="w-full lg:py-48 py-12">
+    <section className="w-full lg:pb-48 lg:pt-12 py-12">
       <div className="container mx-auto px-4">
         {/* Mobile Layout */}
         <div className="lg:hidden space-y-16">
@@ -95,18 +95,6 @@ export default function StickyFeaturesSection() {
             const IconComponent = feature.icon;
             return (
               <div key={feature.id} className="space-y-6">
-                {/* Mobile Image */}
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-                  <Image
-                    src={feature.image || "/placeholder.svg"}
-                    alt={feature.title}
-                    fill
-                    className="object-contain bg-white"
-                    priority={index === 0}
-                    unoptimized
-                  />
-                </div>
-
                 {/* Mobile Content */}
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3">
@@ -145,6 +133,18 @@ export default function StickyFeaturesSection() {
                     </Button>
                   </Link>
                 </div>
+
+                {/* Mobile Image */}
+                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
+                  <Image
+                    src={feature.image || "/placeholder.svg"}
+                    alt={feature.title}
+                    fill
+                    className="object-contain bg-white"
+                    priority={index === 0}
+                    unoptimized
+                  />
+                </div>
               </div>
             );
           })}
@@ -177,7 +177,7 @@ export default function StickyFeaturesSection() {
           </div>
 
           {/* Features Content */}
-          <div className="space-y-72">
+          <div className="space-y-72 py-24">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
@@ -186,7 +186,7 @@ export default function StickyFeaturesSection() {
                   ref={(el) => {
                     sectionRefs.current[index] = el;
                   }}
-                  className="space-y-6 min-h-screen flex flex-col justify-center"
+                  className="space-y-6 min-h-96 flex flex-col justify-center"
                 >
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0 w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">

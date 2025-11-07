@@ -8,6 +8,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/sidebar";
 import { logout } from "@/lib/user/logout";
 import { cn } from "@/lib/utils";
+import { useSubscription } from "@/contexts/subscription-context";
+import TrialCounter from "@/components/ui/trial-counter";
 
 const items = [
   {
@@ -50,7 +53,11 @@ const items = [
   },
 ];
 export function AppSidebar() {
+  const { user: authUser, loading: authLoading } = useAuth();
+  const { subscriptionStatus, endDate, subscriptionLoading } =
+    useSubscription();
   const pathname = usePathname();
+
   return (
     <Sidebar collapsible="icon" variant="floating" className="text-foreground">
       <SidebarHeader>
@@ -97,6 +104,26 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          {subscriptionStatus == "active" && (
+            <SidebarMenuItem className="flex">
+              <span className="text-xs font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
+                Subscribed
+              </span>
+            </SidebarMenuItem>
+          )}
+          {authUser &&
+            !authLoading &&
+            !subscriptionLoading &&
+            (subscriptionStatus === "trialing" ||
+              subscriptionStatus === "expired") && (
+              <SidebarMenuItem className="flex">
+                <TrialCounter
+                  subscriptionStatus={subscriptionStatus}
+                  endDate={endDate}
+                />
+              </SidebarMenuItem>
+            )}
+
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <button className="cursor-pointer" onClick={logout}>

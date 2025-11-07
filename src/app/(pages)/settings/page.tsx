@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +37,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import ManageSubscriptionButton from "@/components/ui/manage-subscription-button";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
@@ -418,6 +420,22 @@ export default function SettingsPage() {
                     Update password
                   </Button>
                 </form>
+                <div>
+                  <h1 className="font-semibold text-2xl mt-12">
+                    Manage Subscription
+                  </h1>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Click the button below to manage your subscription. You will
+                    be redirected to the customer portal.
+                  </p>
+                </div>
+                {user?.is_subscribed ? (
+                  <ManageSubscriptionButton />
+                ) : (
+                  <Button asChild>
+                    <Link href="/subscribe">Upgrade Now</Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
 

@@ -22,7 +22,6 @@ export const SessionDayCard = ({
         1000 // Convert to seconds
     );
   }, 0);
-  console.log(day.sessions[0]?.start_time);
 
   return (
     <div className="text-sm flex flex-col">

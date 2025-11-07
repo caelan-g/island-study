@@ -35,74 +35,86 @@ export async function endSession(
   end_time: Date,
   course_id: string,
   user: User | null,
+  subscriptionStatus: string | null,
   description?: string
 ) {
   if (user) {
-    try {
-      const duration = Math.floor(
-        (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000
-      );
-      const active = await checkSession(user);
-      if (session_id !== "") {
-        const { error } = await supabase
-          .from("sessions")
-          .update({
+    if (subscriptionStatus == "active" || subscriptionStatus == "trialing") {
+      try {
+        const duration = Math.floor(
+          (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000
+        );
+        const active = await checkSession(user);
+        if (session_id !== "") {
+          const { error } = await supabase
+            .from("sessions")
+            .update({
+              start_time: new Date(start_time).toISOString(),
+              end_time: new Date(end_time).toISOString(),
+              description: description,
+              course_id: course_id,
+            })
+            .eq("id", session_id);
+
+          if (error) {
+            console.log(error);
+            toast.error("Failed to save session. Try again.");
+            return false;
+          } else {
+            toast.success("Session saved");
+            return true;
+          }
+        }
+        if (active) {
+          const { error } = await supabase
+            .from("sessions")
+            .update({
+              start_time: new Date(start_time).toISOString(),
+              end_time: new Date(end_time).toISOString(),
+              description: description,
+              course_id: course_id,
+            })
+            .eq("id", active.id);
+
+          if (error) {
+            console.log(error);
+            toast.error("Failed to save session. Try again.");
+            return false;
+          } else {
+            toast.success("Session saved");
+            return true;
+          }
+        } else {
+          const { error } = await supabase.from("sessions").insert({
+            user_id: user.id,
             start_time: new Date(start_time).toISOString(),
             end_time: new Date(end_time).toISOString(),
             description: description,
             course_id: course_id,
-          })
-          .eq("id", session_id);
+          });
 
-        if (error) {
-          console.log(error);
-          toast.error("Failed to save session. Try again.");
-        } else {
-          toast.success("Session saved");
+          if (error) {
+            console.log(error);
+            toast.error("Failed to save session. Try again.");
+            return false;
+          } else {
+            toast.success("Session created");
+          }
         }
-        return;
+        await addXP(supabase, user.id, duration, user);
+        return true;
+      } catch (error) {
+        console.error("Session end failed:", error);
+        toast.error("Can't save session. Please refresh.");
+        return false;
       }
-      if (active) {
-        const { error } = await supabase
-          .from("sessions")
-          .update({
-            start_time: new Date(start_time).toISOString(),
-            end_time: new Date(end_time).toISOString(),
-            description: description,
-            course_id: course_id,
-          })
-          .eq("id", active.id);
-
-        if (error) {
-          console.log(error);
-          toast.error("Failed to save session. Try again.");
-        } else {
-          toast.success("Session saved");
-        }
-      } else {
-        const { error } = await supabase.from("sessions").insert({
-          user_id: user.id,
-          start_time: new Date(start_time).toISOString(),
-          end_time: new Date(end_time).toISOString(),
-          description: description,
-          course_id: course_id,
-        });
-
-        if (error) {
-          console.log(error);
-          toast.error("Failed to save session. Try again.");
-        } else {
-          toast.success("Session created");
-        }
-      }
-      await addXP(supabase, user.id, duration, user);
-    } catch (error) {
-      console.error("Session end failed:", error);
-      toast.error("Can't save session. Please refresh.");
-      return;
+    } else {
+      toast.error("You need an active subscription to save sessions.");
+      return false;
     }
   } else {
     console.log("no user logged in");
     toast.error("Please log in to save sessions");
+    return false;
   }
 }

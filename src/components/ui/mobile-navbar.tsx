@@ -11,6 +11,9 @@ import {
   Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
+import { useSubscription } from "@/contexts/subscription-context";
+import TrialCounter from "@/components/ui/trial-counter";
 
 const navigationItems = [
   {
@@ -42,6 +45,9 @@ const navigationItems = [
 
 export function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user: authUser, loading: authLoading } = useAuth();
+  const { subscriptionStatus, endDate, subscriptionLoading } =
+    useSubscription();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -51,7 +57,9 @@ export function MobileNavbar() {
     <>
       <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 px-4 py-2">
         <div className="flex items-center justify-between">
-          <div className="text-xl font-semibold">Islands.</div>
+          <a href="/dashboard" className="text-xl font-semibold">
+            Islands.
+          </a>
 
           <Button
             variant="ghost"
@@ -86,7 +94,7 @@ export function MobileNavbar() {
           </Button>
         </div>
 
-        <div className="flex flex-col items-center justify-center h-full px-8 pb-12">
+        <div className="flex flex-col items-center justify-center h-full px-8 pb-24">
           <nav className="w-full max-w-sm">
             <ul className="space-y-8">
               {navigationItems.map((item) => {
@@ -96,16 +104,35 @@ export function MobileNavbar() {
                     <a
                       href={item.href}
                       onClick={toggleMenu}
-                      className="flex items-center space-x-2 text-2xl font-medium text-gray-900 hover:text-blue-600 transition-colors duration-200 group"
+                      className="flex items-center space-x-2 text-xl font-medium text-gray-900 transition-colors duration-200 group"
                     >
-                      <div className="flex items-center justify-center w-12 h-12 group-hover:bg-blue-100 transition-colors duration-200">
-                        <IconComponent className="h-6 w-6 group-hover:text-blue-600 transition-colors duration-200" />
+                      <div className="flex items-center justify-center w-12 h-12  transition-colors duration-200">
+                        <IconComponent className="h-5 w-5  transition-colors duration-200" />
                       </div>
                       <span>{item.name}</span>
                     </a>
                   </li>
                 );
               })}
+              {subscriptionStatus == "active" && (
+                <li className="flex">
+                  <span className="text-sm font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
+                    Subscribed
+                  </span>
+                </li>
+              )}
+              {authUser &&
+                !authLoading &&
+                !subscriptionLoading &&
+                (subscriptionStatus === "trialing" ||
+                  subscriptionStatus === "expired") && (
+                  <li className="flex" onClick={toggleMenu}>
+                    <TrialCounter
+                      subscriptionStatus={subscriptionStatus}
+                      endDate={endDate}
+                    />
+                  </li>
+                )}
             </ul>
           </nav>
 

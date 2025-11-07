@@ -297,7 +297,7 @@ export default function Dashboard() {
             <CardContent className="mt-8">
               <div className="flex flex-col py-auto gap-2 justify-center h-full">
                 <div className="min-w-48 flex flex-col gap-6">
-                  <div className="hidden lg:flex flex-row justify-between w-full">
+                  <div className="flex flex-row justify-between w-full">
                     <PeriodProgress
                       studyTime={studyTime["today"]}
                       goal={user?.goal ?? 0}
@@ -312,13 +312,6 @@ export default function Dashboard() {
                       studyTime={studyTime["month"]}
                       goal={user?.goal ?? 0}
                       timeframe="month"
-                    />
-                  </div>
-                  <div className="mx-auto lg:hidden ">
-                    <PeriodProgress
-                      studyTime={studyTime["today"]}
-                      goal={user?.goal ?? 0}
-                      timeframe="day"
                     />
                   </div>
                   <div className="flex flex-col justify-between">
@@ -376,7 +369,7 @@ export default function Dashboard() {
           </Card>
         </div>
         <div className="flex lg:flex-row flex-col gap-4">
-          <Card className="w-full max-w-96">
+          <Card className="w-full lg:max-w-96">
             <CardContent className="flex flex-col mt-6">
               <h2 className="text-xl font-semibold tracking-tight mb-4">
                 Last 30 Days

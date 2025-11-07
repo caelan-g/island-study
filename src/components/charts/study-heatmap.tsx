@@ -140,7 +140,9 @@ export default function StudyHeatmap({
                 <div
                   key={date.toISOString()}
                   className={`w-10 h-10 rounded-md flex flex-col items-center justify-center text-xs transition-all hover:scale-105 cursor-pointer ${colorClass}`}
-                  title={`${date.toLocaleDateString()}: ${hours.toFixed(1)}h studied`}
+                  title={`${date.toLocaleDateString()}: ${hours.toFixed(
+                    1
+                  )}h studied`}
                 >
                   <div className="text-xs">{dayNumber}</div>
                   <div className="text-sm font-bold">

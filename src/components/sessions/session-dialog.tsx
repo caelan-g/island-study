@@ -31,6 +31,7 @@ import { checkSession } from "@/lib/sessions/check-session";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
+import { useSubscription } from "@/contexts/subscription-context";
 
 type ActiveSession = {
   start_time: string;
@@ -60,6 +61,7 @@ export function SessionDialog({
     null
   );
   const { user: authUser } = useAuth();
+  const { subscriptionStatus } = useSubscription();
 
   useEffect(() => {
     const checkForActiveSession = async () => {
@@ -157,22 +159,29 @@ export function SessionDialog({
 
   async function onSubmit(values: z.infer<typeof sessionSchema>) {
     try {
-      await endSession(
-        sessionProps ? sessionProps.id : "",
-        values.startTime,
-        values.endTime,
-        values.course,
-        authUser,
-        values.description
-      );
-      // Only call onSubmitSuccess if the endSession was successful
-      if (onSubmitSuccess) {
-        const sound = "/sounds/quick-tone.mp3";
+      if (
+        await endSession(
+          sessionProps ? sessionProps.id : "",
+          values.startTime,
+          values.endTime,
+          values.course,
+          authUser,
+          subscriptionStatus,
+          values.description
+        )
+      ) {
+        // Only call onSubmitSuccess if the endSession was successful
+        if (onSubmitSuccess) {
+          const sound = "/sounds/quick-tone.mp3";
+          new Audio(sound).play();
+          onSubmitSuccess();
+        }
+        form.reset();
+        onOpenChange(false);
+      } else {
+        const sound = "/sounds/error-tone.mp3";
         new Audio(sound).play();
-        onSubmitSuccess();
       }
-      form.reset();
-      onOpenChange(false);
     } catch (error) {
       console.error("Error ending session:", error);
     }

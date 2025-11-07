@@ -30,6 +30,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
+import { useSubscription } from "@/contexts/subscription-context";
 import { deleteSession } from "@/lib/sessions/delete-session";
 import { Check, Trash } from "lucide-react";
 
@@ -47,6 +48,7 @@ export function EditSessionCard({
   onSubmitSuccess,
 }: SessionDialogProps) {
   const { user: authUser } = useAuth();
+  const { subscriptionStatus } = useSubscription();
 
   const sessionSchema = z.object({
     description: z
@@ -118,6 +120,7 @@ export function EditSessionCard({
         values.endTime,
         values.course,
         authUser,
+        subscriptionStatus,
         values.description
       );
       // Only call onSubmitSuccess if the endSession was successful
