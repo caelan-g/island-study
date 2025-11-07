@@ -22,7 +22,6 @@ export async function updateUserSubscription(
     const { data, error } = await supabaseAdmin
       .from("users")
       .update({
-        is_subscribed: ["active", "trialing"].includes(subscriptionStatus),
         subscription_status: subscriptionStatus,
         stripe_customer_id: stripeCustomerId,
         stripe_subscription_id: stripeSubscriptionId,
