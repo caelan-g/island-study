@@ -55,7 +55,11 @@ export async function onboardUser(name: string, goal: number) {
 
       const { error } = await supabase
         .from("users")
-        .update({ name: name, goal: goal, has_onboarded: true })
+        .update({
+          name: name,
+          goal: goal,
+          has_onboarded: true,
+        })
         .eq("id", user.id)
         .single();
 

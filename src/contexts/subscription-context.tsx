@@ -62,8 +62,8 @@ export function SubscriptionProvider({
         setSubscriptionStatus("active");
       } else if (
         data.subscription_status === "trialing" &&
-        endDate &&
-        new Date(endDate) > new Date()
+        data.trial_end &&
+        new Date(data.trial_end) > new Date()
       ) {
         setSubscriptionStatus("trialing");
       } else {

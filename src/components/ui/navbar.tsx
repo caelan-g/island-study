@@ -30,7 +30,7 @@ export function LandingNavigationMenu() {
             </Link>
           </Button>
           <Button asChild>
-            <Link href="/auth/signup" className="">
+            <Link href="/auth/sign-up" className="">
               Sign Up
             </Link>
           </Button>

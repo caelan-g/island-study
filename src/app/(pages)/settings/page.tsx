@@ -429,7 +429,7 @@ export default function SettingsPage() {
                     be redirected to the customer portal.
                   </p>
                 </div>
-                {user?.is_subscribed ? (
+                {user?.subscription_status === "active" ? (
                   <ManageSubscriptionButton />
                 ) : (
                   <Button asChild>

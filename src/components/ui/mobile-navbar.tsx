@@ -124,6 +124,7 @@ export function MobileNavbar() {
               {authUser &&
                 !authLoading &&
                 !subscriptionLoading &&
+                subscriptionStatus &&
                 (subscriptionStatus === "trialing" ||
                   subscriptionStatus === "expired") && (
                   <li className="flex" onClick={toggleMenu}>
