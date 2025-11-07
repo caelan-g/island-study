@@ -106,7 +106,7 @@ export function AppSidebar() {
         <SidebarMenu>
           {subscriptionStatus == "active" && (
             <SidebarMenuItem className="flex">
-              <span className="text-sm font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
+              <span className="text-xs font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
                 Subscribed
               </span>
             </SidebarMenuItem>

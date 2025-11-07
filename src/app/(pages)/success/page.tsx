@@ -1,5 +1,13 @@
 import { redirect } from "next/navigation";
 import { stripe } from "@/lib/stripe";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default async function Success({
   searchParams,
@@ -28,27 +36,36 @@ export default async function Success({
     return (
       <section
         id="success"
-        className="flex flex-col items-center justify-center min-h-screen text-center"
+        className="flex flex-col items-center justify-center min-h-[40rem] lg:min-h-screen text-center"
       >
-        <div className="p-8 bg-white rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold text-green-600 mb-4">
-            Payment Successful!
-          </h1>
-          <p className="text-gray-700">
-            We appreciate your business! A confirmation email will be sent to{" "}
-            <span className="font-semibold">{customerEmail}</span>.
-          </p>
-          <p className="text-gray-600 mt-2">
-            If you have any questions, please email{" "}
-            <a
-              href="mailto:orders@example.com"
-              className="text-blue-500 hover:underline"
-            >
-              orders@example.com
-            </a>
-            .
-          </p>
-        </div>
+        <Card className="p-2 bg-white text-left">
+          <CardHeader>
+            <CardTitle className="text-3xl font-semibold">
+              Payment Successful!
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">
+              We appreciate your business! A confirmation email will be sent to{" "}
+              <span className="font-semibold">{customerEmail}</span>.
+            </p>
+            <p className="text-gray-600 mt-2">
+              If you have any questions, please email{" "}
+              <a
+                href="mailto:contact@islands.study"
+                className="text-accent-foreground hover:underline"
+              >
+                contact@islands.study
+              </a>
+              .
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button asChild>
+              <a href="/dashboard">Start Studying</a>
+            </Button>
+          </CardFooter>
+        </Card>
       </section>
     );
   }

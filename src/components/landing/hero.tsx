@@ -29,15 +29,13 @@ export default function Hero() {
             </Link>
           </div>
         </div>
-        <div className="max-h-screen">
-          <Image
-            src="/images/landing/dashboarddesktopremoved.png"
-            alt="dashboard"
-            width={2902}
-            height={1838}
-            className="w-[1280px] object-cover absolute left-[40rem] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
-          />
-        </div>
+        <Image
+          src="/images/landing/dashboarddesktopremoved.png"
+          alt="dashboard"
+          width={2902}
+          height={1838}
+          className="w-[1280px] max-h-screen object-contain absolute left-[40rem] [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]"
+        />
       </div>
       <div className="absolute bottom-20 text-xs lg:w-full justify-center text-neutral-600 lg:flex hidden">
         <ArrowDownIcon className="h-5 w-5 mr-1 animate-bounce" />
