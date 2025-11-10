@@ -9,7 +9,7 @@ export default function Proof() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-4xl">
         <div className="text-center">
           <ScrollCounter
-            target={2231}
+            target={394}
             duration={1500}
             suffix=""
             className="text-5xl lg:text-6xl font-bold text-primary mb-4"
