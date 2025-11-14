@@ -17,7 +17,7 @@ export default function IslandSelect({
 }: IslandSelectProps) {
   return (
     <Card
-      className="h-full w-96 relative cursor-default"
+      className="h-full w-screen lg:w-96 relative cursor-default"
       onPointerDown={(e) => e.stopPropagation()}
       onPointerMove={(e) => e.stopPropagation()}
       onWheel={(e) => e.stopPropagation()}
