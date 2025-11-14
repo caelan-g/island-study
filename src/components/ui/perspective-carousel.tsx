@@ -14,6 +14,8 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
   const [dragOffset, setDragOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
+  console.log("Carousel URLs:", urls);
+
   const images = urls.map((url, i) => ({
     id: i + 1,
     src: url,
@@ -106,6 +108,10 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
     return () => document.removeEventListener("mouseup", handleMouseUpGlobal);
   }, [isDragging, dragOffset, currentIndex]);
 
+  useEffect(() => {
+    setCurrentIndex(urls.length - 1);
+  }, [urls]);
+
   const getImageStyle = (index: number) => {
     const position = index - currentIndex;
     const offset = isDragging ? -dragOffset / 5 : 0;
@@ -113,7 +119,7 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
     let scale = 1;
     let opacity = 1;
     let zIndex = 1;
-    const translateX = position * 500 + offset;
+    const translateX = position * 300 + offset;
 
     if (position === 0) {
       // Center image
@@ -146,12 +152,12 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
   };
 
   return (
-    <div className="w-full min-w-96 min-h-96 grow mx-auto">
+    <div className="w-full grow mx-auto">
       <div className="relative">
         {/* Carousel Container */}
         <div
           ref={carouselRef}
-          className="relative h-80 overflow-hidden cursor-grab active:cursor-grabbing"
+          className="relative h-64 overflow-hidden cursor-grab active:cursor-grabbing"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -162,7 +168,7 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
           {images.map((image, index) => (
             <div
               key={image.id}
-              className="absolute left-1/2 top-1/2 "
+              className="absolute left-1/2 top-2/3 "
               style={getImageStyle(index)}
             >
               <Image
@@ -170,7 +176,7 @@ export default function PerspectiveCarousel({ urls }: { urls: string[] }) {
                 alt={image.alt}
                 width={512}
                 height={256}
-                className="pixelated floating pointer-events-none select-none"
+                className="pixelated floating pointer-events-none select-none min-w-84"
                 unoptimized
                 draggable={false}
               />

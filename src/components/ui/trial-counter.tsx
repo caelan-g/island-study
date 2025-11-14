@@ -12,7 +12,7 @@ export default function TrialCounter({
 }) {
   if (subscriptionStatus == "trialing" && endDate) {
     const trialEndDate = new Date(endDate).getTime();
-    const trialDuration = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+    const trialDuration = 21 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
     const trialStartDate = trialEndDate - trialDuration;
     const now = new Date().getTime();
 
