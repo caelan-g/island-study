@@ -206,8 +206,8 @@ export default function Islands() {
             className={cn(
               "fixed lg:right-2 bottom-0 lg:top-1/2 -translate-y-1/2 z-20 min-h-96 transition-transform duration-500 ease-in-out",
               isPanelVisible
-                ? "translate-y-0 lg:translate-x-0"
-                : "translate-y-[110%] lg:translate-x-[110%]"
+                ? "translate-y-0 lg:translate-x-0 lg:-translate-y-1/2"
+                : "translate-y-[110%] lg:-translate-y-1/2 lg:translate-x-[110%]"
             )}
             onPointerDown={(e) => e.stopPropagation()}
             onPointerMove={(e) => e.stopPropagation()}
