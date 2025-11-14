@@ -33,7 +33,7 @@ const features = [
     icon: TreePalm,
     title: "Your Archipelago",
     description:
-      "Navigate through your personalized learning islands. Each island represents a subject area, helping you visualize and organize your study journey.",
+      "Navigate through all of your islands. Each island represents a week of study, with levels representing a days goal reached.",
     image: "/images/landing/archipelagodesktop.jpg",
   },
   {
@@ -55,7 +55,7 @@ const features = [
 ];
 
 export default function Component() {
-  const [activeFeature, setActiveFeature] = useState(features[3]); // Default to market intelligence
+  const [activeFeature, setActiveFeature] = useState(features[2]); // Default to market intelligence
 
   return (
     <div className="min-h-screen  text-gray-900 overflow-hidden">

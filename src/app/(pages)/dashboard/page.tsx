@@ -156,7 +156,9 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col">
-      <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+      <h1 className="text-2xl font-semibold tracking-tight flex flex-row gap-2">
+        Dashboard
+      </h1>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col lg:flex-row gap-4">
           <Card className="lg:min-w-[600px] w-full max-w-[800px]">
