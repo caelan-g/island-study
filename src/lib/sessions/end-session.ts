@@ -39,7 +39,12 @@ export async function endSession(
   description?: string
 ) {
   if (user) {
-    if (subscriptionStatus == "active" || subscriptionStatus == "trialing") {
+    if (
+      subscriptionStatus == "active" ||
+      subscriptionStatus == "trialing" ||
+      subscriptionStatus == "lifetime" ||
+      subscriptionStatus == "influencer"
+    ) {
       try {
         const duration = Math.floor(
           (new Date(end_time).getTime() - new Date(start_time).getTime()) / 1000

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useSubscription } from "@/contexts/subscription-context";
 import TrialCounter from "@/components/ui/trial-counter";
+import InfluencerBadge from "./influencer-badge";
 
 const navigationItems = [
   {
@@ -119,6 +120,11 @@ export function MobileNavbar() {
                   <span className="text-sm font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
                     Subscribed
                   </span>
+                </li>
+              )}
+              {subscriptionStatus == "influencer" && (
+                <li className="flex">
+                  <InfluencerBadge />
                 </li>
               )}
               {authUser &&

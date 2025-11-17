@@ -8,6 +8,7 @@ type SubscriptionStatus =
   | "trialing"
   | "expired"
   | "lifetime"
+  | "influencer"
   | "none"
   | null;
 
@@ -66,6 +67,8 @@ export function SubscriptionProvider({
         new Date(data.trial_end) > new Date()
       ) {
         setSubscriptionStatus("trialing");
+      } else if (data.subscription_status === "influencer") {
+        setSubscriptionStatus("influencer");
       } else {
         setSubscriptionStatus("expired");
       }
