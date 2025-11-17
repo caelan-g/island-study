@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import ManageSubscriptionButton from "@/components/ui/manage-subscription-button";
+import InfluencerBadge from "@/components/ui/influencer-badge";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
@@ -76,6 +77,27 @@ export default function SettingsPage() {
   const [user, setUser] = useState<userProps | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   //const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+  // Centralized subscription conditional rendering including influencer status.
+  const renderSubscriptionActions = () => {
+    if (!user) return null;
+    switch (user.subscription_status) {
+      case "active":
+        return <ManageSubscriptionButton />;
+      case "influencer":
+        return (
+          <div className="w-full flex">
+            <InfluencerBadge />
+          </div>
+        );
+      default:
+        return (
+          <Button asChild>
+            <Link href="/subscribe">Upgrade Now</Link>
+          </Button>
+        );
+    }
+  };
 
   const initializeUser = useCallback(async () => {
     try {
@@ -429,13 +451,7 @@ export default function SettingsPage() {
                     be redirected to the customer portal.
                   </p>
                 </div>
-                {user?.subscription_status === "active" ? (
-                  <ManageSubscriptionButton />
-                ) : (
-                  <Button asChild>
-                    <Link href="/subscribe">Upgrade Now</Link>
-                  </Button>
-                )}
+                {renderSubscriptionActions()}
               </CardContent>
             </Card>
 

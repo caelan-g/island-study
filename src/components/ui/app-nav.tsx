@@ -24,6 +24,7 @@ import { logout } from "@/lib/user/logout";
 import { cn } from "@/lib/utils";
 import { useSubscription } from "@/contexts/subscription-context";
 import TrialCounter from "@/components/ui/trial-counter";
+import InfluencerBadge from "./influencer-badge";
 
 const items = [
   {
@@ -109,6 +110,11 @@ export function AppSidebar() {
               <span className="text-xs font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
                 Subscribed
               </span>
+            </SidebarMenuItem>
+          )}
+          {subscriptionStatus == "influencer" && (
+            <SidebarMenuItem className="flex">
+              <InfluencerBadge />
             </SidebarMenuItem>
           )}
           {authUser &&
