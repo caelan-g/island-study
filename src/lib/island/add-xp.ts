@@ -112,7 +112,7 @@ export async function addXP(
     }
   } else {
     console.error("No user logged in");
-    toast.error("No user logged in. Please login to continue.");
+    toast.error("No user logged in. Please log in to continue.");
   }
   return;
 }
