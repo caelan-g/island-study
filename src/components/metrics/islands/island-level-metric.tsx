@@ -1,4 +1,10 @@
-export function IslandLevelMetric({ level }: { level: number }) {
+export function IslandLevelMetric({
+  level,
+  loading,
+}: {
+  level: number;
+  loading: boolean;
+}) {
   return (
     <div>
       <p className="text-xs text-muted-foreground">Level Reached</p>

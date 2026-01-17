@@ -2,10 +2,12 @@ export function IslandXPMetric({
   threshold,
   level,
   xp,
+  loading,
 }: {
   threshold: number;
   level: number;
   xp: number;
+  loading: boolean;
 }) {
   const total = threshold * (level - 1) + xp;
   const rounded = total > 999 ? (total / 1000).toFixed(1) + "k" : total;

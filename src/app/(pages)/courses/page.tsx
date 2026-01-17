@@ -150,11 +150,13 @@ export default function Courses() {
                 timeframe="month"
                 courses={courses}
                 groupedSessions={groupedSessions}
+                loading={loading}
               />
               <CourseMetric
                 studyTime={studyTime["month"]}
                 timeframe="month"
                 courses={courses}
+                loading={loading}
               />
             </div>
           </CardContent>

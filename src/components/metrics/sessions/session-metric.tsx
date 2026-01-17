@@ -1,4 +1,5 @@
 import { sessionProps } from "@/components/types/session";
+import { Skeleton } from "@/components/ui/skeleton";
 import { timeFilter } from "@/lib/filters/time-filter";
 
 interface GroupedSession {
@@ -10,10 +11,12 @@ export function SessionMetric({
   studyTime,
   timeframe,
   groupedSessions,
+  loading,
 }: {
   studyTime: number;
   timeframe: "week" | "month";
   groupedSessions: GroupedSession[];
+  loading: boolean;
 }) {
   const period = timeframe === "week" ? 7 : 30;
 
@@ -34,11 +37,15 @@ export function SessionMetric({
       <p className="text-xs text-muted-foreground">
         Session Average ({timeframe})
       </p>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-xl font-bold">
-          {timeFilter(studyTime / sessionCount)}
-        </p>
-      </div>
+      {loading ? (
+        <Skeleton className="h-6 w-12 mt-1 rounded-md" />
+      ) : (
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-xl font-bold">
+            {timeFilter(studyTime / sessionCount)}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
