@@ -15,34 +15,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useSubscription } from "@/contexts/subscription-context";
 import TrialCounter from "@/components/ui/trial-counter";
 import InfluencerBadge from "./influencer-badge";
-
-const navigationItems = [
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-  },
-  {
-    name: "Sessions",
-    href: "/sessions",
-    icon: Table,
-  },
-  {
-    name: "Archipelago",
-    href: "/archipelago",
-    icon: TreePalm,
-  },
-  {
-    name: "Courses",
-    href: "/courses",
-    icon: GraduationCap,
-  },
-  {
-    name: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
-];
+import { navItems } from "@/app/data/nav-items";
 
 export function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,19 +71,19 @@ export function MobileNavbar() {
         <div className="flex flex-col items-center justify-center h-full px-8 pb-24">
           <nav className="w-full max-w-sm">
             <ul className="space-y-8">
-              {navigationItems.map((item) => {
+              {navItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
-                  <li key={item.name}>
+                  <li key={item.title}>
                     <a
-                      href={item.href}
+                      href={item.url}
                       onClick={toggleMenu}
                       className="flex items-center space-x-2 text-xl font-medium text-gray-900 transition-colors duration-200 group"
                     >
                       <div className="flex items-center justify-center w-12 h-12  transition-colors duration-200">
                         <IconComponent className="h-5 w-5  transition-colors duration-200" />
                       </div>
-                      <span>{item.name}</span>
+                      <span>{item.title}</span>
                     </a>
                   </li>
                 );

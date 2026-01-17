@@ -25,34 +25,8 @@ import { cn } from "@/lib/utils";
 import { useSubscription } from "@/contexts/subscription-context";
 import TrialCounter from "@/components/ui/trial-counter";
 import InfluencerBadge from "./influencer-badge";
+import { navItems } from "@/app/data/nav-items";
 
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Sessions",
-    url: "/sessions",
-    icon: Table,
-  },
-  {
-    title: "Archipelago",
-    url: "/archipelago",
-    icon: TreePalm,
-  },
-  {
-    title: "Courses",
-    url: "/courses",
-    icon: GraduationCap,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
 export function AppSidebar() {
   const { user: authUser, loading: authLoading } = useAuth();
   const { subscriptionStatus, endDate, subscriptionLoading } =
@@ -81,7 +55,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {items.map((item) => (
+              {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild size="default">
                     <a
