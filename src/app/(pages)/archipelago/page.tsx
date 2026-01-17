@@ -214,7 +214,11 @@ export default function Islands() {
             onWheel={(e) => e.stopPropagation()}
           >
             {selectedIsland && (
-              <IslandSelect {...selectedIsland} onDeselect={handleDeselect} />
+              <IslandSelect
+                {...selectedIsland}
+                onDeselect={handleDeselect}
+                loading={loading}
+              />
             )}
           </div>
           <animated.div

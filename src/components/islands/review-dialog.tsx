@@ -16,6 +16,7 @@ import { IslandXPMetric } from "@/components/metrics/islands/island-xp-metric";
 import { islandProps } from "@/components/types/island";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Spinner } from "../ui/spinner";
 
 interface ReviewDialogProps {
   open: boolean;
@@ -25,6 +26,7 @@ interface ReviewDialogProps {
   goal: number; // User's study goal in seconds
   courses: courseProps[]; // List of courses for the user
   island: islandProps | null; // Island data for the user, can be null if not available
+  loading: boolean;
 }
 
 export default function ReviewDialog({
@@ -35,6 +37,7 @@ export default function ReviewDialog({
   goal,
   courses,
   island,
+  loading,
 }: ReviewDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -56,14 +59,20 @@ export default function ReviewDialog({
             transition={{ type: "spring", duration: 0.5 }}
             className="absolute top-0 right-0 w-2/3 z-[-10]"
           >
-            <Image
-              src={island?.current_url || "/images/loading_island.png"}
-              alt={`Level ${island?.level || 1} Island`}
-              width={512}
-              height={256}
-              className="floating pixelated"
-              unoptimized
-            />
+            {loading || !island ? (
+              <div className="h-[256px] w-full flex items-center">
+                <Spinner className="mx-auto" />
+              </div>
+            ) : (
+              <Image
+                src={island.current_url}
+                alt={`Level ${island?.level || 1} Island`}
+                width={512}
+                height={256}
+                className="floating pixelated"
+                unoptimized
+              />
+            )}
           </motion.div>
 
           {/* Metrics */}
@@ -72,13 +81,20 @@ export default function ReviewDialog({
               timeframe="week"
               courses={courses}
               groupedSessions={groupedSessions}
+              loading={loading}
             />
-            <TimeMetric studyTime={studyTime} goal={goal} timeframe="week" />
-            <IslandLevelMetric level={island?.level || 0} />
+            <TimeMetric
+              studyTime={studyTime}
+              goal={goal}
+              timeframe="week"
+              loading={loading}
+            />
+            <IslandLevelMetric level={island?.level || 0} loading={loading} />
             <IslandXPMetric
               level={island?.level || 0}
               xp={island?.xp || 0}
               threshold={island?.threshold || 0}
+              loading={loading}
             />
           </div>
         </div>

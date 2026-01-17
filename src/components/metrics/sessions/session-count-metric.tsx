@@ -1,4 +1,5 @@
 import { sessionProps } from "@/components/types/session";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GroupedSession {
   date: string;
@@ -8,9 +9,11 @@ interface GroupedSession {
 export function SessionCountMetric({
   timeframe,
   groupedSessions,
+  loading,
 }: {
   timeframe: "week" | "month";
   groupedSessions: GroupedSession[];
+  loading: boolean;
 }) {
   const period = timeframe === "week" ? 7 : 30;
 
@@ -29,9 +32,13 @@ export function SessionCountMetric({
   return (
     <div>
       <p className="text-xs text-muted-foreground">Sessions this {timeframe}</p>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-xl font-bold">{sessionCount}</p>
-      </div>
+      {loading ? (
+        <Skeleton className="h-6 w-12 mt-1 rounded-md" />
+      ) : (
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-xl font-bold">{sessionCount}</p>
+        </div>
+      )}
     </div>
   );
 }
