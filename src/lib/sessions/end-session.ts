@@ -66,6 +66,7 @@ export async function endSession(
             toast.error("Failed to save session. Try again.");
             return false;
           } else {
+            await addXP(supabase, user.id, duration, user);
             toast.success("Session saved");
             return true;
           }
@@ -86,6 +87,7 @@ export async function endSession(
             toast.error("Failed to save session. Try again.");
             return false;
           } else {
+            await addXP(supabase, user.id, duration, user);
             toast.success("Session saved");
             return true;
           }
