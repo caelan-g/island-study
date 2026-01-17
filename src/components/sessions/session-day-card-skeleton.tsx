@@ -1,5 +1,4 @@
 import { MiniRadialChart } from "@/components/charts/mini-radial";
-import { sessionProps } from "@/components/types/session";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const SessionDayCardSkeleton = () => {

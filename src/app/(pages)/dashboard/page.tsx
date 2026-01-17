@@ -468,6 +468,7 @@ export default function Dashboard() {
         goal={user?.goal ?? 0}
         courses={courses}
         island={oldIsland}
+        loading={loading}
       />
     </div>
   );

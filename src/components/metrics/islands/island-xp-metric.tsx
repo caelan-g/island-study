@@ -1,3 +1,5 @@
+import { Skeleton } from "@/components/ui/skeleton";
+
 export function IslandXPMetric({
   threshold,
   level,
@@ -14,9 +16,13 @@ export function IslandXPMetric({
   return (
     <div>
       <p className="text-xs text-muted-foreground">Total XP</p>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-xl font-bold">{rounded}</p>
-      </div>
+      {loading ? (
+        <Skeleton className="h-6 w-12 mt-1 rounded-md" />
+      ) : (
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-xl font-bold">{rounded}</p>
+        </div>
+      )}
     </div>
   );
 }

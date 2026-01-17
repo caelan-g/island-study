@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { timeFilter } from "@/lib/filters/time-filter";
 
 export function IslandTimeMetric({
@@ -15,9 +16,13 @@ export function IslandTimeMetric({
   return (
     <div>
       <p className="text-xs text-muted-foreground">Time Studied</p>
-      <div className="flex flex-row justify-between items-center">
-        <p className="text-xl font-bold">{timeFilter(total)}</p>
-      </div>
+      {loading ? (
+        <Skeleton className="h-6 w-14 mt-1 rounded-md" />
+      ) : (
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-xl font-bold">{timeFilter(total)}</p>
+        </div>
+      )}
     </div>
   );
 }
