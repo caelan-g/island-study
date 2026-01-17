@@ -66,7 +66,6 @@ export async function endSession(
             toast.error("Failed to save session. Try again.");
             return false;
           } else {
-            await addXP(supabase, user.id, duration, user);
             toast.success("Session saved");
             return true;
           }
@@ -105,11 +104,11 @@ export async function endSession(
             toast.error("Failed to save session. Try again.");
             return false;
           } else {
+            await addXP(supabase, user.id, duration, user);
             toast.success("Session created");
+            return true;
           }
         }
-        await addXP(supabase, user.id, duration, user);
-        return true;
       } catch (error) {
         console.error("Session end failed:", error);
         toast.error("Can't save session. Please refresh.");
@@ -120,7 +119,6 @@ export async function endSession(
       return false;
     }
   } else {
-    console.log("no user logged in");
     toast.error("Please log in to save sessions");
     return false;
   }
