@@ -57,10 +57,10 @@ export function DayCourseAreaChart({
   });
 
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="h-[300px]">
       <Chart
         data={processedData}
-        margin={{ left: 12, right: 12, top: 20, bottom: 20 }}
+        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
         stackOffset="none"
       >
         <CartesianGrid vertical={false} stroke="var(--border)" />

@@ -1,4 +1,12 @@
-import { Home, Table, TreePalm, GraduationCap, Settings } from "lucide-react";
+import {
+  Home,
+  Table,
+  TreePalm,
+  GraduationCap,
+  Settings,
+  Beaker,
+  ChartArea,
+} from "lucide-react";
 export const navItems = [
   {
     title: "Dashboard",
@@ -14,6 +22,11 @@ export const navItems = [
     title: "Archipelago",
     url: "/archipelago",
     icon: TreePalm,
+  },
+  {
+    title: "Analytics",
+    url: "/analytics",
+    icon: ChartArea,
   },
   {
     title: "Courses",
