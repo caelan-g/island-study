@@ -32,6 +32,7 @@ import { sessionProps } from "@/components/types/session";
 import { courseProps } from "@/components/types/course";
 import { useAuth } from "@/contexts/auth-context";
 import { useSubscription } from "@/contexts/subscription-context";
+import { timeFilter } from "@/lib/filters/time-filter";
 
 type ActiveSession = {
   start_time: string;
@@ -58,8 +59,9 @@ export function SessionDialog({
   onSubmitSuccess,
 }: SessionDialogProps) {
   const [activeSession, setActiveSession] = useState<ActiveSession | null>(
-    null
+    null,
   );
+  const [creationLoading, setCreationLoading] = useState(false);
   const { user: authUser } = useAuth();
   const { subscriptionStatus } = useSubscription();
 
@@ -104,7 +106,7 @@ export function SessionDialog({
       sessionSchema.refine((data) => data.startTime < data.endTime, {
         message: "Start time must be before end time",
         path: ["endTime"],
-      })
+      }),
     ),
     defaultValues: sessionProps
       ? {
@@ -158,6 +160,7 @@ export function SessionDialog({
   }, [open, resetFormWithCurrentTime]);
 
   async function onSubmit(values: z.infer<typeof sessionSchema>) {
+    setCreationLoading(true);
     try {
       if (
         await endSession(
@@ -167,7 +170,7 @@ export function SessionDialog({
           values.course,
           authUser,
           subscriptionStatus,
-          values.description
+          values.description,
         )
       ) {
         // Only call onSubmitSuccess if the endSession was successful
@@ -185,6 +188,7 @@ export function SessionDialog({
     } catch (error) {
       console.error("Error ending session:", error);
     }
+    setCreationLoading(false);
   }
 
   return (
@@ -268,13 +272,22 @@ export function SessionDialog({
                     name="endTime"
                     render={({ field: endField }) => (
                       <FormItem>
-                        <Label className="text-xs font-bold">Duration</Label>
+                        <div className="flex flex-row gap-1">
+                          <Label className="text-xs font-bold">Duration</Label>
+                          <div className="text-xs">
+                            {timeFilter(
+                              (new Date(endField.value).getTime() -
+                                new Date(startField.value).getTime()) /
+                                1000,
+                            )}
+                          </div>
+                        </div>
                         <div className="flex lg:flex-row flex-col gap-2">
                           <DateTimePicker
                             value={startField.value}
                             onChange={(date) => startField.onChange(date)}
                           />
-                          <span className="text-xs font-bold my-auto align-middle">
+                          <span className="text-xs my-auto align-middle">
                             to
                           </span>
                           <DateTimePicker
@@ -282,6 +295,7 @@ export function SessionDialog({
                             onChange={(date) => endField.onChange(date)}
                           />
                         </div>
+
                         <FormMessage />
                       </FormItem>
                     )}
@@ -297,7 +311,11 @@ export function SessionDialog({
                 </Button>
               </DialogClose>
 
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={creationLoading}
+              >
                 {sessionProps ? "Update" : "Create"}
               </Button>
             </DialogFooter>
