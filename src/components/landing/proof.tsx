@@ -9,7 +9,7 @@ export default function Proof() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-4xl">
         <div className="text-center">
           <ScrollCounter
-            target={672}
+            target={738}
             duration={1500}
             suffix=""
             className="text-5xl lg:text-6xl font-bold text-primary mb-4"
@@ -19,7 +19,7 @@ export default function Proof() {
 
         <div className="text-center">
           <ScrollCounter
-            target={25870}
+            target={18561}
             duration={1500}
             suffix=""
             className="text-5xl lg:text-6xl font-bold text-primary mb-4"
@@ -29,7 +29,7 @@ export default function Proof() {
 
         <div className="text-center">
           <ScrollCounter
-            target={17497}
+            target={4821}
             duration={1500}
             suffix=""
             className="text-5xl lg:text-6xl font-bold text-primary mb-4"

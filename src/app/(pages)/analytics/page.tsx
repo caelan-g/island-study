@@ -159,7 +159,7 @@ export default function AnalyticsPage() {
                 <h2 className="text-xl font-semibold tracking-tight mb-2">
                   Lifetime Stats
                 </h2>
-
+                <span className="text-muted-foreground text-xs">Totals</span>
                 <p className="font-semibold text-md">
                   {Math.floor(totalStudy / 3600)}{" "}
                   <span className="font-normal text-sm">hours studied</span>
@@ -182,6 +182,27 @@ export default function AnalyticsPage() {
                 <p className="font-semibold text-md">
                   {evolutionCount}{" "}
                   <span className="font-normal text-sm">islands evolved</span>
+                </p>
+                <span className="text-muted-foreground text-xs mt-4">
+                  Records
+                </span>
+                <p className="font-semibold text-md">
+                  {evolutionCount}{" "}
+                  <span className="font-normal text-sm">longest session</span>
+                </p>
+                <p className="font-semibold text-md">
+                  {evolutionCount}{" "}
+                  <span className="font-normal text-sm">biggest day</span>
+                  <p className="font-semibold text-md">
+                    {evolutionCount}{" "}
+                    <span className="font-normal text-sm">biggest week</span>
+                    <p className="font-semibold text-md">
+                      {evolutionCount}{" "}
+                      <span className="font-normal text-sm">
+                        biggest 30 days
+                      </span>
+                    </p>
+                  </p>
                 </p>
               </CardContent>
             </Card>
