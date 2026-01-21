@@ -22,7 +22,10 @@ import { toast } from "sonner";
  * @param sessions - Array of session objects to process
  * @returns [TimeMetrics, GroupedSession[]] or undefined if error
  */
-export const processSessionData = (sessions: sessionProps[]) => {
+export const processSessionData = (
+  sessions: sessionProps[],
+  duration: "all" | "month" = "month",
+) => {
   if (!sessions) {
     toast.error("No session data found");
     return;
@@ -54,7 +57,7 @@ export const processSessionData = (sessions: sessionProps[]) => {
         }
         return acc;
       },
-      { today: 0, week: 0, month: 0 }
+      { today: 0, week: 0, month: 0 },
     );
 
     // Group sessions by day
@@ -66,7 +69,7 @@ export const processSessionData = (sessions: sessionProps[]) => {
         acc[date]?.push(session);
         return acc;
       },
-      {}
+      {},
     );
 
     // Fill in missing days with a placeholder session
@@ -87,14 +90,25 @@ export const processSessionData = (sessions: sessionProps[]) => {
         grouped[dateStr] = [placeholderSession];
       }
     }
-
-    const groupedArray = Object.entries(grouped)
-      .map(([date, sessions]) => ({
-        date,
-        sessions,
-      }))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 30);
+    let groupedArray;
+    if (duration === "month") {
+      groupedArray = Object.entries(grouped)
+        .map(([date, sessions]) => ({
+          date,
+          sessions,
+        }))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 30);
+    } else {
+      groupedArray = Object.entries(grouped)
+        .map(([date, sessions]) => ({
+          date,
+          sessions,
+        }))
+        .sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        );
+    }
 
     return [timeMetrics, groupedArray];
   } catch (error) {

@@ -8,14 +8,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-export interface HeatmapDataPoint {
-  date: string; // ISO date string "YYYY-MM-DD"
-  value: number;
-}
+import { GroupedSession } from "@/components/types/session";
+import { courseProps } from "@/components/types/course";
 
 interface YearHeatmapProps {
-  data: HeatmapDataPoint[];
+  data: GroupedSession[];
+  type: "time" | "session" | "course";
+  courseData?: courseProps[];
   colorScale?: {
     empty: string;
     low: string;
@@ -37,7 +36,7 @@ const defaultColorScale = {
 function getColorClass(
   value: number | undefined,
   maxValue: number,
-  colorScale: typeof defaultColorScale
+  colorScale: typeof defaultColorScale,
 ): string {
   if (value === undefined || value === 0) return colorScale.empty;
   const percentage = value / maxValue;
@@ -62,16 +61,90 @@ function toISODateString(date: Date): string {
 
 export function YearHeatmap({
   data,
+  type,
+  courseData,
   colorScale = defaultColorScale,
   className,
 }: YearHeatmapProps) {
-  const { weeks, months, dataMap, maxValue } = useMemo(() => {
-    // Create a map of date -> value for quick lookup
+  const { weeks, months, dataMap, courseMap, maxValue } = useMemo(() => {
+    // Process data based on type
     const dataMap = new Map<string, number>();
+    const courseMap = new Map<
+      string,
+      { courseId: string; courseName: string; courseColor: string }
+    >();
     let maxVal = 0;
-    data.forEach((d) => {
-      dataMap.set(d.date, d.value);
-      if (d.value > maxVal) maxVal = d.value;
+
+    data.forEach((day) => {
+      // Parse date - handles both ISO format and US format
+      let dateStr: string;
+      if (day.date.includes("/")) {
+        // US format: M/D/YYYY
+        const [month, dayNum, year] = day.date.split("/");
+        const date = new Date(
+          parseInt(year),
+          parseInt(month) - 1,
+          parseInt(dayNum),
+        );
+        dateStr = toISODateString(date);
+      } else {
+        // ISO format: YYYY-MM-DD
+        dateStr = day.date;
+      }
+
+      if (type === "session") {
+        // Count number of sessions
+        const sessionCount = day.sessions.length;
+        dataMap.set(dateStr, sessionCount);
+        if (sessionCount > maxVal) maxVal = sessionCount;
+      } else if (type === "time") {
+        // Calculate total study time in seconds
+        const totalTime = day.sessions.reduce((total, session) => {
+          return (
+            total +
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+              1000
+          );
+        }, 0);
+        dataMap.set(dateStr, totalTime);
+        if (totalTime > maxVal) maxVal = totalTime;
+      } else if (type === "course") {
+        // Find the course studied most on this day
+        const courseTime: Record<string, number> = {};
+        day.sessions.forEach((session) => {
+          if (!session.course_id) return;
+          const sessionTime =
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+            1000;
+          courseTime[session.course_id] =
+            (courseTime[session.course_id] || 0) + sessionTime;
+        });
+
+        // Find the course with most time
+        let maxCourseId = "";
+        let maxCourseTime = 0;
+        Object.entries(courseTime).forEach(([courseId, time]) => {
+          if (time > maxCourseTime) {
+            maxCourseTime = time;
+            maxCourseId = courseId;
+          }
+        });
+
+        if (maxCourseId && courseData) {
+          const course = courseData.find((c) => c.id === maxCourseId);
+          if (course) {
+            dataMap.set(dateStr, maxCourseTime);
+            courseMap.set(dateStr, {
+              courseId: maxCourseId,
+              courseName: course.name,
+              courseColor: course.colour,
+            });
+            if (maxCourseTime > maxVal) maxVal = maxCourseTime;
+          }
+        }
+      }
     });
 
     // Generate last 365 days
@@ -129,8 +202,8 @@ export function YearHeatmap({
       }
     });
 
-    return { weeks, months, dataMap, maxValue: maxVal || 1 };
-  }, [data]);
+    return { weeks, months, dataMap, courseMap, maxValue: maxVal || 1 };
+  }, [data, type, courseData]);
 
   const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -185,23 +258,44 @@ export function YearHeatmap({
 
                   const dateStr = toISODateString(day);
                   const value = dataMap.get(dateStr);
+                  const courseInfo = courseMap.get(dateStr);
+
+                  // For course type, use course color; otherwise use color scale
+                  const cellStyle =
+                    type === "course" && courseInfo
+                      ? { backgroundColor: courseInfo.courseColor }
+                      : undefined;
+
+                  const cellClassName =
+                    type === "course" && courseInfo
+                      ? "w-4 h-4 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30"
+                      : cn(
+                          "w-4 h-4 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30",
+                          getColorClass(value, maxValue, colorScale),
+                        );
+
+                  // Format tooltip content based on type
+                  let tooltipTitle = "No activity";
+                  if (value !== undefined && value > 0) {
+                    if (type === "session") {
+                      tooltipTitle = `${value} session${value !== 1 ? "s" : ""}`;
+                    } else if (type === "time") {
+                      const hours = Math.floor(value / 3600);
+                      const minutes = Math.floor((value % 3600) / 60);
+                      tooltipTitle =
+                        hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+                    } else if (type === "course" && courseInfo) {
+                      tooltipTitle = courseInfo.courseName;
+                    }
+                  }
 
                   return (
                     <Tooltip key={dateStr}>
                       <TooltipTrigger asChild>
-                        <div
-                          className={cn(
-                            "w-4 h-4 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30",
-                            getColorClass(value, maxValue, colorScale)
-                          )}
-                        />
+                        <div className={cellClassName} style={cellStyle} />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs">
-                        <p className="font-medium">
-                          {value !== undefined
-                            ? `${value} contributions`
-                            : "No contributions"}
-                        </p>
+                        <p className="font-medium">{tooltipTitle}</p>
                         <p className="text-muted-foreground">
                           {formatDate(day)}
                         </p>
@@ -213,17 +307,17 @@ export function YearHeatmap({
             ))}
           </div>
         </div>
-
-        {/* Legend */}
-        <div className="flex items-center justify-end gap-1 mt-2 text-xs text-muted-foreground">
-          <span>Less</span>
-          <div className={cn("w-4 h-4 rounded-sm", colorScale.empty)} />
-          <div className={cn("w-4 h-4 rounded-sm", colorScale.low)} />
-          <div className={cn("w-4 h-4 rounded-sm", colorScale.medium)} />
-          <div className={cn("w-4 h-4 rounded-sm", colorScale.high)} />
-          <div className={cn("w-4 h-4 rounded-sm", colorScale.max)} />
-          <span>More</span>
-        </div>
+        {type !== "course" && (
+          <div className="flex items-center justify-end gap-1 mt-6 text-xs text-muted-foreground">
+            <span>Less</span>
+            <div className={cn("w-4 h-4 rounded-sm", colorScale.empty)} />
+            <div className={cn("w-4 h-4 rounded-sm", colorScale.low)} />
+            <div className={cn("w-4 h-4 rounded-sm", colorScale.medium)} />
+            <div className={cn("w-4 h-4 rounded-sm", colorScale.high)} />
+            <div className={cn("w-4 h-4 rounded-sm", colorScale.max)} />
+            <span>More</span>
+          </div>
+        )}
       </div>
     </TooltipProvider>
   );

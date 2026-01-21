@@ -14,49 +14,19 @@ import { fetchIslands } from "@/lib/island/fetch-islands";
 import { useAuth } from "@/contexts/auth-context";
 import { fetchCourses } from "@/lib/courses/fetch-courses";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
-import {
-  YearHeatmap,
-  HeatmapDataPoint,
-} from "@/components/charts/year-heatmap";
-
-function generateTestData(): HeatmapDataPoint[] {
-  const data: HeatmapDataPoint[] = [];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  for (let i = 364; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
-
-    // Generate random values with some patterns
-    // More activity on weekdays
-    const dayOfWeek = date.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-
-    // Random chance of having activity
-    const hasActivity = Math.random() > (isWeekend ? 0.6 : 0.3);
-
-    if (hasActivity) {
-      // Generate value between 1 and 15, weighted lower on weekends
-      const maxValue = isWeekend ? 8 : 15;
-      const value = Math.floor(Math.random() * maxValue) + 1;
-
-      data.push({
-        date: date.toISOString().split("T")[0],
-        value,
-      });
-    }
-  }
-
-  return data;
-}
+import { fetchUser } from "@/lib/user/fetch-user";
+import { YearHeatmap } from "@/components/charts/year-heatmap";
+import { RadarChart } from "@/components/charts/radar-chart";
+import { Spinner } from "@/components/ui/spinner";
+import { userProps } from "@/components/types/user";
+import { BarChart } from "@/components/charts/bar-chart";
 
 export default function AnalyticsPage() {
-  const testData = generateTestData();
   const [islandCount, setIslandCount] = useState<number>(0);
   const [evolutionCount, setEvolutionCount] = useState<number>(0);
   const [sessionCount, setSessionCount] = useState<number>(0);
   const [dayCount, setDayCount] = useState<number>(0);
+  const [user, setUser] = useState<userProps>();
   const [totalStudy, setTotalStudy] = useState<number>(0);
   const [courses, setCourses] = useState<courseProps[]>([]);
   const [sessions, setSessions] = useState<sessionProps[]>([]);
@@ -71,41 +41,46 @@ export default function AnalyticsPage() {
   const { user: authUser, loading: authLoading } = useAuth();
 
   const initializeData = useCallback(async () => {
-    const islandData = await fetchIslands(authUser);
-    const courseData = await fetchCourses(authUser);
-    const sessionData = await fetchSessions(authUser);
+    Promise.all([
+      fetchUser(authUser),
+      fetchCourses(authUser),
+      fetchSessions(authUser),
+      fetchIslands(authUser),
+    ])
+      .then(([userData, courseData, sessionData, islandData]) => {
+        if (userData) setUser(userData);
 
-    setIslandCount(islandData ? islandData.length : 0);
-    setLoading(false);
-    if (courseData) setCourses(courseData);
-    if (islandData) {
-      setEvolutionCount(
-        islandData.reduce(
-          (total, island) => total + (island.previous_urls?.length || 0) + 1,
-          0
-        )
-      );
-    }
-    if (sessionData) {
-      setSessions(sessionData);
-      const uniqueDays = new Set(
-        sessionData.map(
-          (session) => new Date(session.start_time).toISOString().split("T")[0]
-        )
-      );
-      setDayCount(uniqueDays.size);
-      setSessionCount(sessionData.length);
-      const totalMilliseconds = sessionData.reduce((acc, session) => {
-        const startTime = new Date(session.start_time).getTime();
-        const endTime = new Date(session.end_time).getTime();
-        if (!isNaN(startTime) && !isNaN(endTime) && endTime > startTime) {
-          return acc + (endTime - startTime);
+        if (courseData) {
+          setCourses(courseData);
         }
-        return acc;
-      }, 0);
-      const totalSeconds = Math.round(totalMilliseconds / 1000);
-      setTotalStudy(totalSeconds);
-    }
+        setIslandCount(islandData ? islandData.length : 0);
+        if (sessionData) {
+          setSessions(sessionData);
+          const uniqueDays = new Set(
+            sessionData.map(
+              (session) =>
+                new Date(session.start_time).toISOString().split("T")[0],
+            ),
+          );
+          setDayCount(uniqueDays.size);
+          setSessionCount(sessionData.length);
+          const totalMilliseconds = sessionData.reduce((acc, session) => {
+            const startTime = new Date(session.start_time).getTime();
+            const endTime = new Date(session.end_time).getTime();
+            if (!isNaN(startTime) && !isNaN(endTime) && endTime > startTime) {
+              return acc + (endTime - startTime);
+            }
+            return acc;
+          }, 0);
+          const totalSeconds = Math.round(totalMilliseconds / 1000);
+          setTotalStudy(totalSeconds);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error loading data:", error);
+        setLoading(false);
+      });
   }, [authUser]);
 
   useEffect(() => {
@@ -115,11 +90,10 @@ export default function AnalyticsPage() {
   }, [authLoading, authUser, initializeData]);
   useEffect(() => {
     if (sessions.length > 0) {
-      const [timeMetrics, groupedArray] = processSessionData(sessions) || [
-        { today: 0, week: 0, month: 0 },
-        [],
-        [],
-      ];
+      const [timeMetrics, groupedArray] = processSessionData(
+        sessions,
+        "all",
+      ) || [{ today: 0, week: 0, month: 0 }, [], []];
 
       setTotal(timeMetrics as TimeMetrics);
       setGroupedSessions((groupedArray as GroupedSession[]).reverse());
@@ -140,18 +114,6 @@ export default function AnalyticsPage() {
                   chartData={groupedSessions}
                   courses={courses}
                 />
-                <div className="flex flex-col gap-2">
-                  <CourseTopMetric
-                    timeframe="month"
-                    courses={courses}
-                    groupedSessions={groupedSessions}
-                  />
-                  <CourseMetric
-                    studyTime={studyTime["month"]}
-                    timeframe="month"
-                    courses={courses}
-                  />
-                </div>
               </CardContent>
             </Card>
             <Card className="min-w-96">
@@ -207,13 +169,92 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="w-full h-full">
+            <CardContent className="flex flex-col mt-6 mb-12">
+              <h2 className="text-xl font-semibold tracking-tight mb-4">
+                Courses This Year
+              </h2>
+              <div className="mx-auto">
+                <div className="text-sm font-semibold mt-2 mb-2">
+                  Course Heatmap
+                </div>
+                <YearHeatmap
+                  data={groupedSessions}
+                  type={"course"}
+                  courseData={courses}
+                  className="mx-auto"
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <div className="flex flex-row gap-4">
+            <Card className="w-full">
+              <CardContent className="flex flex-col gap-4 mt-6">
+                <h2 className="text-xl font-semibold tracking-tight">
+                  Average Study By Day
+                </h2>
+                <div className="">
+                  {loading && !user ? (
+                    <Spinner className="mt-8" />
+                  ) : (
+                    <RadarChart
+                      groupedSessions={groupedSessions}
+                      type="weekday"
+                      goal={user?.goal ?? 0}
+                    />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="w-full">
+              <CardContent className="flex flex-col gap-4 mt-6">
+                <h2 className="text-xl font-semibold tracking-tight">
+                  Average Session Duration by Course
+                </h2>
+                <div className="w-full">
+                  {loading && !user ? (
+                    <Spinner className="mt-8 mx-auto" />
+                  ) : (
+                    <RadarChart
+                      groupedSessions={groupedSessions}
+                      type="course"
+                      courseData={courses}
+                    />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="w-full">
+              <CardContent className="flex flex-col gap-4 mt-6">
+                <h2 className="text-xl font-semibold tracking-tight">
+                  Average Study By Month
+                </h2>
+                <div className="w-full">
+                  {loading && !user ? (
+                    <Spinner className="mt-8 mx-auto" />
+                  ) : (
+                    <BarChart chartData={groupedSessions} />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           <Card className="w-full h-full">
             <CardContent className="flex flex-col mt-6">
               <h2 className="text-xl font-semibold tracking-tight mb-4">
                 This Year
               </h2>
-              <div className="text-md">something here</div>
-              <YearHeatmap data={testData} />
+              <div className="mx-auto">
+                <div className="text-sm font-semibold mt-2 mb-2">
+                  Study Time Heatmap
+                </div>
+                <YearHeatmap data={groupedSessions} type={"time"} />
+                <div className="text-sm font-semibold mt-4 mb-2">
+                  Session Count Heatmap
+                </div>
+                <YearHeatmap data={groupedSessions} type={"session"} />
+              </div>
             </CardContent>
           </Card>
         </div>
