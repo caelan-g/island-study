@@ -8,7 +8,7 @@ export function GoogleButton({ isLoading }: { isLoading: boolean }) {
     const redirectTo =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000/auth/callback"
-        : "https://yourdomain.com/auth/callback";
+        : "https://islands.study/auth/callback";
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
