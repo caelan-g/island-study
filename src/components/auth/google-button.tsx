@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 export function GoogleButton({ isLoading }: { isLoading: boolean }) {
   const supabase = createClient();
   const signInWithGoogle = async () => {
+    const redirectTo =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/auth/callback"
+        : "https://yourdomain.com/auth/callback";
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:3000/auth/callback",
+        redirectTo: redirectTo,
         queryParams: {
           access_type: "offline",
           prompt: "consent",
