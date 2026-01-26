@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { userProps } from "@/components/types/user";
+import { GoogleButton } from "@/components/auth/google-button";
 
 export function LoginForm({
   className,
@@ -69,6 +70,14 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="flex flex-col">
+            <GoogleButton isLoading={isLoading} />
+            <div className="flex items-center gap-2 my-2">
+              <div className="flex-1 border-t mt-0.5"></div>
+              <span className="text-xs text-muted-foreground">or</span>
+              <div className="flex-1 border-t mt-0.5"></div>
+            </div>
+          </div>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
@@ -105,6 +114,7 @@ export function LoginForm({
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>
+
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link
