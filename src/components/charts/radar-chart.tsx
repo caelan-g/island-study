@@ -159,6 +159,10 @@ export function RadarChart({
           cursor={false}
           content={({ active, payload }) => {
             if (active && payload?.length) {
+              const value =
+                type === "course"
+                  ? payload[0].payload.course
+                  : payload[0].payload.average;
               return (
                 <div className="rounded-lg border bg-background p-2 shadow-sm">
                   <div className="grid gap-2">
@@ -166,7 +170,7 @@ export function RadarChart({
                       <span className="font-medium">
                         {payload[0].payload.day}
                       </span>
-                      <span>{timeFilter(payload[0].payload.average)}</span>
+                      <span>{timeFilter(value)}</span>
                     </div>
                   </div>
                 </div>

@@ -1,12 +1,5 @@
 "use client";
-import {
-  TreePalm,
-  Home,
-  Table,
-  GraduationCap,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import {
@@ -44,10 +37,6 @@ export function AppSidebar() {
             >
               Islands.
             </a>
-
-            <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs my-auto">
-              BETA
-            </span>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -61,14 +50,22 @@ export function AppSidebar() {
                     <a
                       href={item.url}
                       className={cn(
-                        "flex gap-2 text-foreground text-md",
-                        pathname === item.url && "font-semibold bg-muted"
+                        "flex justify-between text-foreground",
+                        pathname === item.url && "font-semibold bg-muted",
                       )}
                     >
-                      <item.icon
-                        strokeWidth={pathname === item.url ? "2.5" : "2"}
-                      />
-                      <span>{item.title}</span>
+                      <div className="flex gap-2 text-md items-center">
+                        <item.icon
+                          strokeWidth={pathname === item.url ? "2.5" : "2"}
+                          size={16}
+                        />
+                        <span>{item.title}</span>
+                      </div>
+                      {item.status === "new" && (
+                        <span className="text-[0.7rem] font-semibold rounded-full bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)] px-2 py-0.5">
+                          NEW
+                        </span>
+                      )}
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -1,15 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Home,
-  Table,
-  Settings,
-  TreePalm,
-  GraduationCap,
-  X,
-  Menu,
-} from "lucide-react";
+import { X, Menu, LogOut } from "lucide-react";
+import { logout } from "@/lib/user/logout";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useSubscription } from "@/contexts/subscription-context";
@@ -68,9 +61,9 @@ export function MobileNavbar() {
           </Button>
         </div>
 
-        <div className="flex flex-col items-center justify-center h-full px-8 pb-24">
-          <nav className="w-full max-w-sm">
-            <ul className="space-y-8">
+        <nav className="flex flex-col items-center justify-between pt-36 pb-36 h-full px-8">
+          <div className="w-full max-w-sm">
+            <ul className="space-y-4">
               {navItems.map((item) => {
                 const IconComponent = item.icon;
                 return (
@@ -84,42 +77,58 @@ export function MobileNavbar() {
                         <IconComponent className="h-5 w-5  transition-colors duration-200" />
                       </div>
                       <span>{item.title}</span>
+                      {item.status === "new" && (
+                        <span className="text-[0.7rem] mt-1 ml-2 font-semibold rounded-full bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)] px-2 py-0.5">
+                          NEW
+                        </span>
+                      )}
                     </a>
                   </li>
                 );
               })}
-              {subscriptionStatus == "active" && (
-                <li className="flex">
-                  <span className="text-sm font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
-                    Subscribed
-                  </span>
-                </li>
-              )}
-              {subscriptionStatus == "influencer" && (
-                <li className="flex">
-                  <InfluencerBadge />
-                </li>
-              )}
-              {authUser &&
-                !authLoading &&
-                !subscriptionLoading &&
-                subscriptionStatus &&
-                (subscriptionStatus === "trialing" ||
-                  subscriptionStatus === "expired") && (
-                  <li className="flex" onClick={toggleMenu}>
-                    <TrialCounter
-                      subscriptionStatus={subscriptionStatus}
-                      endDate={endDate}
-                    />
-                  </li>
-                )}
+              <li>
+                <a
+                  onClick={logout}
+                  className="flex items-center space-x-2 text-xl font-medium text-gray-900 transition-colors duration-200 group"
+                >
+                  <div className="flex items-center justify-center w-12 h-12  transition-colors duration-200">
+                    <LogOut className="h-5 w-5  transition-colors duration-200" />
+                  </div>
+                  <span>Logout</span>
+                </a>
+              </li>
             </ul>
-          </nav>
-
-          <div className="absolute bottom-8 text-center">
-            <p className="text-sm text-gray-500">© 2025 Islands</p>
           </div>
-        </div>
+
+          <div className="absolute bottom-8 text-center flex flex-col gap-2">
+            {subscriptionStatus == "active" && (
+              <li className="flex">
+                <span className="text-sm font-semibold items-center flex rounded-full px-2 py-1 bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)]">
+                  Subscribed
+                </span>
+              </li>
+            )}
+            {subscriptionStatus == "influencer" && (
+              <li className="flex ml-2">
+                <InfluencerBadge />
+              </li>
+            )}
+            {authUser &&
+              !authLoading &&
+              !subscriptionLoading &&
+              subscriptionStatus &&
+              (subscriptionStatus === "trialing" ||
+                subscriptionStatus === "expired") && (
+                <li className="flex" onClick={toggleMenu}>
+                  <TrialCounter
+                    subscriptionStatus={subscriptionStatus}
+                    endDate={endDate}
+                  />
+                </li>
+              )}
+            <p className="text-sm text-gray-500">© 2026 Islands</p>
+          </div>
+        </nav>
       </div>
 
       {/* Backdrop */}

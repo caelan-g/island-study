@@ -209,7 +209,7 @@ export function YearHeatmap({
 
   return (
     <TooltipProvider delayDuration={100}>
-      <div className={cn("inline-block", className)}>
+      <div className={cn("w-fit", className)}>
         {/* Month labels */}
         <div className="flex mb-1 ml-8">
           {months.map((month, idx) => {
@@ -268,9 +268,9 @@ export function YearHeatmap({
 
                   const cellClassName =
                     type === "course" && courseInfo
-                      ? "w-4 h-4 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30"
+                      ? "sm:w-3 lg:w-4 2xl:w-5 sm:h-3 lg:h-4 2xl:h-5 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30"
                       : cn(
-                          "w-4 h-4 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30",
+                          "sm:w-3 lg:w-4 2xl:w-5 sm:h-3 lg:h-4 2xl:h-5 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30",
                           getColorClass(value, maxValue, colorScale),
                         );
 
