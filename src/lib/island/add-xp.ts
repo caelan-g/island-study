@@ -31,6 +31,7 @@ export async function addXP(
   user: User | null
 ) {
   if (user) {
+    console.log(duration);
     // Fetch user's active island
     const { data: island, error: fetchError } = await supabase
       .from("islands")
@@ -85,7 +86,7 @@ export async function addXP(
         // If no level-up, just add XP
         const { error } = await supabase
           .from("islands")
-          .update({ xp: (island?.xp || 0) + duration })
+          .update({ xp: island.xp + duration })
           .eq("user_id", userId)
           .eq("active", true);
 
@@ -112,7 +113,7 @@ export async function addXP(
     }
   } else {
     console.error("No user logged in");
-    toast.error("No user logged in. Please login to continue.");
+    toast.error("No user logged in. Please log in to continue.");
   }
   return;
 }

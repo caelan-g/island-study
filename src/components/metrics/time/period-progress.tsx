@@ -1,14 +1,17 @@
 import { timeFilter } from "@/lib/filters/time-filter";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function PeriodProgress({
   studyTime,
   goal,
   timeframe,
+  loading,
 }: {
   studyTime: number;
   goal: number;
   timeframe: "day" | "week" | "month";
+  loading: boolean;
 }) {
   const period = timeframe === "day" ? 1 : timeframe === "week" ? 7 : 30;
   return (
@@ -21,7 +24,13 @@ export function PeriodProgress({
             ? "Week"
             : "Month"}
         </h1>
-        <p className="text-xl font-bold text-center">{timeFilter(studyTime)}</p>
+        {loading ? (
+          <Skeleton className="h-6 w-16 mx-auto my-1 rounded-md" />
+        ) : (
+          <p className="text-xl font-bold text-center">
+            {timeFilter(studyTime)}
+          </p>
+        )}
 
         <Progress
           className={`bg-muted lg:min-w-24 w-full ${

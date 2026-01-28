@@ -17,22 +17,26 @@
  * @returns Formatted time string
  */
 export function timeFilter(seconds: number, type?: string) {
-  try {
-    const hours = seconds / 3600;
-    const wholeHours = Math.floor(hours);
-    const roundedHours = Math.round(hours);
-    const minutes = Math.floor((hours - wholeHours) * 60);
+  if (seconds < 0) {
+    return "-";
+  } else {
+    try {
+      const hours = seconds / 3600;
+      const wholeHours = Math.floor(hours);
+      const roundedHours = Math.round(hours);
+      const minutes = Math.floor((hours - wholeHours) * 60);
 
-    if (type == "hours") {
-      return `${roundedHours}h`;
+      if (type == "hours") {
+        return `${roundedHours}h`;
+      }
+      if (hours >= 1) {
+        return `${wholeHours}h ${minutes}m`;
+      } else {
+        return `${minutes}m`;
+      }
+    } catch (error) {
+      console.log("Error in timeFilter:", error);
+      return "0m"; // Fallback value
     }
-    if (hours >= 1) {
-      return `${wholeHours}h ${minutes}m`;
-    } else {
-      return `${minutes}m`;
-    }
-  } catch (error) {
-    console.error("Error formatting time:", error);
-    return "0m"; // Fallback value
   }
 }

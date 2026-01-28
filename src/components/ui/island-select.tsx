@@ -9,10 +9,12 @@ import PerspectiveCarousel from "@/components/ui/perspective-carousel";
 
 interface IslandSelectProps extends islandProps {
   onDeselect: () => void;
+  loading: boolean;
 }
 
 export default function IslandSelect({
   onDeselect,
+  loading,
   ...island
 }: IslandSelectProps) {
   return (
@@ -41,16 +43,18 @@ export default function IslandSelect({
       </CardHeader>
       <CardContent className="px-0 pb-6">
         <div className="absolute flex flex-row gap-8 z-100 px-6">
-          <IslandLevelMetric level={island.level} />
+          <IslandLevelMetric level={island.level} loading={loading} />
           <IslandXPMetric
             threshold={island.threshold}
             level={island.level}
             xp={island.xp}
+            loading={loading}
           />
           <IslandTimeMetric
             threshold={island.threshold}
             level={island.level}
             xp={island.xp}
+            loading={loading}
           />
         </div>
         <div className="w-full">

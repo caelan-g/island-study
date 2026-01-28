@@ -19,6 +19,7 @@ import { ArrowBigUpDash, PlusIcon } from "lucide-react";
 import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { sessionProps } from "@/components/types/session";
 import { SessionDayCard } from "@/components/sessions/session-day-card";
+import { SessionDayCardSkeleton } from "@/components/sessions/session-day-card-skeleton";
 import { TimeMetric } from "@/components/metrics/time/time-metric";
 import { SessionMetric } from "@/components/metrics/sessions/session-metric";
 import { CourseMetric } from "@/components/metrics/courses/course-metric";
@@ -179,22 +180,22 @@ export default function Dashboard() {
                       }}
                       className="relative"
                     >
-                      <Image
-                        src={
-                          loading
-                            ? "/images/loading_island.png"
-                            : island
-                              ? island.current_url
-                              : "/images/loading_island.png"
-                        }
-                        alt="My Island"
-                        width={600}
-                        height={300}
-                        className={`pixelated pointer-events-none select-none w-full max-w-[800px] floating ${
-                          isLevelUp ? "animate-shimmer" : ""
-                        }`}
-                        unoptimized
-                      />
+                      {loading || !island ? (
+                        <div className="h-[270px] w-full flex items-center">
+                          <Spinner className="mx-auto" />
+                        </div>
+                      ) : (
+                        <Image
+                          src={island.current_url}
+                          alt="My Island"
+                          width={600}
+                          height={300}
+                          className={`pixelated pointer-events-none select-none w-full max-w-[800px] floating ${
+                            isLevelUp ? "animate-shimmer" : ""
+                          }`}
+                          unoptimized
+                        />
+                      )}
 
                       {isLevelUp && (
                         <motion.div
@@ -221,10 +222,16 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="flex flex-row justify-center items-center">
-                <div className="z-10 font-bold text-background">
-                  {island ? island.level : <Spinner size="xs" />}
-                </div>
-                <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
+                {island ? (
+                  <>
+                    <div className="z-10 font-bold text-background">
+                      {island.level}
+                    </div>
+                    <span className="rotate-45 rounded-sm bg-primary size-6 absolute"></span>
+                  </>
+                ) : (
+                  <span className="rotate-45 animate-pulse rounded-sm bg-primary size-6"></span>
+                )}
               </div>
               <div className="flex flex-row justify-between space-x-4 items-center">
                 <div className="flex flex-col w-full">
@@ -304,16 +311,19 @@ export default function Dashboard() {
                       studyTime={studyTime["today"]}
                       goal={user?.goal ?? 0}
                       timeframe="day"
+                      loading={loading}
                     />
                     <PeriodProgress
                       studyTime={studyTime["week"]}
                       goal={user?.goal ?? 0}
                       timeframe="week"
+                      loading={loading}
                     />
                     <PeriodProgress
                       studyTime={studyTime["month"]}
                       goal={user?.goal ?? 0}
                       timeframe="month"
+                      loading={loading}
                     />
                   </div>
                   <div className="flex flex-col justify-between">
@@ -331,24 +341,25 @@ export default function Dashboard() {
                         studyTime={studyTime["week"]}
                         goal={user?.goal ?? 0}
                         timeframe="week"
+                        loading={loading}
                       />
                     </div>
                     <LineChart chartData={groupedSessions} />
                   </div>
                   <div className="lg:flex flex-row justify-between gap-2 hidden">
-                    {loading ? (
-                      <Spinner className="mt-8" />
-                    ) : (
-                      [...groupedSessions]
-                        .slice(0, 7)
-                        .map((day) => (
-                          <SessionDayCard
-                            key={day.date}
-                            day={day}
-                            goal={user?.goal ?? 0}
-                          />
+                    {loading
+                      ? [...Array(7)].map((_, index) => (
+                          <SessionDayCardSkeleton key={index} />
                         ))
-                    )}
+                      : [...groupedSessions]
+                          .slice(0, 7)
+                          .map((day) => (
+                            <SessionDayCard
+                              key={day.date}
+                              day={day}
+                              goal={user?.goal ?? 0}
+                            />
+                          ))}
                   </div>
                   <div className="flex flex-row justify-between lg:hidden">
                     {loading ? (
@@ -376,14 +387,12 @@ export default function Dashboard() {
               <h2 className="text-xl font-semibold tracking-tight mb-4">
                 Last 30 Days
               </h2>
-              {loading ? (
-                <Spinner className="mt-8" />
-              ) : (
-                <StudyHeatmap
-                  groupedSessions={groupedSessions}
-                  goal={user?.goal ?? 0}
-                />
-              )}
+
+              <StudyHeatmap
+                groupedSessions={groupedSessions}
+                goal={user?.goal ?? 0}
+                loading={loading}
+              />
             </CardContent>
           </Card>
           <Card className="lg:min-w-96 w-full">
@@ -393,11 +402,13 @@ export default function Dashboard() {
                   timeframe="week"
                   courses={courses}
                   groupedSessions={groupedSessions}
+                  loading={loading}
                 />
                 <CourseMetric
                   studyTime={studyTime["week"]}
                   timeframe="week"
                   courses={courses}
+                  loading={loading}
                 />
               </div>
               <div className="">
@@ -424,25 +435,22 @@ export default function Dashboard() {
                 Average Study By Day
               </h2>
               <div className="">
-                {loading && !user ? (
-                  <Spinner className="mt-8" />
-                ) : (
-                  <RadarChart
-                    groupedSessions={groupedSessions}
-                    type="weekday"
-                    goal={user?.goal ?? 0}
-                  />
-                )}
+                <RadarChart
+                  groupedSessions={groupedSessions}
+                  goal={user?.goal ?? 0}
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <SessionMetric
                   studyTime={studyTime["week"]}
                   timeframe="week"
                   groupedSessions={groupedSessions}
+                  loading={loading}
                 />
                 <SessionCountMetric
                   timeframe="week"
                   groupedSessions={groupedSessions}
+                  loading={loading}
                 />
               </div>
             </CardContent>
@@ -460,6 +468,7 @@ export default function Dashboard() {
         goal={user?.goal ?? 0}
         courses={courses}
         island={oldIsland}
+        loading={loading}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import { GroupedSession } from "@/components/types/session";
 interface StudyHeatmapProps {
   groupedSessions: GroupedSession[];
   goal: number;
+  loading: boolean;
 }
 
 // Add type for week array
@@ -14,6 +15,7 @@ type WeekData = (Date | null)[];
 export default function StudyHeatmap({
   groupedSessions,
   goal,
+  loading,
 }: StudyHeatmapProps) {
   // Calculate study hours for a given date
   const calculateStudyHours = (sessions: sessionProps[]): number => {
@@ -132,22 +134,30 @@ export default function StudyHeatmap({
                 );
               }
 
-              const hours = getStudyHoursForDate(date);
-              const colorClass = getColorIntensity(hours);
               const dayNumber = date.getDate();
+              const hours = loading ? 0 : getStudyHoursForDate(date);
+              const colorClass = loading
+                ? "bg-gray-100 text-gray-400"
+                : getColorIntensity(hours);
 
               return (
                 <div
                   key={date.toISOString()}
                   className={`w-10 h-10 rounded-md flex flex-col items-center justify-center text-xs transition-all hover:scale-105 cursor-pointer ${colorClass}`}
-                  title={`${date.toLocaleDateString()}: ${hours.toFixed(
-                    1
-                  )}h studied`}
+                  title={
+                    loading
+                      ? date.toLocaleDateString()
+                      : `${date.toLocaleDateString()}: ${hours.toFixed(
+                          1
+                        )}h studied`
+                  }
                 >
                   <div className="text-xs">{dayNumber}</div>
-                  <div className="text-sm font-bold">
-                    {hours > 0 ? `${Math.round(hours)}h` : ""}
-                  </div>
+                  {!loading && (
+                    <div className="text-sm font-bold">
+                      {hours > 0 ? `${Math.round(hours)}h` : ""}
+                    </div>
+                  )}
                 </div>
               );
             })}

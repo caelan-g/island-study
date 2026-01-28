@@ -2,6 +2,7 @@ import { timeFilter } from "@/lib/filters/time-filter";
 import { courseProps } from "@/components/types/course";
 import { sessionProps } from "@/components/types/session";
 import { ArrowUp } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GroupedSession {
   date: string;
@@ -12,10 +13,12 @@ export function CourseTopMetric({
   timeframe,
   courses,
   groupedSessions,
+  loading,
 }: {
   timeframe: "week" | "month";
   courses: courseProps[];
   groupedSessions: GroupedSession[];
+  loading: boolean;
 }) {
   const period = timeframe === "week" ? 7 : 30;
 
@@ -56,21 +59,25 @@ export function CourseTopMetric({
       <p className="text-xs text-muted-foreground">
         Top Studied Course ({timeframe})
       </p>
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex items-center gap-2">
-          <div
-            className="size-4 rounded-sm"
-            style={{ backgroundColor: topCourse?.course.colour }}
-          />
-          <p className="text-xl font-bold truncate">
-            {topCourse ? topCourse.course.name : "No data"}
+      {loading ? (
+        <Skeleton className="h-6 w-32 mt-1 rounded-md" />
+      ) : (
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div
+              className="size-4 rounded-sm"
+              style={{ backgroundColor: topCourse?.course.colour }}
+            />
+            <p className="text-xl font-bold truncate">
+              {topCourse ? topCourse.course.name : "No data"}
+            </p>
+          </div>
+          <p className="text-xs rounded-md bg-emerald-100 dark:bg-emerald-500 dark:text-background flex px-2 py-1 ml-2">
+            <ArrowUp className="size-4 mr-1" />
+            {timeFilter(topCourse?.total || 0)}
           </p>
         </div>
-        <p className="text-xs rounded-md bg-emerald-100 dark:bg-emerald-500 dark:text-background flex px-2 py-1 ml-2">
-          <ArrowUp className="size-4 mr-1" />
-          {timeFilter(topCourse?.total || 0)}
-        </p>
-      </div>
+      )}
     </div>
   );
 }
