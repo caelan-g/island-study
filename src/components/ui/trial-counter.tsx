@@ -21,7 +21,7 @@ export default function TrialCounter({
     const expired = percentageRemaining <= 0;
     return (
       <div className="rounded-lg border w-full p-2 flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between gap-2">
           <span className="text-sm font-semibold items-center flex">
             Free Trial{" "}
             {expired ? (

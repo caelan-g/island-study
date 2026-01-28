@@ -190,199 +190,11 @@ export default function AnalyticsPage() {
       }
     }
   }, [sessions]);
-  if (loading || islandCount >= 3) {
-    return (
-      <div>
-        <div className="text-2xl font-semibold tracking-tight">Analytics</div>
-        {!loading && islandCount <= 3 && (
-          <div className="w-full flex h-screen backdrop-blur-lg fixed z-1 top-0 left-0 overflow-x-hidden">
-            <div className="mx-auto text-center align-middle my-auto flex flex-col pb-12">
-              <Lock size={30} strokeWidth={2} className="my-auto mx-auto" />
-              <div className="font-semibold mx-auto text-lg">
-                Analytics locked
-              </div>
-              <div className="text-sm">Create 3 unique islands</div>
-              <div className="flex flex-row gap-1 mt-2">
-                <Progress
-                  value={islandCount >= 1 ? 100 : 0}
-                  className="[&>div]:bg-[var(--chart-green)]"
-                />
-                <Progress
-                  value={islandCount >= 2 ? 100 : 0}
-                  className="[&>div]:bg-[var(--chart-green)]"
-                />
-                <Progress
-                  value={islandCount >= 3 ? 100 : 0}
-                  className="[&>div]:bg-[var(--chart-green)]"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <Card className="w-full">
-              <CardContent className="flex flex-col mt-6">
-                <h2 className="text-xl font-semibold tracking-tight mb-4">
-                  Study Time by Course
-                </h2>
-                <div className="overflow-x-auto">
-                  <DayCourseAreaChart
-                    chartData={groupedSessions}
-                    courses={courses}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="min-w-80">
-              <CardContent className="flex flex-col mt-6">
-                <h2 className="text-xl font-semibold tracking-tight mb-2">
-                  Lifetime Stats
-                </h2>
-                <span className="text-muted-foreground text-xs">Totals</span>
-                <p className="font-semibold text-md">
-                  {Math.floor(totalStudy / 3600)}{" "}
-                  <span className="font-normal text-sm">hours studied</span>
-                </p>
-                <p className="font-semibold text-md">
-                  {sessionCount}{" "}
-                  <span className="font-normal text-sm">sessions created</span>
-                </p>
-                <p className="font-semibold text-md">
-                  {dayCount}{" "}
-                  <span className="font-normal text-sm">
-                    individual days studied
-                  </span>
-                </p>
-
-                <p className="font-semibold text-md">
-                  {islandCount}{" "}
-                  <span className="font-normal text-sm">islands created</span>
-                </p>
-                <p className="font-semibold text-md">
-                  {evolutionCount}{" "}
-                  <span className="font-normal text-sm">islands evolved</span>
-                </p>
-                <span className="text-muted-foreground text-xs mt-4">
-                  Records
-                </span>
-                <p className="font-semibold text-md">
-                  {Math.floor(longestSession / 3600) > 0
-                    ? `${Math.floor(longestSession / 3600)}h ${Math.floor((longestSession % 3600) / 60)}m`
-                    : `${Math.floor(longestSession / 60)}m`}{" "}
-                  <span className="font-normal text-sm">longest session</span>
-                </p>
-                <p className="font-semibold text-md">
-                  {Math.floor(biggestDay / 3600) > 0
-                    ? `${Math.floor(biggestDay / 3600)}h ${Math.floor((biggestDay % 3600) / 60)}m`
-                    : `${Math.floor(biggestDay / 60)}m`}{" "}
-                  <span className="font-normal text-sm">in 1 day</span>
-                </p>
-                <p className="font-semibold text-md">
-                  {Math.floor(biggestWeek / 3600) > 0
-                    ? `${Math.floor(biggestWeek / 3600)}h ${Math.floor((biggestWeek % 3600) / 60)}m`
-                    : `${Math.floor(biggestWeek / 60)}m`}{" "}
-                  <span className="font-normal text-sm">over 7 days</span>
-                </p>
-                <p className="font-semibold text-md">
-                  {Math.floor(biggest30Days / 3600) > 0
-                    ? `${Math.floor(biggest30Days / 3600)}h ${Math.floor((biggest30Days % 3600) / 60)}m`
-                    : `${Math.floor(biggest30Days / 60)}m`}{" "}
-                  <span className="font-normal text-sm">over 30 days</span>
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="w-full h-full">
-            <CardContent className="flex flex-col mt-6 mb-12">
-              <h2 className="text-xl font-semibold tracking-tight mb-4">
-                Courses This Year
-              </h2>
-              <div className="mx-auto overflow-x-auto w-full">
-                <div className="text-sm font-semibold mt-2 mb-2">
-                  Course Heatmap
-                </div>
-                <YearHeatmap
-                  data={groupedSessions}
-                  type={"course"}
-                  courseData={courses}
-                />
-              </div>
-            </CardContent>
-          </Card>
-          <div className="flex flex-col lg:flex-row gap-4">
-            <Card className="w-full">
-              <CardContent className="flex flex-col gap-4 mt-6 h-full">
-                <h2 className="text-xl font-semibold tracking-tight">
-                  Study Time by Month
-                </h2>
-                <div className="w-full flex-1 mb-12">
-                  <VerticalBarChart chartData={groupedSessions} />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="w-full">
-              <CardContent className="flex flex-col gap-4 mt-6">
-                <h2 className="text-xl font-semibold tracking-tight">
-                  Average Study By Day
-                </h2>
-                <div className="">
-                  <RadarChart
-                    groupedSessions={groupedSessions}
-                    type="weekday"
-                    goal={user?.goal ?? 0}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="w-full">
-              <CardContent className="flex flex-col gap-4 mt-6">
-                <h2 className="text-xl font-semibold tracking-tight">
-                  Average Session Duration by Course
-                </h2>
-                <div className="w-full">
-                  <RadarChart
-                    groupedSessions={groupedSessions}
-                    type="course"
-                    courseData={courses}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="w-full h-full">
-            <CardContent className="flex flex-col mt-6">
-              <h2 className="text-xl font-semibold tracking-tight mb-4">
-                This Year
-              </h2>
-              <div className="mx-auto overflow-x-auto w-full ">
-                <div className="text-sm font-semibold mt-2 mb-2 w-fit">
-                  Study Time Heatmap
-                </div>
-                <YearHeatmap data={groupedSessions} type={"time"} />
-                <div className="text-sm font-semibold mt-4 mb-2 w-fit">
-                  Session Count Heatmap
-                </div>
-                <YearHeatmap data={groupedSessions} type={"session"} />
-              </div>
-            </CardContent>
-          </Card>
-          <div className="mx-auto text-sm mt-4 text-muted-foreground text-center">
-            This page is under development. Let us{" "}
-            <a href="mailto:contact@islands.study" className="underline">
-              know
-            </a>{" "}
-            what you&apos;d like to see!
-          </div>
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className="fixed w-screen h-screen top-0 left-0 lg:pl-[16.5rem] bg-white pt-4">
-        <div className="text-2xl font-semibold tracking-tight">Analytics</div>
-        <div className="w-full flex h-screen backdrop-blur-sm absolute top-0 left-0 overflow-x-hidden">
+  return (
+    <div>
+      <div className="text-2xl font-semibold tracking-tight">Analytics</div>
+      {!loading && islandCount <= 3 && (
+        <div className="w-full flex h-screen backdrop-blur-lg fixed z-1 top-0 left-0 overflow-x-hidden">
           <div className="mx-auto text-center align-middle my-auto flex flex-col pb-12">
             <Lock size={30} strokeWidth={2} className="my-auto mx-auto" />
             <div className="font-semibold mx-auto text-lg">
@@ -405,32 +217,164 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </div>
-        <div className="h-screen flex flex-col gap-4">
-          <div className="flex flex-row gap-4 min-h-96">
-            <Card className="min-w-96">
-              <CardContent className="flex flex-col mt-6">
-                <h2 className="text-xl font-semibold tracking-tight mb-4">
-                  Locked Metric 1
-                </h2>
-              </CardContent>
-            </Card>
-            <Card className="w-full">
-              <CardContent className="flex flex-col mt-6">
-                <h2 className="text-xl font-semibold tracking-tight mb-4">
-                  Locked Metric 2
-                </h2>
-              </CardContent>
-            </Card>
-          </div>
-          <Card className="w-full h-full">
+      )}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <Card className="w-full">
             <CardContent className="flex flex-col mt-6">
               <h2 className="text-xl font-semibold tracking-tight mb-4">
-                Locked Metric 3
+                Study Time by Course
               </h2>
+              <div className="overflow-x-auto">
+                <DayCourseAreaChart
+                  chartData={groupedSessions}
+                  courses={courses}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="min-w-80">
+            <CardContent className="flex flex-col mt-6">
+              <h2 className="text-xl font-semibold tracking-tight mb-2">
+                Lifetime Stats
+              </h2>
+              <span className="text-muted-foreground text-xs">Totals</span>
+              <p className="font-semibold text-md">
+                {Math.floor(totalStudy / 3600)}{" "}
+                <span className="font-normal text-sm">hours studied</span>
+              </p>
+              <p className="font-semibold text-md">
+                {sessionCount}{" "}
+                <span className="font-normal text-sm">sessions created</span>
+              </p>
+              <p className="font-semibold text-md">
+                {dayCount}{" "}
+                <span className="font-normal text-sm">
+                  individual days studied
+                </span>
+              </p>
+
+              <p className="font-semibold text-md">
+                {islandCount}{" "}
+                <span className="font-normal text-sm">islands created</span>
+              </p>
+              <p className="font-semibold text-md">
+                {evolutionCount}{" "}
+                <span className="font-normal text-sm">islands evolved</span>
+              </p>
+              <span className="text-muted-foreground text-xs mt-4">
+                Records
+              </span>
+              <p className="font-semibold text-md">
+                {Math.floor(longestSession / 3600) > 0
+                  ? `${Math.floor(longestSession / 3600)}h ${Math.floor((longestSession % 3600) / 60)}m`
+                  : `${Math.floor(longestSession / 60)}m`}{" "}
+                <span className="font-normal text-sm">longest session</span>
+              </p>
+              <p className="font-semibold text-md">
+                {Math.floor(biggestDay / 3600) > 0
+                  ? `${Math.floor(biggestDay / 3600)}h ${Math.floor((biggestDay % 3600) / 60)}m`
+                  : `${Math.floor(biggestDay / 60)}m`}{" "}
+                <span className="font-normal text-sm">in 1 day</span>
+              </p>
+              <p className="font-semibold text-md">
+                {Math.floor(biggestWeek / 3600) > 0
+                  ? `${Math.floor(biggestWeek / 3600)}h ${Math.floor((biggestWeek % 3600) / 60)}m`
+                  : `${Math.floor(biggestWeek / 60)}m`}{" "}
+                <span className="font-normal text-sm">over 7 days</span>
+              </p>
+              <p className="font-semibold text-md">
+                {Math.floor(biggest30Days / 3600) > 0
+                  ? `${Math.floor(biggest30Days / 3600)}h ${Math.floor((biggest30Days % 3600) / 60)}m`
+                  : `${Math.floor(biggest30Days / 60)}m`}{" "}
+                <span className="font-normal text-sm">over 30 days</span>
+              </p>
             </CardContent>
           </Card>
         </div>
+
+        <Card className="w-full h-full">
+          <CardContent className="flex flex-col mt-6 mb-12">
+            <h2 className="text-xl font-semibold tracking-tight mb-4">
+              Courses This Year
+            </h2>
+            <div className="mx-auto overflow-x-auto w-full">
+              <div className="text-sm font-semibold mt-2 mb-2">
+                Course Heatmap
+              </div>
+              <YearHeatmap
+                data={groupedSessions}
+                type={"course"}
+                courseData={courses}
+              />
+            </div>
+          </CardContent>
+        </Card>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <Card className="w-full">
+            <CardContent className="flex flex-col gap-4 mt-6 h-full">
+              <h2 className="text-xl font-semibold tracking-tight">
+                Study Time by Month
+              </h2>
+              <div className="w-full flex-1 mb-12">
+                <VerticalBarChart chartData={groupedSessions} />
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="w-full">
+            <CardContent className="flex flex-col gap-4 mt-6">
+              <h2 className="text-xl font-semibold tracking-tight">
+                Average Study By Day
+              </h2>
+              <div className="">
+                <RadarChart
+                  groupedSessions={groupedSessions}
+                  type="weekday"
+                  goal={user?.goal ?? 0}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="w-full">
+            <CardContent className="flex flex-col gap-4 mt-6">
+              <h2 className="text-xl font-semibold tracking-tight">
+                Average Session Duration by Course
+              </h2>
+              <div className="w-full">
+                <RadarChart
+                  groupedSessions={groupedSessions}
+                  type="course"
+                  courseData={courses}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <Card className="w-full h-full">
+          <CardContent className="flex flex-col mt-6">
+            <h2 className="text-xl font-semibold tracking-tight mb-4">
+              This Year
+            </h2>
+            <div className="mx-auto overflow-x-auto w-full ">
+              <div className="text-sm font-semibold mt-2 mb-2 w-fit">
+                Study Time Heatmap
+              </div>
+              <YearHeatmap data={groupedSessions} type={"time"} />
+              <div className="text-sm font-semibold mt-4 mb-2 w-fit">
+                Session Count Heatmap
+              </div>
+              <YearHeatmap data={groupedSessions} type={"session"} />
+            </div>
+          </CardContent>
+        </Card>
+        <div className="mx-auto text-sm mt-4 text-muted-foreground text-center">
+          This page is under development. Let us{" "}
+          <a href="mailto:contact@islands.study" className="underline">
+            know
+          </a>{" "}
+          what you&apos;d like to see!
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

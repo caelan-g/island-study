@@ -61,7 +61,7 @@ export function MobileNavbar() {
           </Button>
         </div>
 
-        <nav className="flex flex-col items-center justify-between pt-36 pb-36 h-full px-8">
+        <nav className="flex flex-col items-center justify-between pt-18 h-full px-8">
           <div className="w-full max-w-sm">
             <ul className="space-y-4">
               {navItems.map((item) => {
