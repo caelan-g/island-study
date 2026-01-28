@@ -438,6 +438,7 @@ export default function Dashboard() {
                 <RadarChart
                   groupedSessions={groupedSessions}
                   goal={user?.goal ?? 0}
+                  type="weekday"
                 />
               </div>
               <div className="flex flex-col gap-2">
