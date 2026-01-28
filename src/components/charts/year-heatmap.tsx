@@ -209,7 +209,22 @@ export function YearHeatmap({
 
   return (
     <TooltipProvider delayDuration={100}>
-      <div className={cn("w-fit", className)}>
+      <style>{`
+        .year-heatmap {
+          --cell-unit: 19px;
+        }
+        @media (max-width: 640px) {
+          .year-heatmap {
+            --cell-unit: 15px;
+          }
+        }
+        @media (min-width: 1536px) {
+          .year-heatmap {
+            --cell-unit: 23px;
+          }
+        }
+      `}</style>
+      <div className={cn("w-fit year-heatmap", className)}>
         {/* Month labels */}
         <div className="flex mb-1 ml-8">
           {months.map((month, idx) => {
@@ -223,8 +238,8 @@ export function YearHeatmap({
                 key={`${month.label}-${idx}`}
                 className="text-xs text-muted-foreground"
                 style={{
-                  width: `${width * 19}px`,
-                  minWidth: `${width * 19}px`,
+                  width: `calc(var(--cell-unit) * ${width})`,
+                  minWidth: `calc(var(--cell-unit) * ${width})`,
                 }}
               >
                 {width >= 2 ? month.label : ""}
@@ -235,7 +250,7 @@ export function YearHeatmap({
 
         <div className="flex">
           {/* Day labels */}
-          <div className="flex flex-col gap-[3px] mr-1 text-xs text-muted-foreground">
+          <div className="flex flex-col lg:gap-[3px] 2xl:gap-[7px] mr-1 text-xs text-muted-foreground">
             {dayLabels.map((day, idx) => (
               <div
                 key={day}
@@ -253,7 +268,12 @@ export function YearHeatmap({
               <div key={weekIdx} className="flex flex-col gap-[3px]">
                 {week.map((day, dayIdx) => {
                   if (!day) {
-                    return <div key={`empty-${dayIdx}`} className="w-4 h-4" />;
+                    return (
+                      <div
+                        key={`empty-${dayIdx}`}
+                        className="w-3 lg:w-4 2xl:w-5 h-3 lg:h-4 2xl:h-5"
+                      />
+                    );
                   }
 
                   const dateStr = toISODateString(day);
@@ -268,9 +288,9 @@ export function YearHeatmap({
 
                   const cellClassName =
                     type === "course" && courseInfo
-                      ? "sm:w-3 lg:w-4 2xl:w-5 sm:h-3 lg:h-4 2xl:h-5 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30"
+                      ? "w-3 lg:w-4 2xl:w-5 h-3 lg:h-4 2xl:h-5 rounded-xs lg:rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30"
                       : cn(
-                          "sm:w-3 lg:w-4 2xl:w-5 sm:h-3 lg:h-4 2xl:h-5 rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30",
+                          "w-3 lg:w-4 2xl:w-5 h-3 lg:h-4 2xl:h-5 rounded-xs lg:rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-foreground/30",
                           getColorClass(value, maxValue, colorScale),
                         );
 

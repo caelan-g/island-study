@@ -4,7 +4,6 @@ import {
   TreePalm,
   GraduationCap,
   Settings,
-  Beaker,
   ChartArea,
 } from "lucide-react";
 export const navItems = [

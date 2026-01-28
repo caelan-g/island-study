@@ -1,13 +1,11 @@
 "use client";
 import { Lock } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { courseProps } from "@/components/types/course";
-import { sessionProps, TimeMetrics } from "@/components/types/session";
+import { sessionProps } from "@/components/types/session";
 import { GroupedSession } from "@/components/types/session";
 import { processSessionData } from "@/lib/metrics/process-session-data";
 import { DayCourseAreaChart } from "@/components/charts/day-course-area-chart";
-import { CourseMetric } from "@/components/metrics/courses/course-metric";
-import { CourseTopMetric } from "@/components/metrics/courses/course-top-metric";
 import { Progress } from "@/components/ui/progress";
 import { useCallback, useEffect, useState } from "react";
 import { fetchIslands } from "@/lib/island/fetch-islands";
@@ -35,11 +33,6 @@ export default function AnalyticsPage() {
   const [biggestDay, setBiggestDay] = useState<number>(0);
   const [biggestWeek, setBiggestWeek] = useState<number>(0);
   const [biggest30Days, setBiggest30Days] = useState<number>(0);
-  const [studyTime, setTotal] = useState<TimeMetrics>({
-    today: 0,
-    week: 0,
-    month: 0,
-  });
 
   const [loading, setLoading] = useState(true);
   const { user: authUser, loading: authLoading } = useAuth();
@@ -58,6 +51,11 @@ export default function AnalyticsPage() {
           setCourses(courseData);
         }
         setIslandCount(islandData ? islandData.length : 0);
+        setEvolutionCount(
+          islandData
+            ? islandData.reduce((sum, island) => sum + island.level, 0)
+            : 0,
+        );
         if (sessionData) {
           setSessions(sessionData);
           const uniqueDays = new Set(
@@ -94,15 +92,14 @@ export default function AnalyticsPage() {
   }, [authLoading, authUser, initializeData]);
   useEffect(() => {
     if (sessions.length > 0) {
-      const [timeMetrics, groupedArray] = processSessionData(
-        sessions,
-        "all",
-      ) || [{ today: 0, week: 0, month: 0 }, [], []];
+      const [, groupedArray] = processSessionData(sessions, "all") || [
+        { today: 0, week: 0, month: 0 },
+        [],
+      ];
 
       const processedGroupedSessions = (
         groupedArray as GroupedSession[]
       ).reverse();
-      setTotal(timeMetrics as TimeMetrics);
       setGroupedSessions(processedGroupedSessions);
 
       // Calculate record metrics from processed grouped sessions
@@ -364,7 +361,7 @@ export default function AnalyticsPage() {
             <a href="mailto:contact@islands.study" className="underline">
               know
             </a>{" "}
-            what you'd like to see!
+            what you&apos;d like to see!
           </div>
         </div>
       </div>
