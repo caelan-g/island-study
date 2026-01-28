@@ -57,10 +57,10 @@ export function DayCourseAreaChart({
   });
 
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="h-[300px] w-full">
       <Chart
         data={processedData}
-        margin={{ left: 12, right: 12, top: 20, bottom: 20 }}
+        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
         stackOffset="none"
       >
         <CartesianGrid vertical={false} stroke="var(--border)" />
@@ -89,7 +89,7 @@ export function DayCourseAreaChart({
                           className="size-3 rounded-sm"
                           style={{
                             backgroundColor: courses.find(
-                              (c) => c.id === entry.dataKey
+                              (c) => c.id === entry.dataKey,
                             )?.colour,
                           }}
                         />

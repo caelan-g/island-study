@@ -1,12 +1,5 @@
 "use client";
-import {
-  TreePalm,
-  Home,
-  Table,
-  GraduationCap,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import {
@@ -25,34 +18,8 @@ import { cn } from "@/lib/utils";
 import { useSubscription } from "@/contexts/subscription-context";
 import TrialCounter from "@/components/ui/trial-counter";
 import InfluencerBadge from "./influencer-badge";
+import { navItems } from "@/app/data/nav-items";
 
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Sessions",
-    url: "/sessions",
-    icon: Table,
-  },
-  {
-    title: "Archipelago",
-    url: "/archipelago",
-    icon: TreePalm,
-  },
-  {
-    title: "Courses",
-    url: "/courses",
-    icon: GraduationCap,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
 export function AppSidebar() {
   const { user: authUser, loading: authLoading } = useAuth();
   const { subscriptionStatus, endDate, subscriptionLoading } =
@@ -70,31 +37,35 @@ export function AppSidebar() {
             >
               Islands.
             </a>
-
-            <span className="rounded-md bg-accent-foreground text-background font-bold p-2 text-xs my-auto">
-              BETA
-            </span>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {items.map((item) => (
+            <SidebarMenu>
+              {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild size="default">
                     <a
                       href={item.url}
                       className={cn(
-                        "flex gap-2 text-foreground text-md",
-                        pathname === item.url && "font-semibold bg-muted"
+                        "flex justify-between text-foreground",
+                        pathname === item.url && "font-semibold bg-muted",
                       )}
                     >
-                      <item.icon
-                        strokeWidth={pathname === item.url ? "2.5" : "2"}
-                      />
-                      <span>{item.title}</span>
+                      <div className="flex gap-2 text-md items-center">
+                        <item.icon
+                          strokeWidth={pathname === item.url ? "2.5" : "2"}
+                          size={16}
+                        />
+                        <span>{item.title}</span>
+                      </div>
+                      {item.status === "new" && (
+                        <span className="text-[0.7rem] font-semibold rounded-full bg-[var(--chart-green)]/20 border-[var(--chart-green)] border text-[var(--chart-green)] px-2 py-0.5">
+                          NEW
+                        </span>
+                      )}
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

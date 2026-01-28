@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart as Chart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart as Chart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   ChartConfig,
@@ -23,7 +23,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function BarChart({ chartData }: BarChartProps) {
+export function VerticalBarChart({ chartData }: BarChartProps) {
   const processedData = (() => {
     // Get the current date
     const now = new Date();
@@ -86,7 +86,6 @@ export function BarChart({ chartData }: BarChartProps) {
         return {
           date: date.toLocaleDateString("en-US", {
             month: "short",
-            year: "numeric",
           }),
           studyTime,
         };
@@ -94,15 +93,17 @@ export function BarChart({ chartData }: BarChartProps) {
   })();
 
   return (
-    <ChartContainer config={chartConfig}>
-      <Chart accessibilityLayer data={processedData}>
-        <CartesianGrid vertical={false} />
-        <XAxis
+    <ChartContainer config={chartConfig} className="h-full w-full">
+      <Chart accessibilityLayer data={processedData} layout="vertical">
+        <CartesianGrid horizontal={false} />
+        <YAxis
           dataKey="date"
+          type="category"
           tickLine={false}
           tickMargin={10}
           axisLine={false}
         />
+        <XAxis type="number" hide />
         <ChartTooltip
           cursor={false}
           content={({ active, payload }) => {
@@ -124,7 +125,7 @@ export function BarChart({ chartData }: BarChartProps) {
         <Bar
           dataKey="studyTime"
           fill="var(--chart-green)"
-          radius={[4, 4, 0, 0]} // Rounded top corners
+          radius={[0, 4, 4, 0]} // Rounded right corners
         />
       </Chart>
     </ChartContainer>

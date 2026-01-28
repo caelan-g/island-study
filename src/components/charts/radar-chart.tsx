@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/chart";
 import { timeFilter } from "@/lib/filters/time-filter";
 import { GroupedSession } from "@/components/types/session";
+import { courseProps } from "@/components/types/course";
 
 interface RadarChartProps {
   groupedSessions: GroupedSession[];
-  goal: number;
+  type: "weekday" | "session" | "course";
+  goal?: number;
+  courseData?: courseProps[];
 }
-
 const chartConfig = {
   average: {
     label: "Daily Average",
@@ -25,42 +27,127 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function RadarChart({ groupedSessions, goal }: RadarChartProps) {
+export function RadarChart({
+  groupedSessions,
+  type,
+  goal,
+  courseData,
+}: RadarChartProps) {
   // Process data to get weekday averages
-  const weekdayData = groupedSessions.reduce((acc, day) => {
-    const date = new Date(day.date);
-    const weekday = date.getDay();
+  let chartData;
+  if (type === "weekday") {
+    const weekdayData = groupedSessions.reduce(
+      (acc, day) => {
+        const date = new Date(day.date);
+        const weekday = date.getDay();
 
-    const dayTotal = day.sessions.reduce((total, session) => {
-      return (
-        total +
-        (new Date(session.end_time).getTime() -
-          new Date(session.start_time).getTime()) /
-          1000
-      );
-    }, 0);
+        const dayTotal = day.sessions.reduce((total, session) => {
+          return (
+            total +
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+              1000
+          );
+        }, 0);
 
-    if (!acc[weekday]) {
-      acc[weekday] = { total: 0, count: 0 };
-    }
+        if (!acc[weekday]) {
+          acc[weekday] = { total: 0, count: 0 };
+        }
 
-    acc[weekday].total += dayTotal;
-    acc[weekday].count += 1;
+        acc[weekday].total += dayTotal;
+        acc[weekday].count += 1;
 
-    return acc;
-  }, {} as Record<number, { total: number; count: number }>);
+        return acc;
+      },
+      {} as Record<number, { total: number; count: number }>,
+    );
 
-  // Convert to chart data format
-  const chartData = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-    (day, index) => {
-      const data = weekdayData[index] || { total: 0, count: 1 };
+    // Convert to chart data format
+    chartData = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+      (day, index) => {
+        const data = weekdayData[index] || { total: 0, count: 1 };
+        return {
+          day,
+          average: data.total / data.count,
+          goal,
+        };
+      },
+    );
+  } else if (type === "session") {
+    const weekdayData = groupedSessions.reduce(
+      (acc, day) => {
+        const date = new Date(day.date);
+        const weekday = date.getDay();
+
+        const dayTotal = day.sessions.reduce((total, session) => {
+          return (
+            total +
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+              1000
+          );
+        }, 0);
+
+        if (!acc[weekday]) {
+          acc[weekday] = { total: 0, count: 0 };
+        }
+
+        acc[weekday].total += dayTotal;
+        acc[weekday].count += 1;
+
+        return acc;
+      },
+      {} as Record<number, { total: number; count: number }>,
+    );
+
+    // Convert to chart data format
+    chartData = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+      (day, index) => {
+        const data = weekdayData[index] || { total: 0, count: 1 };
+        return {
+          day,
+          average: data.total / data.count,
+          goal,
+        };
+      },
+    );
+  } else if (type === "course") {
+    const courseSessionData = groupedSessions.reduce(
+      (acc, day) => {
+        day.sessions.forEach((session) => {
+          const courseId = session.course_id;
+          // Skip sessions without a valid course_id
+          if (!courseId) return;
+
+          const sessionDuration =
+            (new Date(session.end_time).getTime() -
+              new Date(session.start_time).getTime()) /
+            1000;
+
+          if (!acc[courseId]) {
+            acc[courseId] = { total: 0, count: 0 };
+          }
+
+          acc[courseId].total += sessionDuration;
+          acc[courseId].count += 1;
+        });
+        return acc;
+      },
+      {} as Record<string, { total: number; count: number }>,
+    );
+
+    // Convert to chart data format, sorted by course ID for consistency
+    const courseIds = Object.keys(courseSessionData).sort();
+    chartData = courseIds.map((courseId) => {
+      const data = courseSessionData[courseId];
+      const courseName =
+        courseData?.find((c) => c.id === courseId)?.name || courseId;
       return {
-        day,
-        average: data.total / data.count,
-        goal,
+        day: courseName,
+        course: data.total / data.count,
       };
-    }
-  );
+    });
+  }
 
   return (
     <ChartContainer
@@ -72,6 +159,10 @@ export function RadarChart({ groupedSessions, goal }: RadarChartProps) {
           cursor={false}
           content={({ active, payload }) => {
             if (active && payload?.length) {
+              const value =
+                type === "course"
+                  ? payload[0].payload.course
+                  : payload[0].payload.average;
               return (
                 <div className="rounded-lg border bg-background p-2 shadow-sm">
                   <div className="grid gap-2">
@@ -79,7 +170,7 @@ export function RadarChart({ groupedSessions, goal }: RadarChartProps) {
                       <span className="font-medium">
                         {payload[0].payload.day}
                       </span>
-                      <span>{timeFilter(payload[0].payload.average)}</span>
+                      <span>{timeFilter(value)}</span>
                     </div>
                   </div>
                 </div>
@@ -98,6 +189,13 @@ export function RadarChart({ groupedSessions, goal }: RadarChartProps) {
           fill="var(--muted-foreground)"
           fillOpacity={0.4}
           stroke="var(--muted-foreground)"
+          strokeWidth={2}
+        />
+        <Radar
+          dataKey="course"
+          fill="var(--chart-green)"
+          fillOpacity={0.4}
+          stroke="var(--chart-green)"
           strokeWidth={2}
         />
         <Radar

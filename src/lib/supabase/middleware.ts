@@ -19,7 +19,7 @@ export async function updateSession(request: NextRequest) {
             name: string;
             value: string;
             options?: CookieOptions;
-          }[]
+          }[],
         ) {
           cookiesToSet.forEach(({ name, value, options }) => {
             request.cookies.set(name, value);
@@ -28,7 +28,7 @@ export async function updateSession(request: NextRequest) {
           });
         },
       },
-    }
+    },
   );
 
   // Do not run code between createServerClient and

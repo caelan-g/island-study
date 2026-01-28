@@ -65,7 +65,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (rawSessionData.length > 0) {
       const [timeMetrics, groupedArray] = processSessionData(
-        rawSessionData
+        rawSessionData,
       ) || [{ today: 0, week: 0, month: 0 }, [], []];
 
       setTotal(timeMetrics as TimeMetrics);
@@ -101,7 +101,7 @@ export default function Dashboard() {
           }
           setIsland(islandData);
           setLoading(false);
-        }
+        },
       )
       .catch((error) => {
         console.error("Error loading data:", error);
@@ -247,11 +247,11 @@ export default function Dashboard() {
                         ? (() => {
                             if (Math.round(daysRemaining) > 0) {
                               return `${Math.round(
-                                daysRemaining
+                                daysRemaining,
                               )} days remaining`;
                             } else if (Math.round(daysRemaining) == 0) {
                               return `${Math.round(
-                                daysRemaining * 24
+                                daysRemaining * 24,
                               )} hours remaining`;
                             }
                             return "Time expired";
@@ -438,6 +438,7 @@ export default function Dashboard() {
                 <RadarChart
                   groupedSessions={groupedSessions}
                   goal={user?.goal ?? 0}
+                  type="weekday"
                 />
               </div>
               <div className="flex flex-col gap-2">
