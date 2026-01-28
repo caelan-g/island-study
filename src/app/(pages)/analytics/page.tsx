@@ -15,7 +15,6 @@ import { fetchSessions } from "@/lib/sessions/fetch-sessions";
 import { fetchUser } from "@/lib/user/fetch-user";
 import { YearHeatmap } from "@/components/charts/year-heatmap";
 import { RadarChart } from "@/components/charts/radar-chart";
-import { Spinner } from "@/components/ui/spinner";
 import { userProps } from "@/components/types/user";
 import { VerticalBarChart } from "@/components/charts/vertical-bar-chart";
 
@@ -195,6 +194,31 @@ export default function AnalyticsPage() {
     return (
       <div>
         <div className="text-2xl font-semibold tracking-tight">Analytics</div>
+        {!loading && islandCount <= 3 && (
+          <div className="w-full flex h-screen backdrop-blur-lg fixed z-1 top-0 left-0 overflow-x-hidden">
+            <div className="mx-auto text-center align-middle my-auto flex flex-col pb-12">
+              <Lock size={30} strokeWidth={2} className="my-auto mx-auto" />
+              <div className="font-semibold mx-auto text-lg">
+                Analytics locked
+              </div>
+              <div className="text-sm">Create 3 unique islands</div>
+              <div className="flex flex-row gap-1 mt-2">
+                <Progress
+                  value={islandCount >= 1 ? 100 : 0}
+                  className="[&>div]:bg-[var(--chart-green)]"
+                />
+                <Progress
+                  value={islandCount >= 2 ? 100 : 0}
+                  className="[&>div]:bg-[var(--chart-green)]"
+                />
+                <Progress
+                  value={islandCount >= 3 ? 100 : 0}
+                  className="[&>div]:bg-[var(--chart-green)]"
+                />
+              </div>
+            </div>
+          </div>
+        )}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col lg:flex-row gap-4">
             <Card className="w-full">
@@ -294,11 +318,7 @@ export default function AnalyticsPage() {
                   Study Time by Month
                 </h2>
                 <div className="w-full flex-1 mb-12">
-                  {loading && !user ? (
-                    <Spinner className="mt-8 mx-auto" />
-                  ) : (
-                    <VerticalBarChart chartData={groupedSessions} />
-                  )}
+                  <VerticalBarChart chartData={groupedSessions} />
                 </div>
               </CardContent>
             </Card>
@@ -308,15 +328,11 @@ export default function AnalyticsPage() {
                   Average Study By Day
                 </h2>
                 <div className="">
-                  {loading && !user ? (
-                    <Spinner className="mt-8" />
-                  ) : (
-                    <RadarChart
-                      groupedSessions={groupedSessions}
-                      type="weekday"
-                      goal={user?.goal ?? 0}
-                    />
-                  )}
+                  <RadarChart
+                    groupedSessions={groupedSessions}
+                    type="weekday"
+                    goal={user?.goal ?? 0}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -326,15 +342,11 @@ export default function AnalyticsPage() {
                   Average Session Duration by Course
                 </h2>
                 <div className="w-full">
-                  {loading && !user ? (
-                    <Spinner className="mt-8 mx-auto" />
-                  ) : (
-                    <RadarChart
-                      groupedSessions={groupedSessions}
-                      type="course"
-                      courseData={courses}
-                    />
-                  )}
+                  <RadarChart
+                    groupedSessions={groupedSessions}
+                    type="course"
+                    courseData={courses}
+                  />
                 </div>
               </CardContent>
             </Card>
